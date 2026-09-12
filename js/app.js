@@ -2062,131 +2062,384 @@
   function renderExpensesPane(container, trip) {
     const attendees = trip.attendees || [];
     const expenses = trip.expenses || [];
+    const currentUser = (appStore.profile && appStore.profile.name) ? appStore.profile.name : 'Alex Chen';
+    
+    // Calculate total spend
     const totalSpent = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-    const totalBudget = trip.budget || 0;
-    const remaining = totalBudget - totalSpent;
 
+    // Calculate individual balances
     const balances = {};
     attendees.forEach(a => balances[a.name] = 0);
+    
     expenses.forEach(exp => {
       const amt = parseFloat(exp.amount) || 0;
-      const splitWith = exp.splitWith && exp.splitWith.length > 0 ? exp.splitWith : attendees.map(a => a.name);
-      const perShare = amt / splitWith.length;
-      balances[exp.paidBy] = (balances[exp.paidBy] || 0) + amt;
-      splitWith.forEach(p => balances[p] = (balances[p] || 0) - perShare);
+      if (exp.sharesMap && Object.keys(exp.sharesMap).length > 0) {
+        // Mode 2 or Mode 3 split map
+        const totalSharesSum = Object.values(exp.sharesMap).reduce((s, v) => s + parseFloat(v), 0);
+        balances[exp.paidBy] = (balances[exp.paidBy] || 0) + amt;
+        Object.entries(exp.sharesMap).forEach(([person, val]) => {
+          const shareAmt = exp.splitMode === 'exact' ? parseFloat(val) : (amt * (parseFloat(val) / (totalSharesSum || 1)));
+          balances[person] = (balances[person] || 0) - shareAmt;
+        });
+      } else {
+        // Equal split default
+        const splitWith = exp.splitWith && exp.splitWith.length > 0 ? exp.splitWith : attendees.map(a => a.name);
+        const perShare = splitWith.length > 0 ? amt / splitWith.length : 0;
+        balances[exp.paidBy] = (balances[exp.paidBy] || 0) + amt;
+        splitWith.forEach(p => balances[p] = (balances[p] || 0) - perShare);
+      }
     });
 
+    const userBalance = balances[currentUser] || 0;
     const settlements = calculateSettlements(balances);
 
-    container.innerHTML = `
-      <div class="expense-summary-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Spent</div>
-          <div class="stat-value" style="color: var(--accent-primary);">$${totalSpent.toLocaleString()}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Budget</div>
-          <div class="stat-value" style="color: var(--text-primary);">$${totalBudget.toLocaleString()}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Remaining Budget</div>
-          <div class="stat-value" style="color: ${remaining >= 0 ? 'var(--status-active)' : '#ef4444'};">$${remaining.toLocaleString()}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Attendees</div>
-          <div class="stat-value" style="color: var(--accent-secondary);">${attendees.length} members</div>
-        </div>
-      </div>
+    let activeCategory = 'all';
+    let searchQuery = '';
 
-      ${settlements.length > 0 ? `
-        <div class="card" style="margin-bottom: 2rem; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);">
-          <h3 style="margin-bottom: 1rem; color: var(--status-active); display: flex; align-items: center; gap: 0.5rem;">
-            ${icon('calculator')} Smart Settlement Calculator (Optimal Transfers)
-          </h3>
-          <div style="display: grid; gap: 0.75rem;">
-            ${settlements.map(s => `
-              <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 0.85rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                <span><strong style="color: #f87171;">${s.from}</strong> owes <strong style="color: var(--status-active);">${s.to}</strong></span>
-                <span class="badge badge-active">$${s.amount.toFixed(2)}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-            <h3>Group Expense Log</h3>
-            <button class="btn btn-primary btn-sm" id="btn-add-exp">${icon('plus')} Log Expense</button>
-          </div>
-
-          <div style="display: grid; gap: 1rem;">
-            ${expenses.map(exp => `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div>
-                  <strong style="font-size: 1.1rem; color: var(--text-primary);">${exp.title}</strong>
-                  <p style="font-size: 0.85rem; color: var(--text-secondary);">Paid by <strong>${exp.paidBy}</strong> • Category: ${exp.category}</p>
-                </div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span style="font-weight: 700; font-size: 1.2rem; color: var(--text-primary);">$${parseFloat(exp.amount).toFixed(2)}</span>
-                  <button class="btn btn-icon-only btn-secondary btn-del-exp" data-id="${exp.id}">${icon('trash-2', '#ef4444')}</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-          <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-              <h3>Trip Attendees</h3>
-              <button class="btn btn-secondary btn-sm" id="btn-add-att">${icon('user-plus')} Invite</button>
-            </div>
-            <div style="display: grid; gap: 0.75rem;">
-              ${attendees.map(att => {
-                const bal = balances[att.name] || 0;
-                const isPos = bal >= 0;
-                return `
-                  <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                      <div class="avatar">${att.avatar}</div>
-                      <div>
-                        <div style="font-weight: 600;">${att.name}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${att.role}</div>
-                      </div>
-                    </div>
-                    <div style="text-align: right;">
-                      <div style="font-size: 0.85rem; font-weight: 700; color: ${isPos ? 'var(--status-active)' : '#ef4444'};">
-                        ${isPos ? '+' : ''}$${bal.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <div class="card">
-            <h4 style="margin-bottom: 1rem;">Expense Breakdown</h4>
-            <canvas id="expenseChart" style="max-height: 220px;"></canvas>
-          </div>
-        </div>
-      </div>
-    `;
-
-    renderExpenseChart(expenses);
-
-    container.querySelector('#btn-add-exp')?.addEventListener('click', () => openAddExpenseModal(trip));
-    container.querySelector('#btn-add-att')?.addEventListener('click', () => openInviteModal(trip));
-
-    container.querySelectorAll('.btn-del-exp').forEach(btn => {
-      btn.addEventListener('click', () => {
-        appStore.deleteExpense(trip.id, btn.getAttribute('data-id'));
-        showToast('Expense removed', 'info');
-        renderExpensesPane(container, appStore.getCurrentTrip());
+    const renderView = () => {
+      const filteredExpenses = expenses.filter(exp => {
+        const matchesCat = activeCategory === 'all' || (exp.category || '').toLowerCase() === activeCategory.toLowerCase();
+        const matchesSearch = !searchQuery || 
+          (exp.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+          (exp.paidBy || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCat && matchesSearch;
       });
-    });
+
+      // User status styling
+      let netCardClass = 'net-balance-card-neutral';
+      let netCardIcon = icon('check-circle', '#94a3b8');
+      let netCardSub = 'No pending debts or credits';
+      let netAmountColor = 'var(--text-primary)';
+
+      if (userBalance > 0.01) {
+        netCardClass = 'net-balance-card-surplus';
+        netCardIcon = icon('arrow-down-left', '#10b981');
+        netCardSub = 'Group owes you across expenses';
+        netAmountColor = '#34d399';
+      } else if (userBalance < -0.01) {
+        netCardClass = 'net-balance-card-debt';
+        netCardIcon = icon('arrow-up-right', '#f43f5e');
+        netCardSub = 'Your net balance is negative';
+        netAmountColor = '#fb7185';
+      }
+
+      container.innerHTML = `
+        <!-- Top Metric Summary Strip -->
+        <div class="expense-summary-banner" style="margin-bottom: 1.75rem;">
+          <div class="stat-card" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(148,163,184,0.15); padding: 1.25rem;">
+            <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; tracking: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem;">
+              Total Trip Spend
+            </div>
+            <div style="font-size: 2rem; font-weight: 800; color: #60a5fa; letter-spacing: -0.02em;">
+              $${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem;">
+              ${expenses.length} logged expense${expenses.length === 1 ? '' : 's'} • ${attendees.length} members
+            </div>
+          </div>
+
+          <div class="stat-card ${netCardClass}" style="position: relative; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem;">
+                  My Net Position (${currentUser})
+                </div>
+                <div style="font-size: 2rem; font-weight: 800; color: ${netAmountColor}; letter-spacing: -0.02em;">
+                  ${userBalance >= 0 ? '+' : ''}$${userBalance.toFixed(2)}
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem;">
+                  ${netCardSub}
+                </div>
+              </div>
+              <div style="padding: 0.6rem; background: rgba(255,255,255,0.05); border-radius: 12px;">
+                ${netCardIcon}
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 0.75rem; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(148,163,184,0.15); padding: 1.25rem;">
+            <button class="btn btn-primary btn-md" id="btn-top-add-exp" style="width: 100%; justify-content: center; font-weight: 600; gap: 0.5rem; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; box-shadow: 0 4px 14px rgba(99,102,241,0.4);">
+              ${icon('plus')} Log Expense
+            </button>
+            <button class="btn btn-secondary btn-md" id="btn-top-settle-up" style="width: 100%; justify-content: center; font-weight: 600; gap: 0.5rem; border-color: rgba(16,185,129,0.4); color: #34d399; background: rgba(16,185,129,0.08);">
+              ${icon('credit-card')} Settle Up Debt
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Workspace Grid (Left Rail + Right Workspace) -->
+        <div class="expense-workspace-grid">
+          <!-- Left Rail (Roster & Debt Matrix) -->
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Debt Matrix Card -->
+            <div class="card debt-matrix-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                  ${icon('calculator', 'var(--accent-primary)')} Settlement Matrix
+                </h3>
+                <span class="badge badge-active" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;">${settlements.length} Transfers</span>
+              </div>
+
+              ${settlements.length === 0 ? `
+                <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-muted);">
+                  <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎉</div>
+                  <div style="font-weight: 600; color: var(--text-secondary); font-size: 0.9rem;">All settled up!</div>
+                  <p style="font-size: 0.78rem; margin-top: 0.25rem;">No peer-to-peer transfers required right now.</p>
+                </div>
+              ` : `
+                <div style="display: grid; gap: 0.85rem;">
+                  ${settlements.map(s => {
+                    const isUserFrom = s.from === currentUser;
+                    const isUserTo = s.to === currentUser;
+                    return `
+                      <div style="background: rgba(15,23,42,0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.65rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+                            <span style="color: ${isUserFrom ? '#fb7185' : '#f87171'}; font-weight: 700;">${s.from}</span>
+                            <span style="color: var(--text-muted); font-size: 0.78rem; margin: 0 0.25rem;">owes</span>
+                            <span style="color: ${isUserTo ? '#34d399' : 'var(--status-active)'}; font-weight: 700;">${s.to}</span>
+                          </div>
+                          <span style="font-weight: 800; font-size: 0.95rem; color: #f87171; background: rgba(239,68,68,0.12); padding: 0.2rem 0.65rem; border-radius: 9999px; border: 1px solid rgba(239,68,68,0.25);">
+                            $${s.amount.toFixed(2)}
+                          </span>
+                        </div>
+
+                        <!-- Payment Apps & Settle Action -->
+                        <div style="display: flex; align-items: center; gap: 0.4rem; justify-content: flex-end; pt-1;">
+                          <a class="payment-link-venmo" href="venmo://paycharge?txn=pay&recipients=${encodeURIComponent(s.to.toLowerCase().replace(/\s+/g,''))}&amount=${s.amount.toFixed(2)}&note=${encodeURIComponent(trip.title + ' Settlement')}" target="_blank" title="Pay with Venmo">
+                            Venmo
+                          </a>
+                          <a class="payment-link-cashapp" href="https://cash.app/$${encodeURIComponent(s.to.toLowerCase().replace(/\s+/g,''))}/${s.amount.toFixed(2)}" target="_blank" title="Pay with Cash App">
+                            Cash App
+                          </a>
+                          <button class="btn btn-secondary btn-sm btn-quick-settle" data-from="${s.from}" data-to="${s.to}" data-amount="${s.amount.toFixed(2)}" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; height: auto;">
+                            Settle
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
+            </div>
+
+            <!-- Attendees Roster Card -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                  Collaborator Roster
+                </h3>
+                <button class="btn btn-secondary btn-sm" id="btn-exp-invite" style="font-size: 0.78rem;">
+                  ${icon('user-plus')} Invite
+                </button>
+              </div>
+
+              <div style="display: grid; gap: 0.75rem;">
+                ${attendees.map(att => {
+                  const bal = balances[att.name] || 0;
+                  const isPos = bal >= 0.01;
+                  const isNeg = bal <= -0.01;
+                  return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0.85rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                      <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="avatar" style="width: 36px; height: 36px; font-size: 0.85rem;">${att.avatar}</div>
+                        <div>
+                          <div style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">${att.name} ${att.name === currentUser ? '<span style="font-size:0.7rem; color: var(--accent-primary);">(You)</span>' : ''}</div>
+                          <div style="font-size: 0.72rem; color: var(--text-muted);">${att.role}</div>
+                        </div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: ${isPos ? '#34d399' : (isNeg ? '#fb7185' : 'var(--text-muted)')};">
+                          ${isPos ? '+' : ''}$${bal.toFixed(2)}
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-muted);">
+                          ${isPos ? 'gets back' : (isNeg ? 'owes' : 'settled')}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Workspace (Category Analytics, Filter Bar & Expense Feed) -->
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Category Analytics & Filter Row -->
+            <div class="card" style="padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                <!-- Filter Pills -->
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  ${['all', 'Dining', 'Lodging', 'Transit', 'Activities', 'Supplies', 'Miscellaneous'].map(cat => `
+                    <button class="cat-filter-btn ${activeCategory === cat ? 'active' : ''}" data-cat="${cat}" style="padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 600; background: ${activeCategory === cat ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)'}; color: ${activeCategory === cat ? '#fff' : 'var(--text-secondary)'}; border: 1px solid ${activeCategory === cat ? 'var(--accent-primary)' : 'var(--border-color)'}; cursor: pointer; transition: all 0.2s;">
+                      ${cat === 'all' ? 'All Categories' : cat}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <!-- Search Input -->
+                <div style="position: relative; width: 220px;">
+                  <input type="text" id="expense-search-input" class="form-control" placeholder="Search expenses..." value="${searchQuery}" style="font-size: 0.8rem; padding-left: 2rem; height: 34px; border-radius: 9999px;" />
+                  <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.5;">
+                    ${icon('search', 'var(--text-muted)')}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Category breakdown bar -->
+              <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.6rem; display: flex; justify-content: space-between;">
+                  <span>Category Breakdown</span>
+                  <span>Total: $${totalSpent.toFixed(2)}</span>
+                </div>
+                <div style="height: 10px; width: 100%; border-radius: 9999px; background: rgba(255,255,255,0.08); display: flex; overflow: hidden;">
+                  ${(() => {
+                    if (totalSpent <= 0) return `<div style="width: 100%; background: rgba(255,255,255,0.1);"></div>`;
+                    const catTotals = {};
+                    expenses.forEach(e => {
+                      const c = e.category || 'Miscellaneous';
+                      catTotals[c] = (catTotals[c] || 0) + (parseFloat(e.amount) || 0);
+                    });
+                    const colorMap = {
+                      'Dining': '#ec4899',
+                      'Lodging': '#f59e0b',
+                      'Transit': '#06b6d4',
+                      'Activities': '#10b981',
+                      'Supplies': '#8b5cf6',
+                      'Miscellaneous': '#6366f1'
+                    };
+                    return Object.entries(catTotals).map(([cat, amt]) => {
+                      const pct = ((amt / totalSpent) * 100).toFixed(1);
+                      return `<div title="${cat}: $${amt.toFixed(2)} (${pct}%)" style="width: ${pct}%; background: ${colorMap[cat] || '#6366f1'}; height: 100%;"></div>`;
+                    }).join('');
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            <!-- Expense Feed -->
+            <div class="card" style="padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                  Expense Log (${filteredExpenses.length})
+                </h3>
+              </div>
+
+              ${filteredExpenses.length === 0 ? `
+                <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧾</div>
+                  <div style="font-weight: 600; color: var(--text-secondary);">No expenses match filters</div>
+                  <p style="font-size: 0.85rem; margin-top: 0.25rem;">Log your first expense or clear search criteria.</p>
+                </div>
+              ` : `
+                <div style="display: grid; gap: 0.85rem;">
+                  ${filteredExpenses.map(exp => {
+                    const amt = parseFloat(exp.amount) || 0;
+                    const splitMode = exp.splitMode || 'equal';
+                    const hasReceipt = Boolean(exp.receiptUrl);
+
+                    return `
+                      <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.15rem; background: rgba(15,23,42,0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); transition: all 0.2s;" onmouseenter="this.style.borderColor='rgba(99,102,241,0.4)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                          <!-- Payer Avatar Badge -->
+                          <div style="position: relative;">
+                            <div class="avatar" style="width: 42px; height: 42px; font-size: 0.95rem; background: linear-gradient(135deg, #4f46e5, #06b6d4);">
+                              ${exp.paidBy ? exp.paidBy.slice(0, 2).toUpperCase() : 'ME'}
+                            </div>
+                            <span style="position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 9999px; background: #10b981; border: 2px solid var(--bg-card);" title="Paid by ${exp.paidBy}"></span>
+                          </div>
+
+                          <div>
+                            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                              <strong style="font-size: 1.05rem; color: var(--text-primary);">${exp.title}</strong>
+                              <span class="badge" style="font-size: 0.72rem; padding: 0.15rem 0.55rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3);">
+                                ${exp.category || 'General'}
+                              </span>
+                              <span class="split-mode-pill split-mode-${splitMode}" style="font-size: 0.68rem; text-transform: uppercase;">
+                                ${splitMode === 'equal' ? 'Equal Split' : (splitMode === 'exact' ? 'Exact Amounts' : 'Weighted Shares')}
+                              </span>
+                              ${hasReceipt ? `
+                                <button class="btn-view-receipt receipt-badge-chip" data-receipt="${encodeURIComponent(exp.receiptUrl)}" style="cursor: pointer;">
+                                  ${icon('file-text', '#34d399')} Receipt
+                                </button>
+                              ` : ''}
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                              Paid by <strong style="color: var(--text-primary);">${exp.paidBy}</strong> • ${exp.date || 'Recent'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 1.25rem;">
+                          <div style="text-align: right;">
+                            <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-primary);">
+                              $${amt.toFixed(2)}
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">
+                              ${exp.splitWith ? exp.splitWith.length : attendees.length} participants
+                            </div>
+                          </div>
+
+                          <button class="btn btn-icon-only btn-secondary btn-del-exp" data-id="${exp.id}" style="width: 34px; height: 34px;" title="Delete Expense">
+                            ${icon('trash-2', '#ef4444')}
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Event Listeners for renderView elements
+      container.querySelector('#btn-top-add-exp')?.addEventListener('click', () => openAddExpenseModal(trip));
+      container.querySelector('#btn-top-settle-up')?.addEventListener('click', () => openSettleUpModal(trip));
+      container.querySelector('#btn-exp-invite')?.addEventListener('click', () => openInviteModal(trip));
+
+      container.querySelectorAll('.btn-quick-settle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const from = btn.getAttribute('data-from');
+          const to = btn.getAttribute('data-to');
+          const amount = btn.getAttribute('data-amount');
+          openSettleUpModal(trip, from, to, amount);
+        });
+      });
+
+      container.querySelectorAll('.cat-filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          activeCategory = e.currentTarget.getAttribute('data-cat');
+          renderView();
+        });
+      });
+
+      const searchInp = container.querySelector('#expense-search-input');
+      if (searchInp) {
+        searchInp.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderView();
+        });
+      }
+
+      container.querySelectorAll('.btn-view-receipt').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const url = decodeURIComponent(e.currentTarget.getAttribute('data-receipt'));
+          openReceiptViewModal(url);
+        });
+      });
+
+      container.querySelectorAll('.btn-del-exp').forEach(btn => {
+        btn.addEventListener('click', () => {
+          appStore.deleteExpense(trip.id, btn.getAttribute('data-id'));
+          showToast('Expense removed', 'info');
+          renderExpensesPane(container, appStore.getCurrentTrip());
+        });
+      });
+    };
+
+    renderView();
   }
 
   let mapExplorerState = {
@@ -2482,33 +2735,35 @@
       window._activeExplorerMap = null;
     }
 
-    const mainCoords = resolveDestinationCoords(trip.destination || trip.title);
+    const mainCoords = (trip.lat && trip.lng) ? { lat: trip.lat, lng: trip.lng } : resolveDestinationCoords(trip.destination || trip.title);
 
-    // Initialize Leaflet map with Dark Carto Basemap
     const map = window.L.map('map-container-explorer', {
       scrollWheelZoom: true,
       zoomControl: false
-    }).setView([mainCoords.lat, mainCoords.lng], 11);
+    }).setView([mainCoords.lat, mainCoords.lng], 12);
 
     window._activeExplorerMap = map;
 
-    // OpenStreetMap Standard Tiles with Dark Theme Filter (100% Free, zero API key required)
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Add zoom control bottom right
     window.L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 250);
+    // ResizeObserver Guard for unmounted/hidden tab containers
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        try { map.invalidateSize(); } catch(e) {}
+      });
+      ro.observe(el);
+      window._activeExplorerMapResizeObserver = ro;
+    }
 
     const bounds = [];
     const markerStore = {};
     const routeCoordsList = [];
 
-    // Geocode & Render Numbered Pins
     for (let idx = 0; idx < stops.length; idx++) {
       const item = stops[idx];
       let itemCoords = null;
@@ -2559,7 +2814,6 @@
 
       markerStore[item.id] = marker;
 
-      // Right-to-Left Sync (Marker click -> highlight sidebar card & scroll)
       marker.on('click', () => {
         container.querySelectorAll('.map-stop-card').forEach(c => c.classList.remove('active-highlight'));
         const card = container.querySelector(`.map-stop-card[data-stop-id="${item.id}"]`);
@@ -2570,10 +2824,9 @@
       });
     }
 
-    // Draw Glowing Route Lines in Route Mode
     if (mapExplorerState.layerMode === 'route' && routeCoordsList.length > 1) {
       const linePath = routeCoordsList.map(r => r.coords);
-      const polyline = window.L.polyline(linePath, {
+      window.L.polyline(linePath, {
         color: '#38bdf8',
         weight: 4,
         opacity: 0.85,
@@ -2581,7 +2834,6 @@
         lineCap: 'round'
       }).addTo(map);
 
-      // Mid-path Distance Chips
       for (let i = 0; i < routeCoordsList.length - 1; i++) {
         const p1 = routeCoordsList[i].coords;
         const p2 = routeCoordsList[i + 1].coords;
@@ -2599,22 +2851,23 @@
       }
     }
 
-    // Fit Bounds & Auto-center on selected trip location
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 200);
-    setTimeout(() => {
+    // Auto-center viewport & fit bounds safely
+    const applyViewportFit = () => {
       try {
         map.invalidateSize();
         if (bounds.length > 0) {
-          if (bounds.length === 1) map.setView(bounds[0], 12);
-          else map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+          if (bounds.length === 1) map.setView(bounds[0], 13);
+          else map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
         } else {
           map.setView([mainCoords.lat, mainCoords.lng], 12);
         }
       } catch(e) {}
-    }, 350);
+    };
 
-    // Left-to-Right Sync (Sidebar card hover/click -> map flyTo & open popup)
+    setTimeout(applyViewportFit, 50);
+    setTimeout(applyViewportFit, 150);
+    setTimeout(applyViewportFit, 350);
+
     container.querySelectorAll('.map-stop-card').forEach(card => {
       const stopId = card.getAttribute('data-stop-id');
       const marker = markerStore[stopId];
@@ -3897,66 +4150,526 @@
 
   function openAddExpenseModal(trip) {
     const attendees = trip.attendees || [];
+    const currentUser = (appStore.profile && appStore.profile.name) ? appStore.profile.name : (attendees[0]?.name || 'Alex Chen');
+    let currentSplitMode = 'equal';
+    let uploadedReceiptUrl = '';
+
     const html = `
       <div class="modal-overlay active" id="modal-add-exp">
-        <div class="modal-container">
+        <div class="modal-container" style="max-width: 620px;">
           <div class="modal-header">
-            <h3>${icon('dollar-sign', 'var(--accent-primary)')} Log Expense</h3>
+            <h3>${icon('dollar-sign', 'var(--accent-primary)')} Log Trip Expense</h3>
             <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
             <form id="form-add-exp" onsubmit="return false;">
+              <!-- Expense Description & Amount -->
               <div class="form-group">
-                <label class="form-label">Description *</label>
-                <input type="text" class="form-control" name="title" placeholder="e.g. Welcome Dinner" required />
+                <label class="form-label">Expense Description *</label>
+                <input type="text" class="form-control" name="title" id="input-exp-title" placeholder="e.g. Welcome Dinner at Sunset Grill" required />
               </div>
+
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Amount ($) *</label>
-                  <input type="number" step="0.01" class="form-control" name="amount" placeholder="150.00" required />
+                  <label class="form-label">Total Amount ($) *</label>
+                  <input type="number" step="0.01" min="0.01" class="form-control" name="amount" id="input-exp-amount" placeholder="0.00" style="font-size: 1.1rem; font-weight: 700;" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Category</label>
-                  <select class="form-control" name="category">
-                    <option value="Dining">Dining</option>
-                    <option value="Lodging">Lodging</option>
-                    <option value="Transit">Transit</option>
-                    <option value="Activities">Activities</option>
+                  <select class="form-control" name="category" id="select-exp-category">
+                    <option value="Dining">Dining & Drinks</option>
+                    <option value="Lodging">Lodging & Stay</option>
+                    <option value="Transit">Transit & Flight</option>
+                    <option value="Activities">Activities & Excursions</option>
+                    <option value="Supplies">Groceries & Gear</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
                   </select>
                 </div>
               </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Paid By</label>
+                  <select class="form-control" name="paidBy" id="select-exp-paidby">
+                    ${attendees.map(a => `<option value="${a.name}" ${a.name === currentUser ? 'selected' : ''}>${a.name} ${a.name === currentUser ? '(You)' : ''}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-control" name="date" id="input-exp-date" value="${new Date().toISOString().split('T')[0]}" />
+                </div>
+              </div>
+
+              <!-- Split Mode Selector Tabs -->
+              <div class="form-group" style="margin-top: 1.25rem;">
+                <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>Split Mode</span>
+                  <span id="split-mode-badge" style="font-size: 0.72rem; color: var(--accent-primary); font-weight: 600;">Equal Division</span>
+                </label>
+
+                <div class="split-mode-tab-bar" style="display: flex; gap: 0.5rem; background: rgba(15,23,42,0.8); padding: 0.35rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  <button type="button" class="btn-split-tab active" data-mode="equal" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: var(--accent-primary); color: #fff; border: none; cursor: pointer;">
+                    1. Equal Split
+                  </button>
+                  <button type="button" class="btn-split-tab" data-mode="exact" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: transparent; color: var(--text-secondary); border: none; cursor: pointer;">
+                    2. Exact Amounts
+                  </button>
+                  <button type="button" class="btn-split-tab" data-mode="shares" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: transparent; color: var(--text-secondary); border: none; cursor: pointer;">
+                    3. Weighted Shares
+                  </button>
+                </div>
+              </div>
+
+              <!-- Dynamic Split Calculation Container -->
+              <div id="split-calc-container" style="background: rgba(15,23,42,0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+                <!-- Injected via JS based on currentSplitMode -->
+              </div>
+
+              <!-- Receipt Proof Upload Zone -->
               <div class="form-group">
-                <label class="form-label">Paid By</label>
-                <select class="form-control" name="paidBy">
-                  ${attendees.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}
-                </select>
+                <label class="form-label">Receipt Proof / Document Attachment</label>
+                <div class="receipt-dropzone" id="receipt-upload-dropzone">
+                  ${icon('camera', 'var(--accent-primary)')}
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-top: 0.35rem;">
+                    Click or drag receipt photo to upload
+                  </div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem;">
+                    Supports JPG, PNG, WebP or receipt PDF links
+                  </div>
+                  <input type="file" id="receipt-file-input" accept="image/*" style="display: none;" />
+                </div>
+
+                <!-- URL fallback & preview -->
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <input type="url" class="form-control" id="input-receipt-url" placeholder="Or paste receipt image URL (https://...)" style="font-size: 0.78rem;" />
+                </div>
+                <div id="receipt-preview-container" style="display: none; margin-top: 0.75rem; align-items: center; gap: 0.75rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); padding: 0.5rem 0.85rem; border-radius: var(--radius-md);">
+                  <img id="receipt-preview-thumb" src="" alt="Receipt preview" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px;" />
+                  <div style="flex: 1; font-size: 0.8rem; color: #34d399; font-weight: 600;">Receipt image attached</div>
+                  <button type="button" id="btn-remove-receipt" class="btn btn-icon-only btn-secondary" style="width: 28px; height: 28px;">&times;</button>
+                </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
+
+          <div class="modal-footer" style="justify-content: space-between;">
             <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
-            <button class="btn btn-primary submit-modal" type="button">Log Expense</button>
+            <button class="btn btn-primary submit-modal" id="btn-submit-exp" type="button">Log Expense</button>
           </div>
         </div>
       </div>
     `;
+
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-exp');
     const close = () => m.remove();
     m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
 
+    const amountInp = m.querySelector('#input-exp-amount');
+    const splitContainer = m.querySelector('#split-calc-container');
+    const modeTabs = m.querySelectorAll('.btn-split-tab');
+    const modeBadge = m.querySelector('#split-mode-badge');
+
+    // State for split tracking
+    const exactValues = {};
+    const shareValues = {};
+    const equalChecked = {};
+
+    attendees.forEach(a => {
+      equalChecked[a.name] = true;
+      exactValues[a.name] = 0;
+      shareValues[a.name] = 1;
+    });
+
+    const updateSplitUI = () => {
+      const totalAmt = parseFloat(amountInp.value) || 0;
+
+      if (currentSplitMode === 'equal') {
+        modeBadge.innerText = 'Equal Division';
+        const checkedList = Object.entries(equalChecked).filter(([_, chk]) => chk).map(([n]) => n);
+        const perPerson = checkedList.length > 0 ? (totalAmt / checkedList.length) : 0;
+
+        splitContainer.innerHTML = `
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            Select participants to split $${totalAmt.toFixed(2)} evenly (${checkedList.length} checked • <strong>$${perPerson.toFixed(2)}</strong> each)
+          </div>
+          <div style="display: grid; gap: 0.5rem; max-height: 180px; overflow-y: auto;">
+            ${attendees.map(a => `
+              <label style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                  <input type="checkbox" class="chk-equal-person" data-person="${a.name}" ${equalChecked[a.name] ? 'checked' : ''} />
+                  <span style="font-size: 0.88rem; font-weight: 600;">${a.name}</span>
+                </div>
+                <span style="font-size: 0.82rem; font-weight: 700; color: ${equalChecked[a.name] ? '#34d399' : 'var(--text-muted)'};">
+                  ${equalChecked[a.name] ? `$${perPerson.toFixed(2)}` : '$0.00'}
+                </span>
+              </label>
+            `).join('')}
+          </div>
+        `;
+
+        splitContainer.querySelectorAll('.chk-equal-person').forEach(chk => {
+          chk.addEventListener('change', (e) => {
+            equalChecked[e.target.getAttribute('data-person')] = e.target.checked;
+            updateSplitUI();
+          });
+        });
+
+      } else if (currentSplitMode === 'exact') {
+        modeBadge.innerText = 'Exact Custom Amounts';
+        const sumExact = Object.values(exactValues).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+        const isMatch = Math.abs(sumExact - totalAmt) < 0.01;
+
+        splitContainer.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Specify exact dollar amount per person:</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: ${isMatch ? '#34d399' : '#f87171'}; padding: 0.2rem 0.6rem; border-radius: 4px; background: ${isMatch ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'};">
+              Sum: $${sumExact.toFixed(2)} / $${totalAmt.toFixed(2)} ${isMatch ? '✓ Matched' : '⚠️ Unbalanced'}
+            </span>
+          </div>
+          <div style="display: grid; gap: 0.5rem; max-height: 180px; overflow-y: auto;">
+            ${attendees.map(a => `
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.75rem; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.88rem; font-weight: 600;">${a.name}</span>
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                  <span style="font-size: 0.85rem; color: var(--text-muted);">$</span>
+                  <input type="number" step="0.01" min="0" class="inp-exact-person form-control" data-person="${a.name}" value="${exactValues[a.name] || ''}" placeholder="0.00" style="width: 100px; font-size: 0.85rem; height: 32px; text-align: right;" />
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        splitContainer.querySelectorAll('.inp-exact-person').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            exactValues[e.target.getAttribute('data-person')] = parseFloat(e.target.value) || 0;
+            updateSplitUI();
+          });
+        });
+
+      } else if (currentSplitMode === 'shares') {
+        modeBadge.innerText = 'Weighted Share Ratios';
+        const totalShares = Object.values(shareValues).reduce((s, v) => s + (parseInt(v) || 0), 0);
+
+        splitContainer.innerHTML = `
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            Assign relative share weights (Total shares: <strong>${totalShares}</strong>):
+          </div>
+          <div style="display: grid; gap: 0.5rem; max-height: 180px; overflow-y: auto;">
+            ${attendees.map(a => {
+              const sh = shareValues[a.name] || 0;
+              const perAmt = totalShares > 0 ? (totalAmt * (sh / totalShares)) : 0;
+              return `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.75rem; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color);">
+                  <div>
+                    <span style="font-size: 0.88rem; font-weight: 600;">${a.name}</span>
+                    <span style="font-size: 0.78rem; color: #34d399; margin-left: 0.5rem; font-weight: 700;">$${perAmt.toFixed(2)}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <button type="button" class="btn btn-secondary btn-share-minus" data-person="${a.name}" style="width: 28px; height: 28px; padding: 0; min-width: 0; font-weight: 800;">-</button>
+                    <span style="font-weight: 700; font-size: 0.9rem; min-width: 24px; text-align: center;">${sh} share${sh === 1 ? '' : 's'}</span>
+                    <button type="button" class="btn btn-secondary btn-share-plus" data-person="${a.name}" style="width: 28px; height: 28px; padding: 0; min-width: 0; font-weight: 800;">+</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        splitContainer.querySelectorAll('.btn-share-minus').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const p = e.currentTarget.getAttribute('data-person');
+            shareValues[p] = Math.max(0, (shareValues[p] || 0) - 1);
+            updateSplitUI();
+          });
+        });
+
+        splitContainer.querySelectorAll('.btn-share-plus').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const p = e.currentTarget.getAttribute('data-person');
+            shareValues[p] = (shareValues[p] || 0) + 1;
+            updateSplitUI();
+          });
+        });
+      }
+    };
+
+    // Mode tab switching
+    modeTabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        modeTabs.forEach(t => {
+          t.classList.remove('active');
+          t.style.background = 'transparent';
+          t.style.color = 'var(--text-secondary)';
+        });
+        const btn = e.currentTarget;
+        btn.classList.add('active');
+        btn.style.background = 'var(--accent-primary)';
+        btn.style.color = '#fff';
+        currentSplitMode = btn.getAttribute('data-mode');
+        updateSplitUI();
+      });
+    });
+
+    amountInp.addEventListener('input', updateSplitUI);
+    updateSplitUI();
+
+    // Receipt Upload Dropzone Handlers
+    const dropzone = m.querySelector('#receipt-upload-dropzone');
+    const fileInput = m.querySelector('#receipt-file-input');
+    const urlInput = m.querySelector('#input-receipt-url');
+    const previewContainer = m.querySelector('#receipt-preview-container');
+    const previewThumb = m.querySelector('#receipt-preview-thumb');
+    const btnRemoveReceipt = m.querySelector('#btn-remove-receipt');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          uploadedReceiptUrl = evt.target.result;
+          previewThumb.src = uploadedReceiptUrl;
+          previewContainer.style.display = 'flex';
+          showToast('Receipt image attached!', 'success');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    urlInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if (val) {
+        uploadedReceiptUrl = val;
+        previewThumb.src = val;
+        previewContainer.style.display = 'flex';
+      } else if (!fileInput.files.length) {
+        uploadedReceiptUrl = '';
+        previewContainer.style.display = 'none';
+      }
+    });
+
+    btnRemoveReceipt.addEventListener('click', () => {
+      uploadedReceiptUrl = '';
+      fileInput.value = '';
+      urlInput.value = '';
+      previewContainer.style.display = 'none';
+    });
+
+    // Save Action
     const handleSave = () => {
-      const f = m.querySelector('#form-add-exp');
-      const d = Object.fromEntries(new FormData(f).entries());
-      if (!d.title || !d.title.trim()) return showToast('Please enter expense description', 'info');
-      d.amount = parseFloat(d.amount) || 0;
-      d.splitWith = attendees.map(a => a.name);
-      appStore.addExpense(trip.id, d);
+      const title = m.querySelector('#input-exp-title').value.trim();
+      const amount = parseFloat(amountInp.value) || 0;
+      const category = m.querySelector('#select-exp-category').value;
+      const paidBy = m.querySelector('#select-exp-paidby').value;
+      const date = m.querySelector('#input-exp-date').value;
+
+      if (!title) {
+        showToast('Please enter an expense description', 'info');
+        m.querySelector('#input-exp-title').focus();
+        return;
+      }
+      if (amount <= 0) {
+        showToast('Please enter a valid expense amount', 'info');
+        amountInp.focus();
+        return;
+      }
+
+      let splitWith = [];
+      let sharesMap = {};
+
+      if (currentSplitMode === 'equal') {
+        splitWith = Object.entries(equalChecked).filter(([_, chk]) => chk).map(([n]) => n);
+        if (splitWith.length === 0) {
+          showToast('Please select at least one participant to split with', 'info');
+          return;
+        }
+      } else if (currentSplitMode === 'exact') {
+        const sumExact = Object.values(exactValues).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+        if (Math.abs(sumExact - amount) > 0.01) {
+          showToast(`Exact amounts sum ($${sumExact.toFixed(2)}) must equal total expense amount ($${amount.toFixed(2)})`, 'info');
+          return;
+        }
+        sharesMap = { ...exactValues };
+        splitWith = Object.keys(sharesMap).filter(k => (parseFloat(sharesMap[k]) || 0) > 0);
+      } else if (currentSplitMode === 'shares') {
+        const totalShares = Object.values(shareValues).reduce((s, v) => s + (parseInt(v) || 0), 0);
+        if (totalShares <= 0) {
+          showToast('Please assign at least 1 share weight', 'info');
+          return;
+        }
+        sharesMap = { ...shareValues };
+        splitWith = Object.keys(sharesMap).filter(k => (parseInt(sharesMap[k]) || 0) > 0);
+      }
+
+      const expenseData = {
+        title,
+        amount,
+        category,
+        paidBy,
+        date,
+        splitMode: currentSplitMode,
+        splitWith,
+        sharesMap,
+        receiptUrl: uploadedReceiptUrl
+      };
+
+      appStore.addExpense(trip.id, expenseData);
       close();
-      showToast('Expense logged!', 'success');
+      showToast(`Logged "$${amount.toFixed(2)} - ${title}"`, 'success');
       renderCurrentView();
     };
-    m.querySelector('.submit-modal').onclick = handleSave;
+
+    m.querySelector('#btn-submit-exp').onclick = handleSave;
+  }
+
+  function openSettleUpModal(trip, defaultFrom = '', defaultTo = '', defaultAmount = '') {
+    const attendees = trip.attendees || [];
+    const currentUser = (appStore.profile && appStore.profile.name) ? appStore.profile.name : 'Alex Chen';
+    
+    const fromUser = defaultFrom || (attendees.find(a => a.name !== currentUser)?.name || attendees[0]?.name);
+    const toUser = defaultTo || currentUser;
+
+    const html = `
+      <div class="modal-overlay active" id="modal-settle-up">
+        <div class="modal-container" style="max-width: 500px;">
+          <div class="modal-header">
+            <h3>${icon('credit-card', '#34d399')} Record Peer Settlement</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form id="form-settle-up" onsubmit="return false;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Payer (From)</label>
+                  <select class="form-control" name="fromPerson" id="select-settle-from">
+                    ${attendees.map(a => `<option value="${a.name}" ${a.name === fromUser ? 'selected' : ''}>${a.name}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Recipient (To)</label>
+                  <select class="form-control" name="toPerson" id="select-settle-to">
+                    ${attendees.map(a => `<option value="${a.name}" ${a.name === toUser ? 'selected' : ''}>${a.name}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Settlement Amount ($) *</label>
+                <input type="number" step="0.01" min="0.01" class="form-control" name="amount" id="input-settle-amount" placeholder="0.00" value="${defaultAmount || ''}" style="font-size: 1.2rem; font-weight: 800; color: #34d399;" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Payment Method</label>
+                <select class="form-control" name="method" id="select-settle-method">
+                  <option value="Venmo">Venmo Transfer</option>
+                  <option value="Cash App">Cash App</option>
+                  <option value="Cash">Cash in Hand</option>
+                  <option value="Bank Transfer">Zelle / Bank Transfer</option>
+                </select>
+              </div>
+
+              <!-- Quick Launch Deep Links -->
+              <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-top: 1rem;">
+                <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">
+                  Instant Payment App Shortcuts:
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <a id="btn-deep-venmo" class="payment-link-venmo" style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;" target="_blank" href="#">
+                    Launch Venmo
+                  </a>
+                  <a id="btn-deep-cashapp" class="payment-link-cashapp" style="flex: 1; text-align: center; justify-content: center; padding: 0.5rem;" target="_blank" href="#">
+                    Launch Cash App
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" id="btn-record-settlement" type="button" style="background: linear-gradient(135deg, #10b981, #059669); border: none;">
+              Record Settlement
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-settle-up');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const fromSel = m.querySelector('#select-settle-from');
+    const toSel = m.querySelector('#select-settle-to');
+    const amtInp = m.querySelector('#input-settle-amount');
+    const venmoBtn = m.querySelector('#btn-deep-venmo');
+    const cashappBtn = m.querySelector('#btn-deep-cashapp');
+
+    const updateDeepLinks = () => {
+      const to = toSel.value;
+      const amt = parseFloat(amtInp.value) || 0;
+      const cleanTo = to.toLowerCase().replace(/\s+/g, '');
+      venmoBtn.href = `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(cleanTo)}&amount=${amt.toFixed(2)}&note=${encodeURIComponent(trip.title + ' Settlement')}`;
+      cashappBtn.href = `https://cash.app/$${encodeURIComponent(cleanTo)}/${amt.toFixed(2)}`;
+    };
+
+    toSel.addEventListener('change', updateDeepLinks);
+    amtInp.addEventListener('input', updateDeepLinks);
+    updateDeepLinks();
+
+    m.querySelector('#btn-record-settlement').onclick = () => {
+      const from = fromSel.value;
+      const to = toSel.value;
+      const amount = parseFloat(amtInp.value) || 0;
+      const method = m.querySelector('#select-settle-method').value;
+
+      if (amount <= 0) {
+        return showToast('Please enter settlement amount', 'info');
+      }
+      if (from === to) {
+        return showToast('Payer and recipient cannot be the same person', 'info');
+      }
+
+      appStore.addExpense(trip.id, {
+        title: `Settlement: ${from} → ${to} (${method})`,
+        amount: amount,
+        category: 'Settlement',
+        paidBy: from,
+        splitWith: [to],
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      close();
+      showToast(`Recorded $${amount.toFixed(2)} settlement from ${from} to ${to}!`, 'success');
+      renderCurrentView();
+    };
+  }
+
+  function openReceiptViewModal(receiptUrl) {
+    const html = `
+      <div class="modal-overlay active" id="modal-view-receipt">
+        <div class="modal-container" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3>${icon('file-text', '#34d399')} Receipt Proof</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body" style="text-align: center; padding: 1.5rem;">
+            <img src="${receiptUrl}" alt="Receipt Document" style="max-width: 100%; max-height: 60vh; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.5);" />
+          </div>
+          <div class="modal-footer" style="justify-content: space-between;">
+            <a href="${receiptUrl}" target="_blank" download class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem;">
+              ${icon('download')} Download
+            </a>
+            <button class="btn btn-primary close-modal" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-view-receipt');
+    m.querySelectorAll('.close-modal').forEach(b => b.onclick = () => m.remove());
   }
 
   function openSettingsModal() {
@@ -4144,7 +4857,12 @@
     'machu picchu': { lat: -13.1631, lng: -72.5450 },
     'costa rica': { lat: 9.7489, lng: -83.7534 },
     'marrakech': { lat: 31.6295, lng: -7.9811 },
-    'cape town': { lat: -33.9249, lng: 18.4241 }
+    'cape town': { lat: -33.9249, lng: 18.4241 },
+    'smokies': { lat: 35.6532, lng: -83.5070 },
+    'smoky': { lat: 35.6532, lng: -83.5070 },
+    'smoky mountains': { lat: 35.6532, lng: -83.5070 },
+    'great smoky mountains': { lat: 35.6532, lng: -83.5070 },
+    'gatlinburg': { lat: 35.7143, lng: -83.5102 }
   };
 
   const GEO_CACHE_KEY = 'wanderpulse_geocache_v1';
