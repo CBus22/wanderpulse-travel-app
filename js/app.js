@@ -2658,11 +2658,10 @@
 
   function getCategoryColor(cat) {
     const c = (cat || '').toLowerCase();
-    if (c.includes('transit') || c.includes('flight') || c.includes('drive')) return '#06b6d4'; // Cyan
-    if (c.includes('lodging') || c.includes('hotel') || c.includes('stay')) return '#f59e0b'; // Amber
-    if (c.includes('dining') || c.includes('food') || c.includes('meal')) return '#ec4899'; // Rose
-    if (c.includes('note')) return '#8b5cf6'; // Violet
-    return '#10b981'; // Emerald Activity
+    if (c.includes('transit') || c.includes('flight') || c.includes('drive')) return '#5C9EAD'; // Stream Blue
+    if (c.includes('lodging') || c.includes('hotel') || c.includes('stay')) return '#D97736'; // Ember Orange
+    if (c.includes('dining') || c.includes('food') || c.includes('meal') || c.includes('restaurant')) return '#C85A32'; // Warm Clay
+    return '#52B788'; // Sage Green Outdoor/Activity
   }
 
   function exportGoogleMapsRoute(trip, items) {
@@ -2847,7 +2846,7 @@
       });
     }
 
-    setTimeout(() => updateExplorerView(trip, container), 100);
+    setTimeout(() => updateExplorerView(trip, container), 50);
   }
 
   function getFilteredStops(trip) {
@@ -2890,7 +2889,7 @@
           <div class="map-stop-card" data-stop-id="${item.id}" data-idx="${idx}">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
               <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex: 1;">
-                <div class="stop-sequence-badge">${idx + 1}</div>
+                <div class="stop-sequence-badge" style="background: ${catColor};">${idx + 1}</div>
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
                     <span style="font-weight: 800; font-size: 0.8rem; color: var(--accent-secondary);">Day ${item.day || 1} • ${item.time || '09:00'}</span>
@@ -2909,8 +2908,8 @@
             </div>
 
             ${nextItem ? `
-              <div style="margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 0.75rem; color: #38bdf8; display: flex; align-items: center; gap: 0.35rem;">
-                🚘 Estimated Leg to Stop #${idx + 2} (${nextItem.title.slice(0, 18)}...)
+              <div style="margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 0.75rem; color: #E28F38; display: flex; align-items: center; gap: 0.35rem;">
+                🚘 Leg to Stop #${idx + 2} (${nextItem.title.slice(0, 18)}...)
               </div>
             ` : ''}
           </div>
@@ -2926,12 +2925,29 @@
     const el = document.getElementById('map-container-explorer');
     if (!el || !window.L) return;
 
+    // Measurement Guard: Defer initialization if container is not yet measurable
+    if (el.clientWidth === 0 || el.clientHeight === 0) {
+      let attempts = 0;
+      const checkAndInit = () => {
+        attempts++;
+        if (el.clientWidth > 0 && el.clientHeight > 0) {
+          initExplorerMapEngine(trip, stops, container);
+        } else if (attempts < 12) {
+          setTimeout(checkAndInit, 50);
+        }
+      };
+      setTimeout(checkAndInit, 50);
+      return;
+    }
+
     if (window._activeExplorerMap) {
       try { window._activeExplorerMap.remove(); } catch(e) {}
       window._activeExplorerMap = null;
     }
 
-    const mainCoords = (trip.lat && trip.lng) ? { lat: trip.lat, lng: trip.lng } : resolveDestinationCoords(trip.destination || trip.title);
+    const mainCoords = (trip.lat && trip.lng && trip.lat !== 0) 
+      ? { lat: trip.lat, lng: trip.lng } 
+      : resolveDestinationCoords(trip.destination || trip.title);
 
     const map = window.L.map('map-container-explorer', {
       scrollWheelZoom: true,
@@ -2947,8 +2963,11 @@
 
     window.L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // ResizeObserver Guard for unmounted/hidden tab containers
+    // ResizeObserver Guard for responsive containers & tab switches
     if (window.ResizeObserver) {
+      if (window._activeExplorerMapResizeObserver) {
+        try { window._activeExplorerMapResizeObserver.disconnect(); } catch(e) {}
+      }
       const ro = new ResizeObserver(() => {
         try { map.invalidateSize(); } catch(e) {}
       });
@@ -2983,7 +3002,7 @@
       const pinIcon = window.L.divIcon({
         className: 'numbered-map-pin',
         html: `
-          <div style="background: ${catColor}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; box-shadow: 0 3px 10px rgba(0,0,0,0.5); border: 2.5px solid #ffffff;">
+          <div style="background: ${catColor}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); border: 2.5px solid #ffffff;">
             ${idx + 1}
           </div>
         `,
@@ -2992,21 +3011,28 @@
         popupAnchor: [0, -16]
       });
 
+      const popupHtml = `
+        <div class="map-popup-card" style="font-family: var(--font-family-base); padding: 4px; max-width: 250px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.72rem; font-weight: 800; color: ${catColor}; text-transform: uppercase; letter-spacing: 0.05em;">
+              Stop #${idx + 1} • Day ${item.day || 1}
+            </span>
+            <span style="font-size: 0.75rem; color: #D1C9BE; font-weight: 600;">${item.time || '09:00'}</span>
+          </div>
+          <h4 style="margin: 0 0 4px 0; font-size: 0.98rem; font-weight: 700; color: #FAF8F5;">${item.title}</h4>
+          ${item.location ? `<p style="margin: 0 0 8px 0; font-size: 0.8rem; color: #D1C9BE;">📍 ${item.location}</p>` : ''}
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+            <span class="badge" style="background: rgba(255,255,255,0.08); color: ${catColor}; font-size: 0.7rem;">${item.category || 'Activity'}</span>
+            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((item.location || item.title) + ' ' + trip.destination)}" target="_blank" style="color: #E28F38; font-size: 0.78rem; font-weight: 700; text-decoration: none;">
+              Directions &rarr;
+            </a>
+          </div>
+        </div>
+      `;
+
       const marker = window.L.marker([itemCoords.lat, itemCoords.lng], { icon: pinIcon })
         .addTo(map)
-        .bindPopup(`
-          <div style="font-family: var(--font-family-base); padding: 4px; max-width: 240px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-              <span style="font-size: 0.72rem; font-weight: 800; color: ${catColor}; text-transform: uppercase;">Stop #${idx + 1} • Day ${item.day || 1}</span>
-              <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">${item.time || '09:00'}</span>
-            </div>
-            <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; color: #0f172a;">${item.title}</h4>
-            ${item.location ? `<p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #475569;">📍 ${item.location}</p>` : ''}
-            <div style="display: flex; gap: 0.5rem; margin-top: 6px;">
-              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((item.location || item.title) + ' ' + trip.destination)}" target="_blank" style="color: #6366f1; font-size: 0.78rem; font-weight: 700; text-decoration: none;">Directions &rarr;</a>
-            </div>
-          </div>
-        `);
+        .bindPopup(popupHtml);
 
       markerStore[item.id] = marker;
 
@@ -3023,9 +3049,9 @@
     if (mapExplorerState.layerMode === 'route' && routeCoordsList.length > 1) {
       const linePath = routeCoordsList.map(r => r.coords);
       window.L.polyline(linePath, {
-        color: '#38bdf8',
+        color: '#E28F38',
         weight: 4,
-        opacity: 0.85,
+        opacity: 0.9,
         dashArray: '8, 8',
         lineCap: 'round'
       }).addTo(map);
@@ -3034,35 +3060,41 @@
         const p1 = routeCoordsList[i].coords;
         const p2 = routeCoordsList[i + 1].coords;
         const dist = calculateDistanceMiles(p1[0], p1[1], p2[0], p2[1]);
+        const driveMins = Math.max(5, Math.round(dist * 2.2 + 4));
         const midLat = (p1[0] + p2[0]) / 2;
         const midLng = (p1[1] + p2[1]) / 2;
 
         const distanceIcon = window.L.divIcon({
           className: 'route-distance-chip',
-          html: `🚘 ${dist} mi`,
-          iconSize: [60, 20],
-          iconAnchor: [30, 10]
+          html: `🚘 ${dist} mi • ~${driveMins} min`,
+          iconSize: [110, 24],
+          iconAnchor: [55, 12]
         });
         window.L.marker([midLat, midLng], { icon: distanceIcon }).addTo(map);
       }
     }
 
-    // Auto-center viewport & fit bounds safely
+    // Auto-center viewport & fit bounds safely with smooth animation
     const applyViewportFit = () => {
       try {
         map.invalidateSize();
         if (bounds.length > 0) {
-          if (bounds.length === 1) map.setView(bounds[0], 13);
-          else map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
+          if (bounds.length === 1) {
+            map.flyTo(bounds[0], 13, { duration: 0.8 });
+          } else {
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14, animate: true, duration: 0.8 });
+          }
         } else {
-          map.setView([mainCoords.lat, mainCoords.lng], 12);
+          map.flyTo([mainCoords.lat, mainCoords.lng], 11, { duration: 0.8 });
         }
       } catch(e) {}
     };
 
-    setTimeout(applyViewportFit, 50);
-    setTimeout(applyViewportFit, 150);
-    setTimeout(applyViewportFit, 350);
+    requestAnimationFrame(() => {
+      applyViewportFit();
+      setTimeout(applyViewportFit, 100);
+      setTimeout(applyViewportFit, 300);
+    });
 
     container.querySelectorAll('.map-stop-card').forEach(card => {
       const stopId = card.getAttribute('data-stop-id');
@@ -3073,7 +3105,7 @@
         card.classList.add('active-highlight');
         if (marker) {
           const latLng = marker.getLatLng();
-          map.flyTo([latLng.lat, latLng.lng], 14, { animate: true, duration: 1.2 });
+          map.flyTo([latLng.lat, latLng.lng], 14, { animate: true, duration: 0.8 });
           marker.openPopup();
         }
       });
