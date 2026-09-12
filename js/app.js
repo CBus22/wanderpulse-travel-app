@@ -42,7 +42,12 @@
     'cloud': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19x-9c-2.5 0-4.5-2-4.5-4.5 0-2 1.3-3.7 3.2-4.2C7.7 7.7 10 5.5 13 5.5c2.7 0 5 1.8 5.7 4.3 1.8.3 3.3 1.8 3.3 3.7 0 2.5-2 4.5-4.5 4.5z"/></svg>`,
     'check-circle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
     'more-horizontal': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
-    'edit': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`
+    'edit': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+    'lock': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+    'camera': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>`,
+    'flag': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>`,
+    'award': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`,
+    'alert-triangle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`
   };
 
   function icon(name, color = '') {
@@ -128,11 +133,27 @@
     name: 'Alex Rivers',
     avatar: 'AR',
     bio: 'Passionate globetrotter, photographer, & hiking enthusiast seeking authentic cultural experiences around the world.',
+    coverImage: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80',
+    customAvatarUrl: '',
     currency: 'USD',
     homeAirport: 'JFK (New York)',
     passportCountry: 'United States',
-    dietary: 'No restrictions',
-    travelStyle: ['Solo Trekking', 'Cultural Discovery', 'Food & Photography']
+    passportExpiration: '2027-04-15',
+    dietary: 'Plant-Based / Vegetarian',
+    allergies: 'Peanuts (Mild)',
+    travelStyle: ['Solo Trekking', 'Cultural Discovery', 'Food & Photography'],
+    travelPace: 'Fast & Packed Explorer',
+    loyaltyPrograms: [
+      { name: 'Delta SkyMiles', number: 'DL-9823410', code: 'DL' },
+      { name: 'Marriott Bonvoy', number: 'MB-4410921', code: 'MB' }
+    ],
+    emergencyContact: {
+      name: 'Sarah Rivers',
+      relation: 'Sister',
+      phone: '+1 (555) 234-5678'
+    },
+    visitedCountriesCount: 14,
+    visitedStatesCount: 28
   };
 
   const initialTrips = [
@@ -656,12 +677,46 @@
   }
 
   // --- Personal Space View ---
+  let privateFilterState = 'all';
+
   function renderPersonalSpace(containerEl) {
     const profile = appStore.loadProfile();
     const trips = appStore.getTrips();
 
-    const privateTrips = trips.filter(t => t.isPrivate || t.attendees.length <= 1);
+    const privateTripsAll = trips.filter(t => t.isPrivate || t.attendees.length <= 1);
     const groupTrips = trips.filter(t => !t.isPrivate && t.attendees.length > 1);
+
+    const privateTrips = privateTripsAll.filter(t => {
+      if (privateFilterState === 'upcoming') return t.status === 'upcoming' || t.status === 'active';
+      if (privateFilterState === 'past') return t.status === 'completed';
+      return true;
+    });
+
+    const totalTripsCount = trips.length;
+    const countriesCount = profile.visitedCountriesCount || 14;
+    const statesCount = profile.visitedStatesCount || 28;
+    
+    let daysOnRoad = 0;
+    trips.forEach(t => {
+      if (t.startDate && t.endDate) {
+        const s = new Date(t.startDate);
+        const e = new Date(t.endDate);
+        const diff = Math.max(1, Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1);
+        daysOnRoad += diff;
+      }
+    });
+    if (daysOnRoad === 0) daysOnRoad = 18;
+
+    function getDietaryBadge(dietaryStr = '') {
+      const lower = dietaryStr.toLowerCase();
+      if (lower.includes('vegan') || lower.includes('plant') || lower.includes('vegetarian') || lower.includes('pescatarian')) {
+        return `<span class="dietary-flag-emerald">🌱 ${dietaryStr}</span>`;
+      }
+      if (lower.includes('allerg') || lower.includes('celiac') || lower.includes('nut') || lower.includes('gluten') || lower.includes('dairy')) {
+        return `<span class="dietary-flag-amber">⚠️ ${dietaryStr}</span>`;
+      }
+      return `<span class="dietary-flag-blue">🍽️ ${dietaryStr || 'No Restrictions'}</span>`;
+    }
 
     containerEl.innerHTML = `
       <div class="nav-back-btn" id="btn-back-dash-from-space">
@@ -669,59 +724,225 @@
         <span>Back to Main Dashboard</span>
       </div>
 
-      <div class="profile-card">
-        <div class="profile-avatar-large">${profile.avatar}</div>
-        <div style="flex: 1;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h1 style="font-size: 2rem; margin-bottom: 0.35rem;">${profile.name}</h1>
-              <p style="color: var(--text-secondary); max-width: 600px; margin-bottom: 1rem; font-size: 0.95rem;">${profile.bio}</p>
+      <!-- Panoramic Profile Header Card -->
+      <div class="profile-panoramic-card">
+        <img src="${profile.coverImage || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80'}" alt="Cover Photo" class="profile-cover-banner" />
+        <div class="profile-cover-overlay">
+          <div class="profile-header-flex">
+            <div style="display: flex; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
+              <div class="profile-avatar-wrapper">
+                ${profile.customAvatarUrl ? `
+                  <img src="${profile.customAvatarUrl}" alt="${profile.name}" class="profile-avatar-large-img" />
+                ` : `
+                  <div class="profile-avatar-large">${profile.avatar}</div>
+                `}
+                <button class="avatar-upload-badge" id="btn-edit-avatar-badge" title="Change Cover or Profile Picture">
+                  ${icon('camera')}
+                </button>
+              </div>
+
+              <div>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">${profile.name}</h1>
+                <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin-bottom: 0.75rem; font-size: 0.95rem; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">${profile.bio}</p>
+                
+                <!-- Bright high-contrast interest tags -->
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;" id="interest-pills-list">
+                  ${(profile.travelStyle || []).map(style => `
+                    <span class="interest-chip-bright">
+                      ✨ ${style}
+                    </span>
+                  `).join('')}
+                  <button class="btn-add-interest-chip" id="btn-add-interest-chip">
+                    + Add Interest
+                  </button>
+                </div>
+              </div>
             </div>
-            <button class="btn btn-secondary btn-sm" id="btn-edit-profile">
-              ${icon('settings')} Edit Profile & Preferences
-            </button>
-          </div>
 
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            ${(profile.travelStyle || []).map(style => `
-              <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3);">
-                ${style}
-              </span>
-            `).join('')}
+            <!-- Baseline Aligned Edit Profile Button -->
+            <div>
+              <button class="btn btn-primary" id="btn-edit-profile" style="box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
+                ${icon('settings')} Edit Profile & Preferences
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
-        <div class="stat-card">
-          <div class="stat-label">Home Airport</div>
-          <div class="stat-value" style="font-size: 1.2rem; color: var(--accent-primary);">${profile.homeAirport || 'JFK'}</div>
+      <!-- Gamification Stats Ribbon Bar -->
+      <div class="gamification-ribbon">
+        <div class="gamification-stat-item">
+          <div class="gamification-stat-icon">🌍</div>
+          <div>
+            <div class="gamification-stat-val">${countriesCount} Countries / ${statesCount} States</div>
+            <div class="gamification-stat-lbl">Explored Worldwide</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Preferred Currency</div>
-          <div class="stat-value" style="font-size: 1.2rem; color: var(--status-active);">${profile.currency || 'USD'}</div>
+        <div class="gamification-stat-item">
+          <div class="gamification-stat-icon">🗺️</div>
+          <div>
+            <div class="gamification-stat-val">${totalTripsCount} Trips</div>
+            <div class="gamification-stat-lbl">Total Planned in WanderPulse</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Passport Nationality</div>
-          <div class="stat-value" style="font-size: 1.2rem; color: var(--text-primary);">${profile.passportCountry || 'United States'}</div>
+        <div class="gamification-stat-item">
+          <div class="gamification-stat-icon">📅</div>
+          <div>
+            <div class="gamification-stat-val">${daysOnRoad} Days</div>
+            <div class="gamification-stat-lbl">On the Road this Year</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Dietary Preferences</div>
-          <div class="stat-value" style="font-size: 1.2rem; color: var(--accent-secondary);">${profile.dietary || 'None'}</div>
+        <div class="gamification-stat-item">
+          <div class="gamification-stat-icon">⚡</div>
+          <div>
+            <div class="gamification-stat-val" style="color: var(--accent-secondary);">${profile.travelPace || 'Fast & Packed Explorer'}</div>
+            <div class="gamification-stat-lbl">Preferred Travel Pace</div>
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom: 3rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-          <h2>🔒 Private Personal Trips (${privateTrips.length})</h2>
+      <!-- Bento Grid Travel Preferences -->
+      <h2 style="font-size: 1.3rem; margin-bottom: 1.15rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+        ${icon('compass', 'var(--accent-primary)')} Travel Preferences &amp; Essential Logistics
+      </h2>
+
+      <div class="bento-grid">
+        <!-- Bento Card 1: Home Airport -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('plane', 'var(--accent-primary)')}
+              <span class="bento-title">Home Airport</span>
+            </div>
+            <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 800;">
+              ${(profile.homeAirport || 'JFK').slice(0, 3).toUpperCase()}
+            </span>
+          </div>
+          <div class="bento-value">${profile.homeAirport || 'JFK (New York)'}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Primary departure hub for flight routing</div>
+        </div>
+
+        <!-- Bento Card 2: Preferred Currency -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('dollar-sign', 'var(--status-active)')}
+              <span class="bento-title">Preferred Currency</span>
+            </div>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 800;">
+              ${profile.currency || 'USD'} • $
+            </span>
+          </div>
+          <div class="bento-value">${profile.currency || 'USD'} (US Dollar)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Default unit for budget splitting</div>
+        </div>
+
+        <!-- Bento Card 3: Passport Nationality -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('flag', 'var(--accent-secondary)')}
+              <span class="bento-title">Passport Nationality</span>
+            </div>
+            <span style="font-size: 1.2rem;">🇺🇸</span>
+          </div>
+          <div class="bento-value">${profile.passportCountry || 'United States'}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+            ${profile.passportExpiration ? `Expires: ${profile.passportExpiration}` : 'Visa-free entry eligible in 180+ countries'}
+          </div>
+        </div>
+
+        <!-- Bento Card 4: Dietary Preferences -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('star', '#f59e0b')}
+              <span class="bento-title">Dietary Preferences</span>
+            </div>
+            ${getDietaryBadge(profile.dietary || 'No restrictions')}
+          </div>
+          <div class="bento-value" style="font-size: 1.05rem;">${profile.dietary || 'No Restrictions'}</div>
+          ${profile.allergies ? `
+            <div style="font-size: 0.75rem; color: #fbbf24; margin-top: 0.4rem; font-weight: 600;">
+              ⚠️ Allergy Notes: ${profile.allergies}
+            </div>
+          ` : '<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Synced for group dining itineraries</div>'}
+        </div>
+
+        <!-- Bento Card 5: Frequent Flyer & Loyalty Programs -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('award', '#ec4899')}
+              <span class="bento-title">Loyalty Programs</span>
+            </div>
+            <span class="badge" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; font-size: 0.7rem;">
+              ${(profile.loyaltyPrograms || []).length} Linked
+            </span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+            ${(profile.loyaltyPrograms && profile.loyaltyPrograms.length > 0) ? profile.loyaltyPrograms.map(lp => `
+              <div class="loyalty-program-chip">
+                <div>
+                  <strong style="color: var(--text-primary); font-size: 0.8rem;">${lp.name}</strong>
+                  <div style="color: var(--text-muted); font-size: 0.72rem; font-family: monospace;">${lp.number}</div>
+                </div>
+                <button class="btn btn-icon-only btn-secondary btn-copy-loyalty" data-num="${lp.number}" title="Copy Membership ID" style="padding: 2px;">
+                  ${icon('copy')}
+                </button>
+              </div>
+            `).join('') : `
+              <div style="font-size: 0.82rem; color: var(--text-muted);">No loyalty programs added yet.</div>
+            `}
+          </div>
+        </div>
+
+        <!-- Bento Card 6: Travel Pace & Style -->
+        <div class="bento-card">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('sparkles', '#8b5cf6')}
+              <span class="bento-title">Travel Style &amp; Pace</span>
+            </div>
+            <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3);">
+              Pace Metric
+            </span>
+          </div>
+          <div class="bento-value" style="font-size: 1.1rem; color: #d8b4fe;">
+            ${profile.travelPace || 'Fast & Packed Explorer'}
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+            Emergency Contact: <strong>${profile.emergencyContact?.name || 'Sarah Rivers'}</strong> (${profile.emergencyContact?.phone || '+1 555-234-5678'})
+          </div>
+        </div>
+      </div>
+
+      <!-- Private Personal Trips Section -->
+      <div style="margin-bottom: 3.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <h2 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; color: var(--text-primary);">
+              ${icon('lock', '#f59e0b')} Private Personal Trips (${privateTripsAll.length})
+            </h2>
+
+            <div class="map-filter-bar" id="private-filter-pills" style="display: inline-flex;">
+              <button class="map-pill-btn ${privateFilterState === 'all' ? 'active' : ''}" data-pfilt="all">All (${privateTripsAll.length})</button>
+              <button class="map-pill-btn ${privateFilterState === 'upcoming' ? 'active' : ''}" data-pfilt="upcoming">Upcoming</button>
+              <button class="map-pill-btn ${privateFilterState === 'past' ? 'active' : ''}" data-pfilt="past">Archived / Past</button>
+            </div>
+          </div>
+
           <button class="btn btn-primary btn-sm" id="btn-create-private-trip">
             ${icon('plus')} New Private Trip
           </button>
         </div>
 
         ${privateTrips.length === 0 ? `
-          <div class="card" style="text-align: center; padding: 2rem;">
-            <p style="color: var(--text-muted);">No private personal trips created yet.</p>
+          <div class="card" style="text-align: center; padding: 2.5rem 1.5rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+            <h4 style="margin-bottom: 0.35rem;">No private personal trips found</h4>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1rem;">Keep personal getaways and solo itineraries completely confidential to your space.</p>
+            <button class="btn btn-primary btn-sm" id="btn-create-private-trip-empty">${icon('plus')} Create Private Trip</button>
           </div>
         ` : `
           <div class="trips-grid">
@@ -730,13 +951,18 @@
         `}
       </div>
 
-      <div style="margin-bottom: 3rem;">
-        <h2>👥 Shared Group Trips (${groupTrips.length})</h2>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">Trips with friends and collaborators.</p>
+      <!-- Shared Group Trips Section -->
+      <div style="margin-bottom: 3.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+          <div>
+            <h2 style="font-size: 1.35rem; color: var(--text-primary);">👥 Shared Group Trips (${groupTrips.length})</h2>
+            <p style="color: var(--text-secondary); font-size: 0.85rem;">Collaborative trips shared with friends and travel partners.</p>
+          </div>
+        </div>
 
         ${groupTrips.length === 0 ? `
-          <div class="card" style="text-align: center; padding: 2rem;">
-            <p style="color: var(--text-muted);">No shared group trips active.</p>
+          <div class="card" style="text-align: center; padding: 2.5rem 1.5rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">No shared group trips active currently.</p>
           </div>
         ` : `
           <div class="trips-grid">
@@ -752,15 +978,76 @@
     });
 
     containerEl.querySelector('#btn-edit-profile').addEventListener('click', openEditProfileModal);
+    containerEl.querySelector('#btn-edit-avatar-badge')?.addEventListener('click', openEditProfileModal);
+    
     containerEl.querySelector('#btn-create-private-trip')?.addEventListener('click', () => openCreateTripModal(true));
+    containerEl.querySelector('#btn-create-private-trip-empty')?.addEventListener('click', () => openCreateTripModal(true));
+
+    containerEl.querySelectorAll('#private-filter-pills .map-pill-btn').forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        privateFilterState = e.currentTarget.getAttribute('data-pfilt');
+        renderPersonalSpace(containerEl);
+      });
+    });
+
+    containerEl.querySelector('#btn-add-interest-chip')?.addEventListener('click', () => {
+      const val = prompt('Enter a new travel interest/style tag (e.g. Scuba Diving, Culinary Tours, Photography):');
+      if (val && val.trim()) {
+        if (!profile.travelStyle) profile.travelStyle = [];
+        profile.travelStyle.push(val.trim());
+        appStore.saveProfile(profile);
+        showToast(`Added "${val.trim()}" interest tag!`, 'success');
+        renderPersonalSpace(containerEl);
+      }
+    });
+
+    containerEl.querySelectorAll('.btn-copy-loyalty').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const num = btn.getAttribute('data-num');
+        navigator.clipboard.writeText(num);
+        showToast(`Copied Loyalty ID: ${num}`, 'success');
+      });
+    });
 
     containerEl.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-delete-trip')) return;
+        if (e.target.closest('.kebab-menu-container')) return;
         const tripId = card.getAttribute('data-trip-id');
         appStore.setCurrentTripId(tripId);
         currentView = 'trip-detail';
         renderCurrentView();
+      });
+    });
+
+    containerEl.querySelectorAll('.kebab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parent = btn.closest('.kebab-menu-container');
+        const dropdown = parent.querySelector('.kebab-dropdown');
+        document.querySelectorAll('.kebab-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
+        dropdown.classList.toggle('active');
+      });
+    });
+
+    containerEl.querySelectorAll('.kebab-action-edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tripId = btn.getAttribute('data-trip-id');
+        const trip = appStore.getTrips().find(t => t.id === tripId);
+        if (trip) openEditTripModal(trip);
+      });
+    });
+
+    containerEl.querySelectorAll('.kebab-action-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tripId = btn.getAttribute('data-trip-id');
+        if (confirm('Are you sure you want to delete this trip project?')) {
+          appStore.deleteTrip(tripId);
+          showToast('Trip deleted', 'info');
+          renderPersonalSpace(containerEl);
+        }
       });
     });
   }
@@ -2312,15 +2599,20 @@
       }
     }
 
-    // Fit Bounds
-    if (bounds.length > 0) {
+    // Fit Bounds & Auto-center on selected trip location
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 200);
+    setTimeout(() => {
       try {
-        if (bounds.length === 1) map.setView(bounds[0], 13);
-        else map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+        map.invalidateSize();
+        if (bounds.length > 0) {
+          if (bounds.length === 1) map.setView(bounds[0], 12);
+          else map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+        } else {
+          map.setView([mainCoords.lat, mainCoords.lng], 12);
+        }
       } catch(e) {}
-    } else {
-      map.setView([mainCoords.lat, mainCoords.lng], 11);
-    }
+    }, 350);
 
     // Left-to-Right Sync (Sidebar card hover/click -> map flyTo & open popup)
     container.querySelectorAll('.map-stop-card').forEach(card => {
@@ -2751,74 +3043,225 @@
 
   function openEditProfileModal() {
     const profile = appStore.loadProfile();
+    const emContact = profile.emergencyContact || { name: 'Sarah Rivers', relation: 'Sister', phone: '+1 (555) 234-5678' };
+
+    let isExpiringSoon = false;
+    let monthsRemaining = 12;
+    if (profile.passportExpiration) {
+      const expDate = new Date(profile.passportExpiration);
+      const now = new Date();
+      const diffMs = expDate - now;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      monthsRemaining = Math.max(0, Math.round(diffDays / 30));
+      if (monthsRemaining < 6) isExpiringSoon = true;
+    }
+
     const html = `
       <div class="modal-overlay active" id="modal-edit-profile">
-        <div class="modal-container">
+        <div class="modal-container drawer-modal-container">
           <div class="modal-header">
-            <h3>${icon('user', 'var(--accent-primary)')} Edit Personal Profile & Preferences</h3>
+            <h3>${icon('user', 'var(--accent-primary)')} Edit Profile &amp; Travel Preferences</h3>
             <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
-          <div class="modal-body">
+          
+          <div class="modal-body" style="overflow-y: auto;">
             <form id="form-edit-profile" onsubmit="return false;">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Full Name</label>
-                  <input type="text" class="form-control" name="name" value="${profile.name}" required />
+              <!-- Section 1: Basic Identity & Media -->
+              <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                  👤 Section 1: Basic Identity &amp; Cover Media
+                </h4>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" name="name" value="${profile.name}" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Initials Badge</label>
+                    <input type="text" class="form-control" name="avatar" value="${profile.avatar}" maxlength="3" required />
+                  </div>
                 </div>
+
                 <div class="form-group">
-                  <label class="form-label">Avatar Initials</label>
-                  <input type="text" class="form-control" name="avatar" value="${profile.avatar}" maxlength="3" required />
+                  <label class="form-label">Bio &amp; Traveler Philosophy</label>
+                  <textarea class="form-control" name="bio" rows="2">${profile.bio}</textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Panoramic Cover Photo URL</label>
+                  <input type="url" class="form-control" name="coverImage" value="${profile.coverImage || ''}" placeholder="https://images.unsplash.com/photo-..." />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Custom Profile Picture URL (Optional)</label>
+                  <input type="url" class="form-control" name="customAvatarUrl" value="${profile.customAvatarUrl || ''}" placeholder="https://..." />
                 </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Bio & Traveler Philosophy</label>
-                <textarea class="form-control" name="bio" rows="3">${profile.bio}</textarea>
+
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+
+              <!-- Section 2: Travel Essentials & Logistics -->
+              <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: #06b6d4; font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                  ✈️ Section 2: Travel Essentials &amp; Emergency Contact
+                </h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Home Airport (IATA Code)</label>
+                    <input type="text" class="form-control" name="homeAirport" value="${profile.homeAirport || 'JFK (New York)'}" placeholder="e.g. JFK (New York), HND, LHR" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Preferred Currency</label>
+                    <select class="form-control" name="currency">
+                      <option value="USD" ${profile.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
+                      <option value="EUR" ${profile.currency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
+                      <option value="GBP" ${profile.currency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
+                      <option value="JPY" ${profile.currency === 'JPY' ? 'selected' : ''}>JPY (¥)</option>
+                      <option value="CAD" ${profile.currency === 'CAD' ? 'selected' : ''}>CAD ($)</option>
+                      <option value="AUD" ${profile.currency === 'AUD' ? 'selected' : ''}>AUD ($)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Travel Pace &amp; Style</label>
+                    <select class="form-control" name="travelPace">
+                      <option value="Fast & Packed Explorer" ${(profile.travelPace || '').includes('Fast') ? 'selected' : ''}>Fast &amp; Packed Explorer</option>
+                      <option value="Balanced & Moderate Pace" ${(profile.travelPace || '').includes('Balanced') ? 'selected' : ''}>Balanced &amp; Moderate Pace</option>
+                      <option value="Relaxed & Leisurely" ${(profile.travelPace || '').includes('Relaxed') ? 'selected' : ''}>Relaxed &amp; Leisurely</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Emergency Contact Name</label>
+                    <input type="text" class="form-control" name="emContactName" value="${emContact.name || ''}" placeholder="e.g. Sarah Rivers" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Emergency Contact Phone #</label>
+                  <input type="tel" class="form-control" name="emContactPhone" value="${emContact.phone || ''}" placeholder="+1 (555) 234-5678" />
+                </div>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Home Airport</label>
-                  <input type="text" class="form-control" name="homeAirport" value="${profile.homeAirport || ''}" placeholder="e.g. JFK / HND" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Preferred Currency</label>
-                  <select class="form-control" name="currency">
-                    <option value="USD" ${profile.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
-                    <option value="EUR" ${profile.currency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
-                    <option value="GBP" ${profile.currency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
-                    <option value="JPY" ${profile.currency === 'JPY' ? 'selected' : ''}>JPY (¥)</option>
-                  </select>
+
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+
+              <!-- Section 3: Dining & Health Notes -->
+              <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: #34d399; font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                  🥗 Section 3: Dining &amp; Health Sync
+                </h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Dietary Preference</label>
+                    <select class="form-control" name="dietary">
+                      <option value="Plant-Based / Vegetarian" ${profile.dietary === 'Plant-Based / Vegetarian' ? 'selected' : ''}>Plant-Based / Vegetarian</option>
+                      <option value="Vegan" ${profile.dietary === 'Vegan' ? 'selected' : ''}>Vegan</option>
+                      <option value="Pescatarian" ${profile.dietary === 'Pescatarian' ? 'selected' : ''}>Pescatarian</option>
+                      <option value="Gluten-Free / Celiac" ${profile.dietary === 'Gluten-Free / Celiac' ? 'selected' : ''}>Gluten-Free / Celiac</option>
+                      <option value="Halal" ${profile.dietary === 'Halal' ? 'selected' : ''}>Halal</option>
+                      <option value="Kosher" ${profile.dietary === 'Kosher' ? 'selected' : ''}>Kosher</option>
+                      <option value="No Restrictions" ${profile.dietary === 'No Restrictions' ? 'selected' : ''}>No Restrictions</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Allergies / Specific Health Notes</label>
+                    <input type="text" class="form-control" name="allergies" value="${profile.allergies || ''}" placeholder="e.g. Peanuts, Shellfish, Lactose" />
+                  </div>
                 </div>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Passport Nationality</label>
-                  <input type="text" class="form-control" name="passportCountry" value="${profile.passportCountry || ''}" />
+
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+
+              <!-- Section 4: Document Expirations & Safety Alert -->
+              <div>
+                <h4 style="color: #fbbf24; font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                  🛂 Section 4: Passport &amp; Document Expirations
+                </h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Passport Country</label>
+                    <input type="text" class="form-control" name="passportCountry" value="${profile.passportCountry || 'United States'}" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Passport Expiration Date</label>
+                    <input type="date" class="form-control" id="input-passport-exp" name="passportExpiration" value="${profile.passportExpiration || '2027-04-15'}" />
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Dietary Preferences</label>
-                  <input type="text" class="form-control" name="dietary" value="${profile.dietary || ''}" />
+
+                <div id="passport-exp-warning-box">
+                  ${isExpiringSoon ? `
+                    <div class="passport-expiration-alert">
+                      ${icon('alert-triangle', '#ef4444')}
+                      <div>
+                        <strong>⚠️ Passport Expiration Warning:</strong>
+                        <div>Your passport expires in ${monthsRemaining} months. Most international countries require at least 6 months validity before departure!</div>
+                      </div>
+                    </div>
+                  ` : ''}
                 </div>
               </div>
             </form>
           </div>
+
           <div class="modal-footer">
             <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
-            <button class="btn btn-primary submit-modal" type="button">Save Profile</button>
+            <button class="btn btn-primary submit-modal" type="button">Save Profile Preferences</button>
           </div>
         </div>
       </div>
     `;
+
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-edit-profile');
     const close = () => m.remove();
     m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
 
+    const expInput = m.querySelector('#input-passport-exp');
+    const warningBox = m.querySelector('#passport-exp-warning-box');
+
+    if (expInput) {
+      expInput.addEventListener('change', () => {
+        const val = expInput.value;
+        if (val) {
+          const expDate = new Date(val);
+          const now = new Date();
+          const diffMs = expDate - now;
+          const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          const months = Math.max(0, Math.round(diffDays / 30));
+          if (months < 6) {
+            warningBox.innerHTML = `
+              <div class="passport-expiration-alert">
+                ${icon('alert-triangle', '#ef4444')}
+                <div>
+                  <strong>⚠️ Passport Expiration Warning:</strong>
+                  <div>Your selected passport date expires in ${months} months. Renewal recommended before international travel!</div>
+                </div>
+              </div>
+            `;
+          } else {
+            warningBox.innerHTML = '';
+          }
+        }
+      });
+    }
+
     m.querySelector('.submit-modal').onclick = () => {
       const f = m.querySelector('#form-edit-profile');
       const data = Object.fromEntries(new FormData(f).entries());
+      
+      data.emergencyContact = {
+        name: data.emContactName || '',
+        phone: data.emContactPhone || ''
+      };
+
       appStore.saveProfile(data);
       close();
-      showToast('Profile preferences updated!', 'success');
+      showToast('Profile preferences saved!', 'success');
       if (currentView === 'personal-space') renderCurrentView();
     };
   }
