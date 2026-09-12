@@ -301,6 +301,8 @@
       startDate: '2026-11-01',
       endDate: '2026-11-07',
       status: 'upcoming',
+      tripType: 'coupled',
+      treatCoupledAsHousehold: true,
       coverImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
       budget: 3200,
       currency: 'USD',
@@ -322,12 +324,18 @@
             toTime: '11:00 AM',
             toDate: '2026-11-01',
             toTerminal: 'Terminal 3',
-            duration: '5h 45m • 1 Stop in IAH (1h 15m layover)',
+            duration: '5h 45m • Direct',
             cabinClass: 'Economy / Main Cabin',
             confirmation: 'P8X9LK',
             status: 'On Time',
             carryOn: true,
-            checkedBags: 1,
+            checkedBags: 2,
+            seat1: '14A',
+            seat2: '14B',
+            seats: '14A & 14B',
+            passengers: ['Alex Rivers', 'Taylor Rivers'],
+            p1Passport: 'US88492014',
+            p2Passport: 'US88492015',
             checkinUrl: 'https://www.united.com'
           }
         ],
@@ -342,7 +350,8 @@
             checkIn: '2026-11-01 • 3:00 PM',
             checkOut: '2026-11-07 • 12:00 PM',
             nights: '6 Nights',
-            roomDetails: 'Ocean View Villa with Private Plunge Pool • 2 Guests',
+            roomDetails: 'Ocean View Villa with Private Plunge Pool • Dual Occupancy',
+            guests: ['Alex Rivers', 'Taylor Rivers'],
             confirmation: 'NZC-40912',
             accessCode: 'Access Code: 8391#',
             cancellationAlert: 'Free cancellation until Oct 25, 2026',
@@ -364,13 +373,28 @@
         ],
         notes: 'Hotel shuttle pick-up at Terminal 3 Exit 4.'
       },
-      itinerary: [], activities: [], packingList: [], prepChecklist: [],
-      attendees: [
-        { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' }
+      itinerary: [], activities: [],
+      packingList: [
+        { id: 'pack-10', category: 'Clothing', item: 'Linen Shirts & Trail Wear', packed: true, assignee: 'Alex Rivers' },
+        { id: 'pack-11', category: 'Clothing', item: 'Resort Wear & Swimsuits', packed: false, assignee: 'Taylor Rivers' },
+        { id: 'pack-12', category: 'Toiletries', item: 'Reef-Safe Sunscreen SPF 50 & Sun Hat', packed: false, assignee: 'Shared Household', p1Verified: true, p2Verified: false },
+        { id: 'pack-13', category: 'Tech', item: 'GoPro Hero & Waterproof Phone Pouch', packed: false, assignee: 'Shared Household', p1Verified: false, p2Verified: false }
       ],
-      expenses: []
+      prepChecklist: [
+        { id: 'prep-10', title: 'Passport Valid 6+ Months for Both Passengers', completed: true }
+      ],
+      attendees: [
+        { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed', householdId: 'hh-cancun', partnerId: 'att-11' },
+        { id: 'att-11', name: 'Taylor Rivers', role: 'Partner / Co-Planner', avatar: 'TR', email: 'taylor@example.com', rsvp: 'Confirmed', householdId: 'hh-cancun', partnerId: 'att-10' },
+        { id: 'att-12', name: 'Jordan Lee', role: 'Travel Friend', avatar: 'JL', email: 'jordan@example.com', rsvp: 'Confirmed' }
+      ],
+      expenses: [
+        { id: 'exp-10', title: 'Jeep Rental Deposit', amount: 450, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-11-01', splitWith: ['Alex Rivers', 'Taylor Rivers', 'Jordan Lee'] },
+        { id: 'exp-11', title: 'Nizuc Welcome Dinner', amount: 280, paidBy: 'Jordan Lee', category: 'Dining', date: '2026-11-02', splitWith: ['Alex Rivers', 'Taylor Rivers', 'Jordan Lee'] }
+      ]
     }
   ];
+
 
   class Store {
     constructor() {
@@ -649,7 +673,81 @@
         this.saveTrips();
       }
     }
+
+    linkHouseholdCluster(tripId, attendeeId1, attendeeId2) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.attendees) {
+        const householdId = 'hh-' + Date.now();
+        const att1 = t.attendees.find(a => a.id === attendeeId1 || a.name === attendeeId1);
+        const att2 = t.attendees.find(a => a.id === attendeeId2 || a.name === attendeeId2);
+        if (att1) { att1.householdId = householdId; att1.partnerId = att2 ? att2.id : null; }
+        if (att2) { att2.householdId = householdId; att2.partnerId = att1 ? att1.id : null; }
+        this.saveTrips();
+      }
+    }
+
+    unlinkHouseholdCluster(tripId, attendeeId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.attendees) {
+        const att = t.attendees.find(a => a.id === attendeeId || a.name === attendeeId);
+        if (att && att.householdId) {
+          const hhId = att.householdId;
+          t.attendees.forEach(a => {
+            if (a.householdId === hhId) {
+              delete a.householdId;
+              delete a.partnerId;
+            }
+          });
+          this.saveTrips();
+        }
+      }
+    }
+
+    toggleDualCheckItem(tripId, itemId, partnerKey) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.packingList) {
+        const item = t.packingList.find(i => i.id === itemId);
+        if (item) {
+          if (partnerKey === 'p1') item.p1Verified = !item.p1Verified;
+          if (partnerKey === 'p2') item.p2Verified = !item.p2Verified;
+          if (item.p1Verified && item.p2Verified) item.packed = true;
+          else if (!item.p1Verified || !item.p2Verified) item.packed = false;
+          this.saveTrips();
+        }
+      }
+    }
+
+    updateItemAssignee(tripId, itemId, assignee) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.packingList) {
+        const item = t.packingList.find(i => i.id === itemId);
+        if (item) {
+          item.assignee = assignee;
+          this.saveTrips();
+        }
+      }
+    }
+
+    toggleTreatCoupledAsHousehold(tripId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        t.treatCoupledAsHousehold = !t.treatCoupledAsHousehold;
+        this.saveTrips();
+      }
+    }
+
+    updateFlightManifest(tripId, flightId, data) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.logistics && t.logistics.flights) {
+        const fl = t.logistics.flights.find(f => f.id === flightId);
+        if (fl) {
+          Object.assign(fl, data);
+          this.saveTrips();
+        }
+      }
+    }
   }
+
 
   const appStore = new Store();
 
@@ -2209,8 +2307,19 @@
                         </div>
                       </div>
 
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                         ${!item.isPrep ? `
+                          ${isCoupled && (packingFilterState === 'shared' || !item.assignee || item.assignee.toLowerCase().includes('shared')) ? `
+                            <div style="display: flex; gap: 0.25rem; align-items: center;">
+                              <span class="dual-check-pill ${item.p1Verified ? 'active' : ''}" data-id="${item.id}" data-pcheck="p1">
+                                ${partner1Name} ${item.p1Verified ? '✓' : ''}
+                              </span>
+                              <span class="dual-check-pill ${item.p2Verified ? 'active' : ''}" data-id="${item.id}" data-pcheck="p2">
+                                ${partner2Name} ${item.p2Verified ? '✓' : ''}
+                              </span>
+                            </div>
+                          ` : ''}
+
                           <div class="qty-stepper">
                             <button class="qty-btn btn-qty-minus" data-id="${item.id}">-</button>
                             <span class="qty-count">${item.quantity || 1}</span>
@@ -2221,11 +2330,17 @@
                             ${item.bagTag || 'Carry-On'}
                           </span>
 
-                          ${item.assignee ? `
+                          ${isCoupled ? `
+                            <select class="form-control select-item-assignee" data-id="${item.id}" style="font-size: 0.72rem; padding: 0.15rem 0.4rem; height: 26px; border-radius: 6px; width: auto; background: rgba(15,23,42,0.8); color: var(--text-primary); border: 1px solid var(--border-color);">
+                              <option value="${partner1Name}" ${item.assignee === partner1Name ? 'selected' : ''}>👤 ${partner1Name}</option>
+                              <option value="${partner2Name}" ${item.assignee === partner2Name ? 'selected' : ''}>👤 ${partner2Name}</option>
+                              <option value="Shared Household" ${(!item.assignee || item.assignee.includes('Shared')) ? 'selected' : ''}>🧳 Shared</option>
+                            </select>
+                          ` : (item.assignee ? `
                             <div class="avatar" title="Packed by ${item.assignee}" style="width: 22px; height: 22px; font-size: 0.65rem;">
                               ${item.assignee.slice(0, 2).toUpperCase()}
                             </div>
-                          ` : ''}
+                          ` : '')}
 
                           <button class="btn btn-icon-only btn-secondary btn-del-pack" data-id="${item.id}" title="Remove Item" style="padding: 2px;">
                             ${icon('trash-2', '#ef4444')}
@@ -2255,6 +2370,26 @@
       });
     });
 
+    container.querySelectorAll('.dual-check-pill').forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = pill.getAttribute('data-id');
+        const pcheck = pill.getAttribute('data-pcheck');
+        appStore.toggleDualCheckItem(trip.id, id, pcheck);
+        renderPackingPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelectorAll('.select-item-assignee').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        const id = sel.getAttribute('data-id');
+        const val = sel.value;
+        appStore.updateItemAssignee(trip.id, id, val);
+        showToast(`Reassigned item to ${val}`, 'info');
+        renderPackingPane(container, appStore.getCurrentTrip());
+      });
+    });
+
     container.querySelectorAll('.checkbox-custom[data-pack-id]').forEach(cb => {
       cb.addEventListener('click', () => {
         const id = cb.getAttribute('data-pack-id');
@@ -2264,6 +2399,7 @@
         renderPackingPane(container, appStore.getCurrentTrip());
       });
     });
+
 
     container.querySelectorAll('.btn-qty-minus').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -2371,7 +2507,7 @@
     });
 
     const userBalance = balances[currentUser] || 0;
-    const settlements = calculateSettlements(balances);
+    const settlements = calculateSettlements(balances, trip);
 
     let activeCategory = 'all';
     let searchQuery = '';
@@ -2402,6 +2538,18 @@
         netCardSub = 'Your net balance is negative';
         netAmountColor = '#fb7185';
       }
+
+      // Group attendees for Household Clusters vs Solo Attendees
+      const householdClusters = {};
+      const soloAttendees = [];
+      attendees.forEach(att => {
+        if (att.householdId) {
+          if (!householdClusters[att.householdId]) householdClusters[att.householdId] = [];
+          householdClusters[att.householdId].push(att);
+        } else {
+          soloAttendees.push(att);
+        }
+      });
 
       container.innerHTML = `
         <!-- Top Metric Summary Strip -->
@@ -2519,35 +2667,96 @@
 
             <!-- Attendees Roster Card -->
             <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0;">
-                  Collaborator Roster
-                </h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                  <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                    Collaborator Roster
+                  </h3>
+                  <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem;">
+                    Drag &amp; drop attendees onto each other to group into Households
+                  </div>
+                </div>
                 <button class="btn btn-secondary btn-sm" id="btn-exp-invite" style="font-size: 0.78rem;">
                   ${icon('user-plus')} Invite
                 </button>
               </div>
 
+              <!-- Household Single Debt Pooling Toggle -->
+              <div style="margin-bottom: 1rem; padding: 0.65rem 0.85rem; background: rgba(223, 106, 79, 0.08); border: 1px solid rgba(223, 106, 79, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="font-size: 1.1rem;">🏡</span>
+                  <div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #FAF8F5;">Single Household Debt Pooling</div>
+                    <div style="font-size: 0.7rem; color: #D1C9BE;">Collapse spousal/couple balances into net household pool</div>
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-toggle-household-mode" style="font-size: 0.72rem; border-color: #DF6A4F; color: #DF6A4F; padding: 0.2rem 0.6rem;">
+                  ${trip.treatCoupledAsHousehold ? '✓ Active' : 'Disabled'}
+                </button>
+              </div>
+
               <div style="display: grid; gap: 0.75rem;">
-                ${attendees.map(att => {
+                <!-- Household Clusters -->
+                ${Object.entries(householdClusters).map(([hhId, members]) => {
+                  const hhNames = members.map(m => m.name).join(' & ');
+                  const netBal = members.reduce((s, m) => s + (balances[m.name] || 0), 0);
+                  const isPos = netBal >= 0.01;
+                  const isNeg = netBal <= -0.01;
+                  return `
+                    <div class="household-cluster-card" data-hh-id="${hhId}">
+                      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                          <span style="font-size: 1.2rem;">💑</span>
+                          <div>
+                            <div style="font-weight: 700; font-size: 0.9rem; color: #FAF8F5;">${hhNames}</div>
+                            <div style="font-size: 0.7rem; color: #DF6A4F; font-weight: 600;">Household / Couple Unit</div>
+                          </div>
+                        </div>
+                        <div style="text-align: right;">
+                          <div style="font-size: 0.88rem; font-weight: 800; color: ${isPos ? '#34d399' : (isNeg ? '#fb7185' : 'var(--text-muted)')};">
+                            ${isPos ? '+' : ''}$${netBal.toFixed(2)}
+                          </div>
+                          <button class="btn btn-secondary btn-sm btn-unlink-hh" data-att-id="${members[0].id}" style="font-size: 0.68rem; padding: 0.15rem 0.45rem; margin-top: 0.2rem;">
+                            Unlink Unit
+                          </button>
+                        </div>
+                      </div>
+                      <div style="display: grid; gap: 0.35rem; padding-top: 0.5rem; border-top: 1px dashed rgba(223, 106, 79, 0.25);">
+                        ${members.map(m => `
+                          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                            <span>${m.name} (${m.role})</span>
+                            <span style="font-weight: 600;">$${(balances[m.name] || 0).toFixed(2)}</span>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+
+                <!-- Solo Attendees -->
+                ${soloAttendees.map(att => {
                   const bal = balances[att.name] || 0;
                   const isPos = bal >= 0.01;
                   const isNeg = bal <= -0.01;
                   return `
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0.85rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                      <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <div class="avatar" style="width: 36px; height: 36px; font-size: 0.85rem;">${att.avatar}</div>
-                        <div>
-                          <div style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">${att.name} ${att.name === currentUser ? '<span style="font-size:0.7rem; color: var(--accent-primary);">(You)</span>' : ''}</div>
-                          <div style="font-size: 0.72rem; color: var(--text-muted);">${att.role}</div>
+                    <div class="attendee-solo-card" draggable="true" data-att-id="${att.id}" data-att-name="${att.name}">
+                      <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                          <div class="avatar" style="width: 36px; height: 36px; font-size: 0.85rem;">${att.avatar}</div>
+                          <div>
+                            <div style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                              ${att.name} ${att.name === currentUser ? '<span style="font-size:0.7rem; color: var(--accent-primary);">(You)</span>' : ''}
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">${att.role} • <span style="font-size:0.68rem; color: #DF6A4F; cursor: pointer;" class="btn-quick-add-partner" data-att-id="${att.id}">+ Add Partner</span></div>
+                          </div>
                         </div>
-                      </div>
-                      <div style="text-align: right;">
-                        <div style="font-size: 0.85rem; font-weight: 700; color: ${isPos ? '#34d399' : (isNeg ? '#fb7185' : 'var(--text-muted)')};">
-                          ${isPos ? '+' : ''}$${bal.toFixed(2)}
-                        </div>
-                        <div style="font-size: 0.68rem; color: var(--text-muted);">
-                          ${isPos ? 'gets back' : (isNeg ? 'owes' : 'settled')}
+                        <div style="text-align: right;">
+                          <div style="font-size: 0.85rem; font-weight: 700; color: ${isPos ? '#34d399' : (isNeg ? '#fb7185' : 'var(--text-muted)')};">
+                            ${isPos ? '+' : ''}$${bal.toFixed(2)}
+                          </div>
+                          <div style="font-size: 0.68rem; color: var(--text-muted);">
+                            ${isPos ? 'gets back' : (isNeg ? 'owes' : 'settled')}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2693,6 +2902,53 @@
       container.querySelector('#btn-top-settle-up')?.addEventListener('click', () => openSettleUpModal(trip));
       container.querySelector('#btn-exp-invite')?.addEventListener('click', () => openInviteModal(trip));
 
+      container.querySelector('#btn-toggle-household-mode')?.addEventListener('click', () => {
+        appStore.toggleTreatCoupledAsHousehold(trip.id);
+        showToast(trip.treatCoupledAsHousehold ? 'Disabled household pooling' : 'Single household debt pooling enabled!', 'info');
+        renderExpensesPane(container, appStore.getCurrentTrip());
+      });
+
+      container.querySelectorAll('.btn-unlink-hh').forEach(btn => {
+        btn.addEventListener('click', () => {
+          appStore.unlinkHouseholdCluster(trip.id, btn.getAttribute('data-att-id'));
+          showToast('Unlinked household unit', 'info');
+          renderExpensesPane(container, appStore.getCurrentTrip());
+        });
+      });
+
+      // HTML5 Drag & Drop for Attendee Cards
+      let draggedAttId = null;
+      container.querySelectorAll('.attendee-solo-card[draggable="true"]').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          draggedAttId = card.getAttribute('data-att-id');
+          e.dataTransfer.setData('text/plain', draggedAttId);
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          card.classList.add('drag-over');
+        });
+
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('drag-over');
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('drag-over');
+          const targetAttId = card.getAttribute('data-att-id');
+          if (draggedAttId && targetAttId && draggedAttId !== targetAttId) {
+            const att1 = attendees.find(a => a.id === draggedAttId);
+            const att2 = attendees.find(a => a.id === targetAttId);
+            if (confirm(`Combine ${att1?.name} and ${att2?.name} into a Household / Couple Unit?`)) {
+              appStore.linkHouseholdCluster(trip.id, draggedAttId, targetAttId);
+              showToast(`Linked ${att1?.name} & ${att2?.name} into Household Unit!`, 'success');
+              renderExpensesPane(container, appStore.getCurrentTrip());
+            }
+          }
+        });
+      });
+
       container.querySelectorAll('.btn-quick-settle').forEach(btn => {
         btn.addEventListener('click', () => {
           const from = btn.getAttribute('data-from');
@@ -2734,6 +2990,7 @@
     };
 
     renderView();
+
   }
 
   let mapExplorerState = {
@@ -3347,17 +3604,24 @@
                           <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
                             🧳 Carry-on Included
                           </div>
-                          <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem;">
-                            💼 ${f.checkedBags ? `${f.checkedBags} Checked Bag${f.checkedBags === 1 ? '' : 's'}` : 'Personal Item'}
-                          </div>
-                        </div>
-
-                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                 <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
                           ${f.checkinUrl ? `
                             <a href="${f.checkinUrl}" target="_blank" class="btn btn-secondary btn-sm" style="flex: 1; justify-content: center; font-size: 0.72rem; padding: 0.3rem 0.5rem;">
                               Airline Check-in
                             </a>
                           ` : ''}
+                        </div>
+
+                        <div class="coupled-manifest-badge" style="margin-top: 0.5rem;">
+                          <div style="font-size: 0.76rem;">
+                            <strong style="color: #DF6A4F;">💑 Seats ${f.seats || (f.seat1 ? `${f.seat1} & ${f.seat2}` : '14A & 14B')}</strong>
+                            <span style="color: var(--text-muted); font-size: 0.72rem; margin-left: 0.35rem;">
+                              • Passengers: ${f.passengers ? f.passengers.join(' & ') : 'Alex & Taylor'}
+                            </span>
+                          </div>
+                          <button class="btn btn-secondary btn-sm btn-open-seat-switcher" data-flight-id="${f.id}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; border-color: rgba(223,106,79,0.4); color: #DF6A4F;">
+                            📄 Seats &amp; Manifest
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -3560,6 +3824,14 @@
       openSmartImportModal(trip);
     });
 
+    container.querySelectorAll('.btn-open-seat-switcher').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const flightId = btn.getAttribute('data-flight-id');
+        const fl = flights.find(f => f.id === flightId) || { id: flightId, airline: 'Flight Leg', fromIata: 'JFK', toIata: 'HND' };
+        openPassengerDocSwitcher(fl, trip);
+      });
+    });
+
     container.querySelectorAll('.btn-copy-conf-pnr').forEach(chip => {
       chip.addEventListener('click', (e) => {
         const pnr = e.currentTarget.getAttribute('data-pnr');
@@ -3603,7 +3875,131 @@
     });
   }
 
+  function openPassengerDocSwitcher(flight, trip) {
+    const partner1Name = appStore.profile.name || 'Alex Rivers';
+    const partner2Name = appStore.profile.partnerName || 'Taylor Rivers';
+
+    let seat1 = flight.seat1 || '14A';
+    let seat2 = flight.seat2 || '14B';
+
+    const html = `
+      <div class="modal-overlay active" id="modal-passenger-doc">
+        <div class="modal-container" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3>${icon('plane', 'var(--accent-primary)')} Passenger Manifest &amp; Seat Switcher</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+            <div style="padding: 0.75rem 1rem; background: rgba(223,106,79,0.08); border: 1px solid rgba(223,106,79,0.3); border-radius: 12px; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; color: #FAF8F5; font-size: 0.9rem;">${flight.airline || 'Flight'} Leg: ${flight.fromIata || 'JFK'} → ${flight.toIata || 'HND'}</div>
+                <div style="font-size: 0.78rem; color: #D1C9BE;">Booking Reference: <strong>${flight.confirmation || 'PNR-90218'}</strong></div>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-swap-seats-instant" style="font-size: 0.78rem; border-color: #DF6A4F; color: #DF6A4F;">
+                🔄 Swap Seats (${seat1} ↔ ${seat2})
+              </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+              <!-- Partner 1 Card -->
+              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <div class="avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">${partner1Name.slice(0, 2).toUpperCase()}</div>
+                  <div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">${partner1Name}</div>
+                    <div style="font-size: 0.7rem; color: var(--accent-primary);">Primary Passenger</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">Assigned Seat</label>
+                  <input type="text" class="form-control" id="input-p1-seat" value="${seat1}" style="font-size: 0.85rem; font-weight: 700; color: #DF6A4F;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">Passport #</label>
+                  <input type="text" class="form-control" id="input-p1-passport" value="${flight.p1Passport || 'US88492014'}" style="font-size: 0.8rem;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">TSA PreCheck / KTN</label>
+                  <input type="text" class="form-control" id="input-p1-ktn" value="${flight.p1Ktn || '982736410'}" style="font-size: 0.8rem;" />
+                </div>
+              </div>
+
+              <!-- Partner 2 Card -->
+              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <div class="avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">${partner2Name.slice(0, 2).toUpperCase()}</div>
+                  <div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">${partner2Name}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">Co-Passenger</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">Assigned Seat</label>
+                  <input type="text" class="form-control" id="input-p2-seat" value="${seat2}" style="font-size: 0.85rem; font-weight: 700; color: #DF6A4F;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">Passport #</label>
+                  <input type="text" class="form-control" id="input-p2-passport" value="${flight.p2Passport || 'US88492015'}" style="font-size: 0.8rem;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.75rem;">TSA PreCheck / KTN</label>
+                  <input type="text" class="form-control" id="input-p2-ktn" value="${flight.p2Ktn || '982736411'}" style="font-size: 0.8rem;" />
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+              <button class="btn btn-secondary close-modal" type="button">Cancel</button>
+              <button class="btn btn-primary" id="btn-save-manifest" type="button" style="background: linear-gradient(135deg, #DF6A4F, #E28F38); border: none;">Save Manifest Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    const modalEl = document.getElementById('modal-passenger-doc');
+
+    const closeModal = () => modalEl.remove();
+    modalEl.querySelectorAll('.close-modal').forEach(b => b.addEventListener('click', closeModal));
+
+    modalEl.querySelector('#btn-swap-seats-instant').addEventListener('click', () => {
+      const p1Inp = modalEl.querySelector('#input-p1-seat');
+      const p2Inp = modalEl.querySelector('#input-p2-seat');
+      const temp = p1Inp.value;
+      p1Inp.value = p2Inp.value;
+      p2Inp.value = temp;
+      showToast('Seats swapped! Click Save to apply.', 'info');
+    });
+
+    modalEl.querySelector('#btn-save-manifest').addEventListener('click', () => {
+      const s1 = modalEl.querySelector('#input-p1-seat').value.trim();
+      const s2 = modalEl.querySelector('#input-p2-seat').value.trim();
+      const p1Pass = modalEl.querySelector('#input-p1-passport').value.trim();
+      const p2Pass = modalEl.querySelector('#input-p2-passport').value.trim();
+      const p1Ktn = modalEl.querySelector('#input-p1-ktn').value.trim();
+      const p2Ktn = modalEl.querySelector('#input-p2-ktn').value.trim();
+
+      appStore.updateFlightManifest(trip.id, flight.id, {
+        seat1: s1,
+        seat2: s2,
+        seats: `${s1} & ${s2}`,
+        p1Passport: p1Pass,
+        p2Passport: p2Pass,
+        p1Ktn: p1Ktn,
+        p2Ktn: p2Ktn,
+        passengers: [partner1Name, partner2Name]
+      });
+
+      closeModal();
+      showToast('Updated passenger manifest & seats!', 'success');
+      const mainContainer = document.getElementById('tab-pane-logistics') || document.querySelector('.main-content-area');
+      if (mainContainer) renderLogisticsPane(mainContainer, appStore.getCurrentTrip());
+    });
+  }
+
   // --- Multi-Type Intake Slide-over Drawer ---
+
   function openAddLogisticsDrawer(trip, defaultCat = 'flight') {
     let activeCat = defaultCat;
 
@@ -5968,10 +6364,39 @@
   }
 
   // --- Calculations & Helpers ---
-  function calculateSettlements(balancesObj) {
+  function calculateSettlements(balancesObj, trip = null) {
+    let processedBalances = { ...balancesObj };
+
+    if (trip && trip.treatCoupledAsHousehold && trip.attendees) {
+      const householdGroups = {};
+      const soloNames = [];
+
+      trip.attendees.forEach(a => {
+        if (a.householdId) {
+          if (!householdGroups[a.householdId]) householdGroups[a.householdId] = [];
+          householdGroups[a.householdId].push(a.name);
+        } else {
+          soloNames.push(a.name);
+        }
+      });
+
+      const newBalances = {};
+      Object.entries(householdGroups).forEach(([hhId, names]) => {
+        const combinedLabel = names.join(' & ') + ' (Household)';
+        const netSum = names.reduce((sum, name) => sum + (processedBalances[name] || 0), 0);
+        newBalances[combinedLabel] = netSum;
+      });
+
+      soloNames.forEach(name => {
+        newBalances[name] = processedBalances[name] || 0;
+      });
+
+      processedBalances = newBalances;
+    }
+
     const debtors = [];
     const creditors = [];
-    Object.entries(balancesObj).forEach(([person, amt]) => {
+    Object.entries(processedBalances).forEach(([person, amt]) => {
       if (amt < -0.01) debtors.push({ person, amount: -amt });
       else if (amt > 0.01) creditors.push({ person, amount: amt });
     });
@@ -5988,6 +6413,7 @@
     }
     return settlements;
   }
+
 
   function renderExpenseChart(expenses) {
     const ctx = document.getElementById('expenseChart');
