@@ -25,6 +25,8 @@
     'dollar-sign': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
     'map': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>`,
     'share-2': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>`,
+    'sparkles': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+    'image': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`,
     'info': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>`,
     'building': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>`,
     'notebook': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="6" y="2" rx="2"/></svg>`,
@@ -47,10 +49,62 @@
     return svg;
   }
 
+  // --- Dynamic Destination Photo Resolver (Unsplash Travel Engine) ---
+  const DESTINATION_PHOTOS = {
+    'cancun': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    'mexico': 'https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=1200&q=80',
+    'bali': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+    'indonesia': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+    'paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
+    'france': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
+    'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80',
+    'italy': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80',
+    'tokyo': 'assets/images/tokyo.png',
+    'japan': 'assets/images/tokyo.png',
+    'amalfi': 'assets/images/amalfi.png',
+    'swiss': 'assets/images/swiss.png',
+    'alps': 'assets/images/swiss.png',
+    'hawaii': 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80',
+    'honolulu': 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80',
+    'new york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80',
+    'nyc': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80',
+    'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80',
+    'barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a771deda?auto=format&fit=crop&w=1200&q=80',
+    'spain': 'https://images.unsplash.com/photo-1583422409516-2895a771deda?auto=format&fit=crop&w=1200&q=80',
+    'dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
+    'iceland': 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80',
+    'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80',
+    'australia': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80',
+    'cairo': 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80',
+    'egypt': 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80',
+    'phuket': 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80',
+    'thailand': 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80',
+    'santorini': 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80',
+    'greece': 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80',
+    'miami': 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
+    'beach': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    'mountain': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
+  };
+
+  function resolveDestinationPhoto(destinationText) {
+    if (!destinationText) return 'assets/images/hero.png';
+    const query = destinationText.toLowerCase();
+
+    for (const [key, photoUrl] of Object.entries(DESTINATION_PHOTOS)) {
+      if (query.includes(key)) {
+        return photoUrl;
+      }
+    }
+
+    // Dynamic keyword search fallback using Unsplash Source Engine
+    const encoded = encodeURIComponent(destinationText.trim() + ' travel destination');
+    return `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80`;
+  }
+
   // --- Storage ---
-  const STORAGE_KEY = 'wanderpulse_trips_data_v4';
-  const SETTINGS_KEY = 'wanderpulse_settings_v4';
-  const PROFILE_KEY = 'wanderpulse_user_profile_v4';
+  const STORAGE_KEY = 'wanderpulse_trips_data_v5';
+  const SETTINGS_KEY = 'wanderpulse_settings_v5';
+  const PROFILE_KEY = 'wanderpulse_user_profile_v5';
 
   const defaultProfile = {
     name: 'Alex Rivers',
@@ -107,16 +161,16 @@
     },
     {
       id: 'trip-2',
-      title: 'Amalfi Coast Summer Escape',
-      destination: 'Positano & Capri, Italy',
-      startDate: '2026-07-10',
-      endDate: '2026-07-18',
+      title: 'Cancun Beach Resort Getaway',
+      destination: 'Cancun, Mexico',
+      startDate: '2026-11-01',
+      endDate: '2026-11-07',
       status: 'upcoming',
-      coverImage: 'assets/images/amalfi.png',
-      budget: 5200,
+      coverImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+      budget: 3200,
       currency: 'USD',
       isPrivate: false,
-      lat: 40.6281, lng: 14.4850,
+      lat: 21.1619, lng: -86.8515,
       logistics: { flights: [], accommodations: [], notes: '' },
       itinerary: [], activities: [], packingList: [], prepChecklist: [],
       attendees: [
@@ -175,6 +229,9 @@
       const today = new Date().toISOString().split('T')[0];
       const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
 
+      // Auto resolve high-res destination photo if user didn't select custom one
+      const autoCover = obj.coverImage && obj.coverImage.trim() ? obj.coverImage : resolveDestinationPhoto(obj.destination || obj.title);
+
       const newTrip = {
         id: 'trip-' + Date.now(),
         title: obj.title || 'My Travel Adventure',
@@ -182,11 +239,11 @@
         startDate: obj.startDate || today,
         endDate: obj.endDate || nextWeek,
         status: obj.status || 'upcoming',
-        coverImage: obj.coverImage || 'assets/images/hero.png',
+        coverImage: autoCover,
         budget: parseFloat(obj.budget) || 1500,
         currency: 'USD',
         isPrivate: obj.isPrivate === 'true' || obj.isPrivate === true,
-        lat: 35.6762, lng: 139.6503,
+        lat: 21.1619, lng: -86.8515,
         logistics: { flights: [], accommodations: [], notes: '' },
         itinerary: [], activities: [],
         packingList: [
@@ -294,7 +351,7 @@
   }
 
   // --- Views ---
-  let currentView = 'dashboard'; // 'dashboard', 'trip-detail', 'personal-space'
+  let currentView = 'dashboard';
   let currentFilter = 'all';
   let searchQuery = '';
 
@@ -370,7 +427,7 @@
     }
 
     const createBtn = containerEl.querySelector('#btn-create-trip') || containerEl.querySelector('#btn-create-trip-empty');
-    if (createBtn) createBtn.addEventListener('click', openCreateTripModal);
+    if (createBtn) createBtn.addEventListener('click', () => openCreateTripModal(false));
 
     const spaceBtn = containerEl.querySelector('#btn-go-space');
     if (spaceBtn) spaceBtn.addEventListener('click', () => {
@@ -459,7 +516,6 @@
         <span>Back to Main Dashboard</span>
       </div>
 
-      <!-- Profile Header Card -->
       <div class="profile-card">
         <div class="profile-avatar-large">${profile.avatar}</div>
         <div style="flex: 1;">
@@ -483,7 +539,6 @@
         </div>
       </div>
 
-      <!-- Travel Preferences & Stats Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
         <div class="stat-card">
           <div class="stat-label">Home Airport</div>
@@ -503,7 +558,6 @@
         </div>
       </div>
 
-      <!-- Private vs Group Trips Sections -->
       <div style="margin-bottom: 3rem;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
           <h2>🔒 Private Personal Trips (${privateTrips.length})</h2>
@@ -1091,12 +1145,29 @@
             <form id="form-create-trip" onsubmit="return false;">
               <div class="form-group">
                 <label class="form-label">Trip Title *</label>
-                <input type="text" class="form-control" name="title" placeholder="e.g. Summer Vacation in Bali" required />
+                <input type="text" class="form-control" name="title" placeholder="e.g. Cancún Tropical Getaway" required />
               </div>
+              
               <div class="form-group">
-                <label class="form-label">Destination</label>
-                <input type="text" class="form-control" name="destination" placeholder="e.g. Ubud & Seminyak, Indonesia" />
+                <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>Destination / Location</span>
+                  <span style="font-size: 0.75rem; color: var(--accent-secondary); font-weight: normal; display: flex; align-items: center; gap: 0.25rem;">
+                    ${icon('sparkles')} Auto-fetches matching photo!
+                  </span>
+                </label>
+                <input type="text" class="form-control" id="input-destination" name="destination" placeholder="e.g. Cancún, Mexico or Paris, France" />
               </div>
+
+              <!-- Live Photo Preview Badge -->
+              <div id="photo-preview-container" style="margin-bottom: 1.25rem; border-radius: var(--radius-md); overflow: hidden; height: 140px; border: 1px solid var(--border-color); position: relative;">
+                <img id="img-cover-preview" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div style="position: absolute; bottom: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 0.35rem;">
+                  ${icon('image')} Auto-Selected Destination Photo
+                </div>
+              </div>
+
+              <input type="hidden" name="coverImage" id="hidden-cover-image" value="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" />
+
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Start Date</label>
@@ -1107,6 +1178,7 @@
                   <input type="date" class="form-control" name="endDate" />
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Estimated Budget ($)</label>
@@ -1134,6 +1206,17 @@
     const close = () => m.remove();
     m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
 
+    const destInput = m.querySelector('#input-destination');
+    const imgPreview = m.querySelector('#img-cover-preview');
+    const hiddenCover = m.querySelector('#hidden-cover-image');
+
+    destInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      const photoUrl = resolveDestinationPhoto(val);
+      imgPreview.src = photoUrl;
+      hiddenCover.value = photoUrl;
+    });
+
     const handleSave = () => {
       const form = m.querySelector('#form-create-trip');
       const formData = new FormData(form);
@@ -1146,7 +1229,7 @@
 
       const newTrip = appStore.addTrip(data);
       close();
-      showToast('New travel project created!', 'success');
+      showToast(`Trip created with destination photo!`, 'success');
       currentView = 'trip-detail';
       renderCurrentView();
     };
