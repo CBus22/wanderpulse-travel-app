@@ -49,62 +49,78 @@
     return svg;
   }
 
-  // --- Dynamic Destination Photo Resolver (Unsplash Travel Engine) ---
-  const DESTINATION_PHOTOS = {
-    'cancun': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    'mexico': 'https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=1200&q=80',
-    'bali': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
-    'indonesia': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
-    'paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
-    'france': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
-    'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80',
-    'italy': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80',
-    'tokyo': 'assets/images/tokyo.png',
-    'japan': 'assets/images/tokyo.png',
-    'amalfi': 'assets/images/amalfi.png',
-    'swiss': 'assets/images/swiss.png',
-    'alps': 'assets/images/swiss.png',
-    'hawaii': 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80',
-    'honolulu': 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80',
-    'new york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80',
-    'nyc': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80',
-    'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80',
-    'barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a771deda?auto=format&fit=crop&w=1200&q=80',
-    'spain': 'https://images.unsplash.com/photo-1583422409516-2895a771deda?auto=format&fit=crop&w=1200&q=80',
-    'dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
-    'iceland': 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80',
-    'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80',
-    'australia': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80',
-    'cairo': 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80',
-    'egypt': 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80',
-    'phuket': 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80',
-    'thailand': 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80',
-    'santorini': 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80',
-    'greece': 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80',
-    'miami': 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
-    'beach': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    'mountain': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
-  };
+  // --- Dynamic Destination Photo Resolver & Preset Library ---
+  const PHOTO_LIBRARY_PRESETS = [
+    // --- Beaches & Coastal ---
+    { id: 'beach-1', name: 'Cancún & Maya Coast', category: 'beaches', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', keywords: ['cancun', 'cozumel', 'riviera maya', 'playa del carmen', 'caribbean'] },
+    { id: 'beach-2', name: 'Miami South Beach', category: 'beaches', url: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80', keywords: ['miami', 'florida', 'key west', 'tampa', 'orlando', 'ocean'] },
+    { id: 'beach-3', name: 'Bali Tropical Haven', category: 'beaches', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80', keywords: ['bali', 'indonesia', 'seminyak', 'ubud', 'lombok'] },
+    { id: 'beach-4', name: 'Hawaii Ocean Sunset', category: 'beaches', url: 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1200&q=80', keywords: ['hawaii', 'honolulu', 'maui', 'oahu', 'kauai', 'waikiki'] },
+    { id: 'beach-5', name: 'Phuket Emerald Island', category: 'beaches', url: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80', keywords: ['phuket', 'thailand', 'krabi', 'koh samui', 'phi phi'] },
+    { id: 'beach-6', name: 'Cabo San Lucas Sunset', category: 'beaches', url: 'https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=1200&q=80', keywords: ['cabo', 'los cabos', 'mexico', 'puerto vallarta', 'tulum', 'baja'] },
+    { id: 'beach-7', name: 'Maldives Overwater Bungalow', category: 'beaches', url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1200&q=80', keywords: ['maldives', 'tahiti', 'bora bora', 'fiji', 'seychelles', 'bahamas', 'jamaica', 'punta cana', 'aruba', 'barbados'] },
+    { id: 'beach-8', name: 'Amalfi Coast Villa', category: 'beaches', url: 'assets/images/amalfi.png', keywords: ['amalfi', 'positano', 'capri', 'naples', 'sorrento', 'italy coast'] },
+
+    // --- Cities & Metropolis ---
+    { id: 'city-1', name: 'Tokyo Shinjuku Skyline', category: 'cities', url: 'assets/images/tokyo.png', keywords: ['tokyo', 'japan', 'shinjuku', 'shibuya', 'kyoto', 'osaka'] },
+    { id: 'city-2', name: 'Paris Eiffel Tower', category: 'cities', url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80', keywords: ['paris', 'france', 'nice', 'lyon', 'eiffel'] },
+    { id: 'city-3', name: 'New York Times Square', category: 'cities', url: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80', keywords: ['new york', 'nyc', 'manhattan', 'brooklyn'] },
+    { id: 'city-4', name: 'London Big Ben', category: 'cities', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80', keywords: ['london', 'uk', 'england', 'manchester', 'edinburgh'] },
+    { id: 'city-5', name: 'Dubai Skyscraper Horizon', category: 'cities', url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80', keywords: ['dubai', 'uae', 'abu dhabi', 'burj khalifa'] },
+    { id: 'city-6', name: 'Sydney Opera House', category: 'cities', url: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1200&q=80', keywords: ['sydney', 'australia', 'melbourne', 'brisbane'] },
+    { id: 'city-7', name: 'Barcelona Sagrada Familia', category: 'cities', url: 'https://images.unsplash.com/photo-1583422409516-2895a771deda?auto=format&fit=crop&w=1200&q=80', keywords: ['barcelona', 'spain', 'madrid', 'seville', 'ibiza'] },
+    { id: 'city-8', name: 'Amsterdam Romantic Canals', category: 'cities', url: 'https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&w=1200&q=80', keywords: ['amsterdam', 'netherlands', 'holland', 'rotterdam'] },
+    { id: 'city-9', name: 'Las Vegas Strip Neon', category: 'cities', url: 'https://images.unsplash.com/photo-1581351123004-757df051db8e?auto=format&fit=crop&w=1200&q=80', keywords: ['las vegas', 'vegas', 'nevada', 'casino'] },
+    { id: 'city-10', name: 'Chicago River & Towers', category: 'cities', url: 'https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=1200&q=80', keywords: ['chicago', 'illinois', 'windy city'] },
+
+    // --- Nature & Mountains ---
+    { id: 'nature-1', name: 'Swiss Alps Chalet', category: 'nature', url: 'assets/images/swiss.png', keywords: ['swiss', 'alps', 'switzerland', 'zermatt', 'matterhorn', 'ski', 'snow', 'mountains'] },
+    { id: 'nature-2', name: 'Iceland Northern Lights', category: 'nature', url: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80', keywords: ['iceland', 'reykjavik', 'aurora', 'glacier', 'fjord'] },
+    { id: 'nature-3', name: 'Yosemite National Park', category: 'nature', url: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=1200&q=80', keywords: ['yosemite', 'california', 'national park', 'hiking', 'redwoods'] },
+    { id: 'nature-4', name: 'Grand Canyon Sunrise', category: 'nature', url: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=1200&q=80', keywords: ['grand canyon', 'arizona', 'utah', 'sedona', 'zion'] },
+    { id: 'nature-5', name: 'Serengeti Safari', category: 'nature', url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80', keywords: ['safari', 'africa', 'kenya', 'tanzania', 'south africa'] },
+
+    // --- Culture & History ---
+    { id: 'culture-1', name: 'Rome Colosseum Ancient', category: 'culture', url: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80', keywords: ['rome', 'italy', 'florence', 'tuscany', 'colosseum'] },
+    { id: 'culture-2', name: 'Santorini Sunset', category: 'culture', url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80', keywords: ['santorini', 'greece', 'athens', 'mykonos', 'crete'] },
+    { id: 'culture-3', name: 'Cairo Pyramids of Giza', category: 'culture', url: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80', keywords: ['cairo', 'egypt', 'pyramid', 'nile', 'luxor'] },
+    { id: 'culture-4', name: 'Venice Waterways', category: 'culture', url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80', keywords: ['venice', 'gondola'] },
+
+    // --- Adventure & Road Trips ---
+    { id: 'adv-1', name: 'Scenic Coastal Highway', category: 'adventure', url: 'assets/images/hero.png', keywords: ['road trip', 'route 66', 'highway', 'drive', 'coastal', 'adventure'] },
+    { id: 'adv-2', name: 'Sahara Desert Dunes', category: 'adventure', url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80', keywords: ['desert', 'sahara', 'morocco', 'dunes'] },
+    { id: 'adv-3', name: 'Luxury Ocean Cruise', category: 'adventure', url: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=1200&q=80', keywords: ['cruise', 'ship', 'caribbean cruise', 'sailing', 'boat'] }
+  ];
+
+  function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
 
   function resolveDestinationPhoto(destinationText) {
-    if (!destinationText) return 'assets/images/hero.png';
-    const query = destinationText.toLowerCase();
+    if (!destinationText || !destinationText.trim()) return 'assets/images/hero.png';
+    const query = destinationText.toLowerCase().trim();
 
-    for (const [key, photoUrl] of Object.entries(DESTINATION_PHOTOS)) {
-      if (query.includes(key)) {
-        return photoUrl;
+    // 1. Direct Keyword Match against curated library
+    for (const preset of PHOTO_LIBRARY_PRESETS) {
+      if (preset.keywords.some(k => query.includes(k))) {
+        return preset.url;
       }
     }
 
-    // Dynamic keyword search fallback using Unsplash Source Engine
-    const encoded = encodeURIComponent(destinationText.trim() + ' travel destination');
-    return `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80`;
+    // 2. Deterministic Hash Picker for any unlisted destination (offset to avoid single repetitive fallback)
+    const index = (hashString(query) % (PHOTO_LIBRARY_PRESETS.length - 1)) + 1;
+    return PHOTO_LIBRARY_PRESETS[index]?.url || 'assets/images/hero.png';
   }
 
   // --- Storage ---
-  const STORAGE_KEY = 'wanderpulse_trips_data_v5';
-  const SETTINGS_KEY = 'wanderpulse_settings_v5';
-  const PROFILE_KEY = 'wanderpulse_user_profile_v5';
+  const STORAGE_KEY = 'wanderpulse_trips_data_v6';
+  const SETTINGS_KEY = 'wanderpulse_settings_v6';
+  const PROFILE_KEY = 'wanderpulse_user_profile_v6';
 
   const defaultProfile = {
     name: 'Alex Rivers',
@@ -161,7 +177,7 @@
     },
     {
       id: 'trip-2',
-      title: 'Cancun Beach Resort Getaway',
+      title: 'Cancún Beach Resort Getaway',
       destination: 'Cancun, Mexico',
       startDate: '2026-11-01',
       endDate: '2026-11-07',
@@ -229,8 +245,9 @@
       const today = new Date().toISOString().split('T')[0];
       const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
 
-      // Auto resolve high-res destination photo if user didn't select custom one
-      const autoCover = obj.coverImage && obj.coverImage.trim() ? obj.coverImage : resolveDestinationPhoto(obj.destination || obj.title);
+      // Dynamic resolution based on Destination OR Title if custom photo not manually selected
+      const queryText = (obj.destination && obj.destination.trim()) ? obj.destination : obj.title;
+      const autoCover = (obj.coverImage && obj.coverImage.trim()) ? obj.coverImage : resolveDestinationPhoto(queryText);
 
       const newTrip = {
         id: 'trip-' + Date.now(),
@@ -265,6 +282,22 @@
       this.trips = this.trips.filter(t => t.id !== id);
       if (this.currentTripId === id) this.currentTripId = this.trips[0]?.id || null;
       this.saveTrips();
+    }
+
+    updateTrip(id, obj) {
+      const trip = this.trips.find(t => t.id === id);
+      if (trip) {
+        if (obj.title !== undefined) trip.title = obj.title;
+        if (obj.destination !== undefined) trip.destination = obj.destination;
+        if (obj.startDate !== undefined) trip.startDate = obj.startDate;
+        if (obj.endDate !== undefined) trip.endDate = obj.endDate;
+        if (obj.coverImage !== undefined) trip.coverImage = obj.coverImage;
+        if (obj.budget !== undefined) trip.budget = parseFloat(obj.budget) || 0;
+        if (obj.isPrivate !== undefined) trip.isPrivate = (obj.isPrivate === 'true' || obj.isPrivate === true);
+        if (obj.status !== undefined) trip.status = obj.status;
+        this.saveTrips();
+      }
+      return trip;
     }
 
     addItineraryItem(tripId, item) {
@@ -641,7 +674,10 @@
                 ${icon('calendar', 'var(--text-muted)')} ${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}
               </p>
             </div>
-            <div style="display: flex; gap: 0.75rem;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-sm" id="btn-edit-trip-info">
+                ${icon('settings')} Edit Trip & Photo
+              </button>
               <button class="btn btn-primary btn-sm" id="btn-invite-collaborator">
                 ${icon('share-2')} Invite Collaborators
               </button>
@@ -681,6 +717,13 @@
       currentView = 'dashboard';
       renderCurrentView();
     });
+
+    const editBtn = containerEl.querySelector('#btn-edit-trip-info');
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        openEditTripModal(trip);
+      });
+    }
 
     containerEl.querySelector('#btn-invite-collaborator').addEventListener('click', () => {
       openInviteModal(trip);
@@ -1132,11 +1175,135 @@
     });
   }
 
+  // --- Cover Photo Gallery Picker Helper ---
+  function buildPhotoGalleryHTML(currentUrl = '') {
+    return `
+      <div class="photo-gallery-container">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.35rem;">
+            ${icon('image', 'var(--accent-primary)')} Select Cover Photo
+          </span>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-auto-detect-photo" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+            ${icon('sparkles')} Auto-Detect from Location
+          </button>
+        </div>
+
+        <div class="photo-category-tabs" id="photo-cat-tabs">
+          <button type="button" class="photo-cat-btn active" data-cat="all">All (${PHOTO_LIBRARY_PRESETS.length})</button>
+          <button type="button" class="photo-cat-btn" data-cat="beaches">🏖️ Beaches</button>
+          <button type="button" class="photo-cat-btn" data-cat="cities">🏙️ Cities</button>
+          <button type="button" class="photo-cat-btn" data-cat="nature">⛰️ Nature</button>
+          <button type="button" class="photo-cat-btn" data-cat="culture">🏛️ Culture</button>
+          <button type="button" class="photo-cat-btn" data-cat="adventure">🚗 Adventure</button>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <div class="search-box" style="flex: 1; padding: 0.35rem 0.75rem;">
+            ${icon('search', 'var(--text-muted)')}
+            <input type="text" id="photo-search-input" placeholder="Search gallery (e.g. Paris, Beach, Alps...)" style="font-size: 0.8rem;">
+          </div>
+        </div>
+
+        <div class="photo-grid-scroll" id="photo-grid-list">
+          <!-- Thumbnails rendered dynamically -->
+        </div>
+
+        <div style="margin-top: 0.75rem; border-top: 1px dashed var(--border-color); padding-top: 0.75rem;">
+          <label class="form-label" style="font-size: 0.75rem; color: var(--text-secondary);">Or Paste Custom Image URL</label>
+          <input type="url" class="form-control" id="input-custom-photo-url" placeholder="https://images.unsplash.com/photo-..." value="${currentUrl && !PHOTO_LIBRARY_PRESETS.some(p => p.url === currentUrl) ? currentUrl : ''}" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+        </div>
+      </div>
+    `;
+  }
+
+  function setupPhotoGalleryPicker(modalContainer, selectedUrl, onSelectPhoto) {
+    let currentSelected = selectedUrl || 'assets/images/hero.png';
+    let currentCategory = 'all';
+    let currentSearch = '';
+
+    const gridList = modalContainer.querySelector('#photo-grid-list');
+    const customUrlInput = modalContainer.querySelector('#input-custom-photo-url');
+    const searchInput = modalContainer.querySelector('#photo-search-input');
+    const catTabs = modalContainer.querySelectorAll('.photo-cat-btn');
+    const autoDetectBtn = modalContainer.querySelector('#btn-auto-detect-photo');
+
+    function renderGrid() {
+      const filtered = PHOTO_LIBRARY_PRESETS.filter(p => {
+        const matchesCat = currentCategory === 'all' || p.category === currentCategory;
+        const matchesSearch = !currentSearch || p.name.toLowerCase().includes(currentSearch.toLowerCase()) || p.keywords.some(k => k.includes(currentSearch.toLowerCase()));
+        return matchesCat && matchesSearch;
+      });
+
+      gridList.innerHTML = filtered.map(p => `
+        <div class="photo-thumb-card ${p.url === currentSelected ? 'selected' : ''}" data-url="${p.url}">
+          <img src="${p.url}" alt="${p.name}" loading="lazy" />
+          <div class="thumb-badge">${p.name}</div>
+        </div>
+      `).join('');
+
+      gridList.querySelectorAll('.photo-thumb-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const url = card.getAttribute('data-url');
+          currentSelected = url;
+          if (customUrlInput) customUrlInput.value = '';
+          renderGrid();
+          onSelectPhoto(url, 'manual');
+        });
+      });
+    }
+
+    catTabs.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        catTabs.forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        currentCategory = e.currentTarget.getAttribute('data-cat');
+        renderGrid();
+      });
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        renderGrid();
+      });
+    }
+
+    if (customUrlInput) {
+      customUrlInput.addEventListener('input', (e) => {
+        const url = e.target.value.trim();
+        if (url) {
+          currentSelected = url;
+          renderGrid();
+          onSelectPhoto(url, 'custom');
+        }
+      });
+    }
+
+    if (autoDetectBtn) {
+      autoDetectBtn.addEventListener('click', () => {
+        const destVal = modalContainer.querySelector('#input-destination')?.value;
+        const titleVal = modalContainer.querySelector('#input-title')?.value;
+        const queryText = (destVal && destVal.trim()) ? destVal : titleVal;
+        const detectedUrl = resolveDestinationPhoto(queryText);
+        currentSelected = detectedUrl;
+        if (customUrlInput) customUrlInput.value = '';
+        renderGrid();
+        onSelectPhoto(detectedUrl, 'auto');
+        showToast('Auto-detected destination photo!', 'info');
+      });
+    }
+
+    renderGrid();
+  }
+
   // --- Modals ---
   function openCreateTripModal(isPrivateByDefault = false) {
+    let selectedCoverUrl = 'assets/images/hero.png';
+    let isUserManualPick = false;
+
     const html = `
       <div class="modal-overlay active" id="modal-create-trip">
-        <div class="modal-container">
+        <div class="modal-container" style="max-width: 680px;">
           <div class="modal-header">
             <h3>${icon('plane', 'var(--accent-primary)')} Create New Travel Plan</h3>
             <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
@@ -1145,30 +1312,33 @@
             <form id="form-create-trip" onsubmit="return false;">
               <div class="form-group">
                 <label class="form-label">Trip Title *</label>
-                <input type="text" class="form-control" name="title" placeholder="e.g. Cancún Tropical Getaway" required />
+                <input type="text" class="form-control" id="input-title" name="title" placeholder="e.g. Summer Escape to Paris" required />
               </div>
               
               <div class="form-group">
                 <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
                   <span>Destination / Location</span>
                   <span style="font-size: 0.75rem; color: var(--accent-secondary); font-weight: normal; display: flex; align-items: center; gap: 0.25rem;">
-                    ${icon('sparkles')} Auto-fetches matching photo!
+                    ${icon('sparkles')} Auto-selects photo or pick manually!
                   </span>
                 </label>
-                <input type="text" class="form-control" id="input-destination" name="destination" placeholder="e.g. Cancún, Mexico or Paris, France" />
+                <input type="text" class="form-control" id="input-destination" name="destination" placeholder="e.g. Paris, Tokyo, Maui, Rome, Swiss Alps..." />
               </div>
 
-              <!-- Live Photo Preview Badge -->
-              <div id="photo-preview-container" style="margin-bottom: 1.25rem; border-radius: var(--radius-md); overflow: hidden; height: 140px; border: 1px solid var(--border-color); position: relative;">
-                <img id="img-cover-preview" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" style="width: 100%; height: 100%; object-fit: cover;" />
-                <div style="position: absolute; bottom: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 0.35rem;">
-                  ${icon('image')} Auto-Selected Destination Photo
+              <!-- Live Photo Preview Banner -->
+              <div id="photo-preview-container" style="margin-bottom: 1.25rem; border-radius: var(--radius-md); overflow: hidden; height: 160px; border: 1px solid var(--border-color); position: relative;">
+                <img id="img-cover-preview" src="${selectedCoverUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div style="position: absolute; bottom: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); padding: 0.3rem 0.75rem; border-radius: var(--radius-full); font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 0.35rem;">
+                  ${icon('image')} Selected Cover Photo
                 </div>
               </div>
 
-              <input type="hidden" name="coverImage" id="hidden-cover-image" value="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" />
+              <input type="hidden" name="coverImage" id="hidden-cover-image" value="${selectedCoverUrl}" />
 
-              <div class="form-row">
+              <!-- Interactive Gallery Picker -->
+              ${buildPhotoGalleryHTML(selectedCoverUrl)}
+
+              <div class="form-row" style="margin-top: 1.25rem;">
                 <div class="form-group">
                   <label class="form-label">Start Date</label>
                   <input type="date" class="form-control" name="startDate" />
@@ -1206,15 +1376,30 @@
     const close = () => m.remove();
     m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
 
+    const titleInput = m.querySelector('#input-title');
     const destInput = m.querySelector('#input-destination');
     const imgPreview = m.querySelector('#img-cover-preview');
     const hiddenCover = m.querySelector('#hidden-cover-image');
 
-    destInput.addEventListener('input', (e) => {
-      const val = e.target.value;
-      const photoUrl = resolveDestinationPhoto(val);
-      imgPreview.src = photoUrl;
-      hiddenCover.value = photoUrl;
+    const updatePreviewPhoto = (url, origin = 'auto') => {
+      selectedCoverUrl = url;
+      imgPreview.src = url;
+      hiddenCover.value = url;
+      if (origin === 'manual' || origin === 'custom') isUserManualPick = true;
+    };
+
+    const autoUpdateOnTyping = () => {
+      if (isUserManualPick) return; // respect manual selection
+      const query = (destInput.value && destInput.value.trim()) ? destInput.value : titleInput.value;
+      const detected = resolveDestinationPhoto(query);
+      updatePreviewPhoto(detected, 'auto');
+    };
+
+    destInput.addEventListener('input', autoUpdateOnTyping);
+    titleInput.addEventListener('input', autoUpdateOnTyping);
+
+    setupPhotoGalleryPicker(m, selectedCoverUrl, (newUrl, mode) => {
+      updatePreviewPhoto(newUrl, mode);
     });
 
     const handleSave = () => {
@@ -1227,15 +1412,126 @@
         return;
       }
 
+      data.coverImage = selectedCoverUrl || hiddenCover.value || resolveDestinationPhoto(data.destination || data.title);
+
       const newTrip = appStore.addTrip(data);
       close();
-      showToast(`Trip created with destination photo!`, 'success');
+      showToast(`Trip created with selected photo!`, 'success');
       currentView = 'trip-detail';
       renderCurrentView();
     };
 
     m.querySelector('.submit-modal').onclick = handleSave;
     m.querySelector('#form-create-trip').onsubmit = handleSave;
+  }
+
+  function openEditTripModal(trip) {
+    let selectedCoverUrl = trip.coverImage || 'assets/images/hero.png';
+
+    const html = `
+      <div class="modal-overlay active" id="modal-edit-trip">
+        <div class="modal-container" style="max-width: 680px;">
+          <div class="modal-header">
+            <h3>${icon('settings', 'var(--accent-primary)')} Edit Trip & Change Cover Photo</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form id="form-edit-trip" onsubmit="return false;">
+              <div class="form-group">
+                <label class="form-label">Trip Title *</label>
+                <input type="text" class="form-control" id="input-edit-title" name="title" value="${trip.title}" required />
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Destination / Location</label>
+                <input type="text" class="form-control" id="input-edit-destination" name="destination" value="${trip.destination}" />
+              </div>
+
+              <!-- Live Cover Photo Preview -->
+              <div style="margin-bottom: 1.25rem; border-radius: var(--radius-md); overflow: hidden; height: 160px; border: 1px solid var(--border-color); position: relative;">
+                <img id="img-edit-cover-preview" src="${selectedCoverUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div style="position: absolute; bottom: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); padding: 0.3rem 0.75rem; border-radius: var(--radius-full); font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 0.35rem;">
+                  ${icon('image')} Current Cover Photo
+                </div>
+              </div>
+
+              <input type="hidden" name="coverImage" id="hidden-edit-cover-image" value="${selectedCoverUrl}" />
+
+              <!-- Interactive Gallery Picker -->
+              ${buildPhotoGalleryHTML(selectedCoverUrl)}
+
+              <div class="form-row" style="margin-top: 1.25rem;">
+                <div class="form-group">
+                  <label class="form-label">Start Date</label>
+                  <input type="date" class="form-control" name="startDate" value="${trip.startDate || ''}" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">End Date</label>
+                  <input type="date" class="form-control" name="endDate" value="${trip.endDate || ''}" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Estimated Budget ($)</label>
+                  <input type="number" class="form-control" name="budget" value="${trip.budget || 0}" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Trip Status</label>
+                  <select class="form-control" name="status">
+                    <option value="upcoming" ${trip.status === 'upcoming' ? 'selected' : ''}>Upcoming</option>
+                    <option value="active" ${trip.status === 'active' ? 'selected' : ''}>Active</option>
+                    <option value="completed" ${trip.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    <option value="draft" ${trip.status === 'draft' ? 'selected' : ''}>Draft</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-edit-trip');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const imgPreview = m.querySelector('#img-edit-cover-preview');
+    const hiddenCover = m.querySelector('#hidden-edit-cover-image');
+
+    const updatePreviewPhoto = (url) => {
+      selectedCoverUrl = url;
+      imgPreview.src = url;
+      hiddenCover.value = url;
+    };
+
+    setupPhotoGalleryPicker(m, selectedCoverUrl, (newUrl) => {
+      updatePreviewPhoto(newUrl);
+    });
+
+    const handleSave = () => {
+      const form = m.querySelector('#form-edit-trip');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      if (!data.title || !data.title.trim()) {
+        showToast('Please enter a trip title', 'info');
+        return;
+      }
+
+      data.coverImage = selectedCoverUrl || hiddenCover.value;
+      appStore.updateTrip(trip.id, data);
+      close();
+      showToast('Trip updated successfully!', 'success');
+      renderCurrentView();
+    };
+
+    m.querySelector('.submit-modal').onclick = handleSave;
+    m.querySelector('#form-edit-trip').onsubmit = handleSave;
   }
 
   function openEditProfileModal() {
