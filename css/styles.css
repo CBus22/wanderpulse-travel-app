@@ -473,10 +473,59 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--accent-primary);
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(223, 106, 79, 0.12);
+  border: 1px solid rgba(223, 106, 79, 0.25);
   padding: 0.2rem 0.6rem;
   border-radius: var(--radius-full);
+}
+
+/* Coupled Trip Badge & Interlocking Avatars */
+.badge-coupled {
+  background: linear-gradient(135deg, rgba(223, 106, 79, 0.9), rgba(226, 143, 56, 0.9)) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(223, 106, 79, 0.35) !important;
+}
+
+.duo-interlocking-avatars {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-right: 0.5rem;
+}
+
+.duo-avatar-1 {
+  background: linear-gradient(135deg, #DF6A4F, #E28F38) !important;
+  color: #fff !important;
+  font-weight: 800;
+  border: 2px solid var(--bg-card) !important;
+  z-index: 2;
+}
+
+.duo-avatar-2 {
+  background: linear-gradient(135deg, #52B788, #5C9EAD) !important;
+  color: #fff !important;
+  font-weight: 800;
+  margin-left: -10px;
+  border: 2px solid var(--bg-card) !important;
+  z-index: 1;
+}
+
+.duo-heart-badge {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  font-size: 0.72rem;
+  background: #141312;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
 }
 
 /* Kebab Menu Overflow Dropdown */
