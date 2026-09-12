@@ -12,6 +12,8 @@
     'calendar': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`,
     'plus-circle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>`,
     'database': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
+    'settings': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    'user': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
     'search': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>`,
     'compass': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
     'plus': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>`,
@@ -22,6 +24,7 @@
     'check-square': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
     'dollar-sign': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
     'map': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>`,
+    'share-2': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>`,
     'info': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>`,
     'building': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>`,
     'notebook': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="6" y="2" rx="2"/></svg>`,
@@ -33,8 +36,7 @@
     'calculator': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>`,
     'moon': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
     'sun': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
-    'download': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`,
-    'upload': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>`,
+    'copy': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
     'cloud': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19x-9c-2.5 0-4.5-2-4.5-4.5 0-2 1.3-3.7 3.2-4.2C7.7 7.7 10 5.5 13 5.5c2.7 0 5 1.8 5.7 4.3 1.8.3 3.3 1.8 3.3 3.7 0 2.5-2 4.5-4.5 4.5z"/></svg>`,
     'check-circle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
   };
@@ -46,8 +48,20 @@
   }
 
   // --- Storage ---
-  const STORAGE_KEY = 'wanderpulse_trips_data_v3';
-  const SETTINGS_KEY = 'wanderpulse_settings_v3';
+  const STORAGE_KEY = 'wanderpulse_trips_data_v4';
+  const SETTINGS_KEY = 'wanderpulse_settings_v4';
+  const PROFILE_KEY = 'wanderpulse_user_profile_v4';
+
+  const defaultProfile = {
+    name: 'Alex Rivers',
+    avatar: 'AR',
+    bio: 'Passionate globetrotter, photographer, & hiking enthusiast seeking authentic cultural experiences around the world.',
+    currency: 'USD',
+    homeAirport: 'JFK (New York)',
+    passportCountry: 'United States',
+    dietary: 'No restrictions',
+    travelStyle: ['Solo Trekking', 'Cultural Discovery', 'Food & Photography']
+  };
 
   const initialTrips = [
     {
@@ -60,42 +74,35 @@
       coverImage: 'assets/images/tokyo.png',
       budget: 4500,
       currency: 'USD',
-      lat: 35.6762,
-      lng: 139.6503,
+      isPrivate: false,
+      lat: 35.6762, lng: 139.6503,
       logistics: {
         flights: [
           { airline: 'Japan Airlines JL005', from: 'JFK (New York)', to: 'HND (Tokyo)', date: '2026-10-15 11:30 AM', confirmation: 'JAL-982173' }
         ],
         accommodations: [
-          { name: 'Park Hyatt Tokyo', address: '3-7-1-2 Nishi-Shinjuku, Tokyo', checkIn: '2026-10-15', checkOut: '2026-10-19', confirmation: 'HTL-8831' },
-          { name: 'Mimaru Kyoto Station', address: '15 Higashikujo, Kyoto', checkIn: '2026-10-19', checkOut: '2026-10-25', confirmation: 'HTL-4492' }
+          { name: 'Park Hyatt Tokyo', address: '3-7-1-2 Nishi-Shinjuku, Tokyo', checkIn: '2026-10-15', checkOut: '2026-10-19', confirmation: 'HTL-8831' }
         ],
-        notes: 'Remember to pick up Pocket Wi-Fi at Haneda Airport Terminal 3 counter!'
+        notes: 'Pick up Pocket Wi-Fi at Haneda Terminal 3.'
       },
       itinerary: [
-        { id: 'it-1', day: 1, date: '2026-10-15', title: 'Arrival & Shinjuku Evening', time: '16:00', category: 'sightseeing', location: 'Shinjuku, Tokyo', notes: 'Check in hotel, explore Omoide Yokocho alleyways for ramen & yakitori.', lat: 35.6938, lng: 139.7034 },
-        { id: 'it-2', day: 2, date: '2026-10-16', title: 'Meiji Shrine & Digital Art', time: '09:30', category: 'culture', location: 'Harajuku & Toyosu', notes: 'Morning stroll in Yoyogi park & Meiji Jingu. Afternoon TeamLab Planets reservation at 14:00.', lat: 35.6764, lng: 139.6993 },
-        { id: 'it-3', day: 3, date: '2026-10-19', title: 'Shinkansen to Kyoto & Fushimi Inari', time: '08:00', category: 'transit', location: 'Tokyo Station -> Kyoto', notes: 'Board Hikari Shinkansen 507. Check in Mimaru Kyoto, sunset walk through 10,000 Torii gates.', lat: 34.9671, lng: 135.7727 }
+        { id: 'it-1', day: 1, date: '2026-10-15', title: 'Arrival & Shinjuku Evening', time: '16:00', category: 'sightseeing', location: 'Shinjuku, Tokyo', notes: 'Explore Omoide Yokocho alleyways for ramen & yakitori.', lat: 35.6938, lng: 139.7034 }
       ],
       activities: [
-        { id: 'act-1', title: 'TeamLab Planets Digital Art Museum', category: 'Culture', status: 'Booked', cost: 110, duration: '2.5 hrs', rating: 4.9, notes: 'Water exhibit requires barefoot walking.', lat: 35.6491, lng: 139.7898 },
-        { id: 'act-2', title: 'Traditional Tea Ceremony in Gion', category: 'Culture', status: 'Planned', cost: 90, duration: '1.5 hrs', rating: 4.8, notes: 'Kimono fitting included.', lat: 35.0037, lng: 135.7772 }
+        { id: 'act-1', title: 'TeamLab Planets Digital Art', category: 'Culture', status: 'Booked', cost: 110, duration: '2.5 hrs', rating: 4.9 }
       ],
       packingList: [
-        { id: 'pack-1', category: 'Documents', item: 'Passport & Japan Rail Pass Voucher', packed: true, assignee: 'Alex Rivers' },
-        { id: 'pack-2', category: 'Electronics', item: 'Universal Travel Adapter & Power Bank', packed: true, assignee: 'Alex Rivers' }
+        { id: 'pack-1', category: 'Documents', item: 'Passport & Rail Pass', packed: true, assignee: 'Alex Rivers' }
       ],
       prepChecklist: [
-        { id: 'prep-1', title: 'Passport Valid 6+ Months', completed: true },
-        { id: 'prep-2', title: 'Visit Japan Web Customs QR', completed: true }
+        { id: 'prep-1', title: 'Passport Valid 6+ Months', completed: true }
       ],
       attendees: [
         { id: 'att-1', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' },
         { id: 'att-2', name: 'Elena Rostova', role: 'Co-planner', avatar: 'ER', email: 'elena@example.com', rsvp: 'Confirmed' }
       ],
       expenses: [
-        { id: 'exp-1', title: 'Shinkansen Bullet Train Tickets', amount: 480, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-10-10', splitWith: ['Alex Rivers', 'Elena Rostova'] },
-        { id: 'exp-2', title: 'Tokyo Park Hyatt Accommodation', amount: 1200, paidBy: 'Elena Rostova', category: 'Lodging', date: '2026-10-12', splitWith: ['Alex Rivers', 'Elena Rostova'] }
+        { id: 'exp-1', title: 'Shinkansen Tickets', amount: 480, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-10-10', splitWith: ['Alex Rivers', 'Elena Rostova'] }
       ]
     },
     {
@@ -108,9 +115,14 @@
       coverImage: 'assets/images/amalfi.png',
       budget: 5200,
       currency: 'USD',
+      isPrivate: false,
       lat: 40.6281, lng: 14.4850,
       logistics: { flights: [], accommodations: [], notes: '' },
-      itinerary: [], activities: [], packingList: [], prepChecklist: [], attendees: [], expenses: []
+      itinerary: [], activities: [], packingList: [], prepChecklist: [],
+      attendees: [
+        { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' }
+      ],
+      expenses: []
     }
   ];
 
@@ -118,6 +130,7 @@
     constructor() {
       this.trips = this.loadTrips();
       this.settings = this.loadSettings();
+      this.profile = this.loadProfile();
       this.currentTripId = this.trips[0]?.id || null;
     }
     loadTrips() {
@@ -131,7 +144,6 @@
     saveTrips(data = this.trips) {
       this.trips = data;
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.trips)); } catch (e) {}
-      this.syncCloud();
     }
     loadSettings() {
       try {
@@ -143,6 +155,17 @@
     saveSettings(s) {
       this.settings = { ...this.settings, ...s };
       try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(this.settings)); } catch (e) {}
+    }
+    loadProfile() {
+      try {
+        const d = localStorage.getItem(PROFILE_KEY);
+        if (d) return JSON.parse(d);
+      } catch (e) {}
+      return defaultProfile;
+    }
+    saveProfile(p) {
+      this.profile = { ...this.profile, ...p };
+      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(this.profile)); } catch (e) {}
     }
     getTrips() { return this.trips; }
     getCurrentTrip() { return this.trips.find(t => t.id === this.currentTripId) || this.trips[0] || null; }
@@ -162,16 +185,17 @@
         coverImage: obj.coverImage || 'assets/images/hero.png',
         budget: parseFloat(obj.budget) || 1500,
         currency: 'USD',
+        isPrivate: obj.isPrivate === 'true' || obj.isPrivate === true,
         lat: 35.6762, lng: 139.6503,
         logistics: { flights: [], accommodations: [], notes: '' },
         itinerary: [], activities: [],
         packingList: [
-          { id: 'p-1', category: 'Essentials', item: 'Passport & Phone Charger', packed: false, assignee: 'You' }
+          { id: 'p-1', category: 'Essentials', item: 'Passport & Charger', packed: false, assignee: this.profile.name }
         ],
         prepChecklist: [
           { id: 'pr-1', title: 'Passport Valid 6+ Months', completed: false }
         ],
-        attendees: [{ id: 'a-1', name: 'You', role: 'Organizer', avatar: 'ME', email: '', rsvp: 'Confirmed' }],
+        attendees: [{ id: 'a-1', name: this.profile.name, role: 'Organizer', avatar: this.profile.avatar, email: '', rsvp: 'Confirmed' }],
         expenses: []
       };
       this.trips.unshift(newTrip);
@@ -194,7 +218,6 @@
         this.saveTrips();
       }
     }
-
     deleteItineraryItem(tripId, itemId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.itinerary = t.itinerary.filter(i => i.id !== itemId); this.saveTrips(); }
@@ -204,7 +227,6 @@
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.activities.push({ id: 'act-' + Date.now(), ...act }); this.saveTrips(); }
     }
-
     deleteActivity(tripId, actId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.activities = t.activities.filter(a => a.id !== actId); this.saveTrips(); }
@@ -217,7 +239,6 @@
         if (item) { item.packed = !item.packed; this.saveTrips(); }
       }
     }
-
     addPackingItem(tripId, itemObj) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.packingList.push({ id: 'pack-' + Date.now(), packed: false, ...itemObj }); this.saveTrips(); }
@@ -244,41 +265,9 @@
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.expenses.push({ id: 'exp-' + Date.now(), date: new Date().toISOString().split('T')[0], ...expenseObj }); this.saveTrips(); }
     }
-
     deleteExpense(tripId, expId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.expenses = t.expenses.filter(e => e.id !== expId); this.saveTrips(); }
-    }
-
-    // --- Supabase Async Cloud Sync ---
-    async syncCloud() {
-      if (!this.settings.supabaseUrl || !this.settings.supabaseKey) return;
-      try {
-        const url = `${this.settings.supabaseUrl.replace(/\/$/, '')}/rest/v1/trips`;
-        const current = this.getCurrentTrip();
-        if (!current) return;
-
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'apikey': this.settings.supabaseKey,
-            'Authorization': `Bearer ${this.settings.supabaseKey}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'resolution=merge-duplicates'
-          },
-          body: JSON.stringify({
-            id: current.id,
-            title: current.title,
-            destination: current.destination,
-            start_date: current.startDate,
-            end_date: current.endDate,
-            status: current.status,
-            cover_image: current.coverImage,
-            budget: current.budget,
-            currency: current.currency
-          })
-        }).catch(err => console.log('Cloud sync background post:', err));
-      } catch (e) {}
     }
   }
 
@@ -305,7 +294,7 @@
   }
 
   // --- Views ---
-  let currentView = 'dashboard';
+  let currentView = 'dashboard'; // 'dashboard', 'trip-detail', 'personal-space'
   let currentFilter = 'all';
   let searchQuery = '';
 
@@ -329,8 +318,8 @@
             <button id="btn-create-trip" class="btn btn-primary">
               ${icon('plus-circle')} Create Travel Plan
             </button>
-            <button id="btn-open-settings" class="btn btn-secondary">
-              ${icon('database')} Cloud Sync Settings
+            <button id="btn-go-space" class="btn btn-secondary">
+              ${icon('user')} My Personal Space
             </button>
           </div>
         </div>
@@ -383,8 +372,11 @@
     const createBtn = containerEl.querySelector('#btn-create-trip') || containerEl.querySelector('#btn-create-trip-empty');
     if (createBtn) createBtn.addEventListener('click', openCreateTripModal);
 
-    const settingsBtn = containerEl.querySelector('#btn-open-settings');
-    if (settingsBtn) settingsBtn.addEventListener('click', openSettingsModal);
+    const spaceBtn = containerEl.querySelector('#btn-go-space');
+    if (spaceBtn) spaceBtn.addEventListener('click', () => {
+      currentView = 'personal-space';
+      renderCurrentView();
+    });
 
     containerEl.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
       card.addEventListener('click', (e) => {
@@ -453,6 +445,119 @@
     `;
   }
 
+  // --- Personal Space View ---
+  function renderPersonalSpace(containerEl) {
+    const profile = appStore.loadProfile();
+    const trips = appStore.getTrips();
+
+    const privateTrips = trips.filter(t => t.isPrivate || t.attendees.length <= 1);
+    const groupTrips = trips.filter(t => !t.isPrivate && t.attendees.length > 1);
+
+    containerEl.innerHTML = `
+      <div class="nav-back-btn" id="btn-back-dash-from-space">
+        ${icon('arrow-left')}
+        <span>Back to Main Dashboard</span>
+      </div>
+
+      <!-- Profile Header Card -->
+      <div class="profile-card">
+        <div class="profile-avatar-large">${profile.avatar}</div>
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h1 style="font-size: 2rem; margin-bottom: 0.35rem;">${profile.name}</h1>
+              <p style="color: var(--text-secondary); max-width: 600px; margin-bottom: 1rem; font-size: 0.95rem;">${profile.bio}</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-edit-profile">
+              ${icon('settings')} Edit Profile & Preferences
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            ${(profile.travelStyle || []).map(style => `
+              <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3);">
+                ${style}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Travel Preferences & Stats Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+        <div class="stat-card">
+          <div class="stat-label">Home Airport</div>
+          <div class="stat-value" style="font-size: 1.2rem; color: var(--accent-primary);">${profile.homeAirport || 'JFK'}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Preferred Currency</div>
+          <div class="stat-value" style="font-size: 1.2rem; color: var(--status-active);">${profile.currency || 'USD'}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Passport Nationality</div>
+          <div class="stat-value" style="font-size: 1.2rem; color: var(--text-primary);">${profile.passportCountry || 'United States'}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Dietary Preferences</div>
+          <div class="stat-value" style="font-size: 1.2rem; color: var(--accent-secondary);">${profile.dietary || 'None'}</div>
+        </div>
+      </div>
+
+      <!-- Private vs Group Trips Sections -->
+      <div style="margin-bottom: 3rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+          <h2>🔒 Private Personal Trips (${privateTrips.length})</h2>
+          <button class="btn btn-primary btn-sm" id="btn-create-private-trip">
+            ${icon('plus')} New Private Trip
+          </button>
+        </div>
+
+        ${privateTrips.length === 0 ? `
+          <div class="card" style="text-align: center; padding: 2rem;">
+            <p style="color: var(--text-muted);">No private personal trips created yet.</p>
+          </div>
+        ` : `
+          <div class="trips-grid">
+            ${privateTrips.map(trip => renderTripCard(trip)).join('')}
+          </div>
+        `}
+      </div>
+
+      <div style="margin-bottom: 3rem;">
+        <h2>👥 Shared Group Trips (${groupTrips.length})</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">Trips with friends and collaborators.</p>
+
+        ${groupTrips.length === 0 ? `
+          <div class="card" style="text-align: center; padding: 2rem;">
+            <p style="color: var(--text-muted);">No shared group trips active.</p>
+          </div>
+        ` : `
+          <div class="trips-grid">
+            ${groupTrips.map(trip => renderTripCard(trip)).join('')}
+          </div>
+        `}
+      </div>
+    `;
+
+    containerEl.querySelector('#btn-back-dash-from-space').addEventListener('click', () => {
+      currentView = 'dashboard';
+      renderCurrentView();
+    });
+
+    containerEl.querySelector('#btn-edit-profile').addEventListener('click', openEditProfileModal);
+    containerEl.querySelector('#btn-create-private-trip')?.addEventListener('click', () => openCreateTripModal(true));
+
+    containerEl.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-delete-trip')) return;
+        const tripId = card.getAttribute('data-trip-id');
+        appStore.setCurrentTripId(tripId);
+        currentView = 'trip-detail';
+        renderCurrentView();
+      });
+    });
+  }
+
   let activeSubTab = 'itinerary';
 
   function renderTripDetail(containerEl) {
@@ -482,7 +587,10 @@
                 ${icon('calendar', 'var(--text-muted)')} ${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}
               </p>
             </div>
-            <div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-primary btn-sm" id="btn-invite-collaborator">
+                ${icon('share-2')} Invite Collaborators
+              </button>
               <button class="btn btn-secondary btn-sm" id="btn-open-logistics">
                 ${icon('file-text')} Logistics & Notes
               </button>
@@ -518,6 +626,10 @@
     containerEl.querySelector('#btn-back-dash').addEventListener('click', () => {
       currentView = 'dashboard';
       renderCurrentView();
+    });
+
+    containerEl.querySelector('#btn-invite-collaborator').addEventListener('click', () => {
+      openInviteModal(trip);
     });
 
     containerEl.querySelector('#btn-open-logistics').addEventListener('click', () => {
@@ -857,7 +969,7 @@
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
               <h3>Trip Attendees</h3>
-              <button class="btn btn-secondary btn-sm" id="btn-add-att">${icon('user-plus')} Add</button>
+              <button class="btn btn-secondary btn-sm" id="btn-add-att">${icon('user-plus')} Invite</button>
             </div>
             <div style="display: grid; gap: 0.75rem;">
               ${attendees.map(att => {
@@ -894,7 +1006,7 @@
     renderExpenseChart(expenses);
 
     container.querySelector('#btn-add-exp')?.addEventListener('click', () => openAddExpenseModal(trip));
-    container.querySelector('#btn-add-att')?.addEventListener('click', () => openAddAttendeeModal(trip));
+    container.querySelector('#btn-add-att')?.addEventListener('click', () => openInviteModal(trip));
 
     container.querySelectorAll('.btn-del-exp').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -967,13 +1079,13 @@
   }
 
   // --- Modals ---
-  function openCreateTripModal() {
+  function openCreateTripModal(isPrivateByDefault = false) {
     const html = `
       <div class="modal-overlay active" id="modal-create-trip">
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('plane', 'var(--accent-primary)')} Create New Travel Plan</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <form id="form-create-trip" onsubmit="return false;">
@@ -1001,11 +1113,10 @@
                   <input type="number" class="form-control" name="budget" placeholder="1500" min="0" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Trip Status</label>
-                  <select class="form-control" name="status">
-                    <option value="upcoming">Upcoming</option>
-                    <option value="active">Active</option>
-                    <option value="draft">Draft</option>
+                  <label class="form-label">Privacy Level</label>
+                  <select class="form-control" name="isPrivate">
+                    <option value="false" ${!isPrivateByDefault ? 'selected' : ''}>Shared Group Trip (Collaborative)</option>
+                    <option value="true" ${isPrivateByDefault ? 'selected' : ''}>Private Personal Trip (Only You)</option>
                   </select>
                 </div>
               </div>
@@ -1044,13 +1155,162 @@
     m.querySelector('#form-create-trip').onsubmit = handleSave;
   }
 
+  function openEditProfileModal() {
+    const profile = appStore.loadProfile();
+    const html = `
+      <div class="modal-overlay active" id="modal-edit-profile">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h3>${icon('user', 'var(--accent-primary)')} Edit Personal Profile & Preferences</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form id="form-edit-profile" onsubmit="return false;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" class="form-control" name="name" value="${profile.name}" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Avatar Initials</label>
+                  <input type="text" class="form-control" name="avatar" value="${profile.avatar}" maxlength="3" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bio & Traveler Philosophy</label>
+                <textarea class="form-control" name="bio" rows="3">${profile.bio}</textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Home Airport</label>
+                  <input type="text" class="form-control" name="homeAirport" value="${profile.homeAirport || ''}" placeholder="e.g. JFK / HND" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Preferred Currency</label>
+                  <select class="form-control" name="currency">
+                    <option value="USD" ${profile.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
+                    <option value="EUR" ${profile.currency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
+                    <option value="GBP" ${profile.currency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
+                    <option value="JPY" ${profile.currency === 'JPY' ? 'selected' : ''}>JPY (¥)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Passport Nationality</label>
+                  <input type="text" class="form-control" name="passportCountry" value="${profile.passportCountry || ''}" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Dietary Preferences</label>
+                  <input type="text" class="form-control" name="dietary" value="${profile.dietary || ''}" />
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Save Profile</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-edit-profile');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    m.querySelector('.submit-modal').onclick = () => {
+      const f = m.querySelector('#form-edit-profile');
+      const data = Object.fromEntries(new FormData(f).entries());
+      appStore.saveProfile(data);
+      close();
+      showToast('Profile preferences updated!', 'success');
+      if (currentView === 'personal-space') renderCurrentView();
+    };
+  }
+
+  function openInviteModal(trip) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}#trip=${trip.id}`;
+    const html = `
+      <div class="modal-overlay active" id="modal-invite">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h3>${icon('share-2', 'var(--accent-primary)')} Invite Collaborators to ${trip.title}</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Share this link with your travel partners so they can view and collaborate on this trip itinerary.
+            </p>
+
+            <div class="share-link-box">
+              <input type="text" id="share-link-input" value="${shareUrl}" readonly />
+              <button class="btn btn-primary btn-sm" id="btn-copy-link">
+                ${icon('copy')} Copy
+              </button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;" />
+
+            <h4>Or Invite via Email / Name</h4>
+            <form id="form-invite-att" onsubmit="return false;" style="margin-top: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Collaborator Name *</label>
+                <input type="text" class="form-control" name="name" placeholder="e.g. Jordan Smith" required />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Role</label>
+                  <select class="form-control" name="role">
+                    <option value="Co-planner">Co-planner (Can edit)</option>
+                    <option value="Member">Member (Can add expenses)</option>
+                    <option value="Viewer">Viewer (Read only)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" name="email" placeholder="jordan@example.com" />
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary cancel-modal" type="button">Close</button>
+            <button class="btn btn-primary submit-modal" type="button">Add Collaborator</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-invite');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    m.querySelector('#btn-copy-link').onclick = () => {
+      const input = m.querySelector('#share-link-input');
+      input.select();
+      navigator.clipboard.writeText(shareUrl);
+      showToast('Invite link copied to clipboard!', 'success');
+    };
+
+    m.querySelector('.submit-modal').onclick = () => {
+      const f = m.querySelector('#form-invite-att');
+      const data = Object.fromEntries(new FormData(f).entries());
+      if (!data.name || !data.name.trim()) return showToast('Please enter a name', 'info');
+      appStore.addAttendee(trip.id, data);
+      close();
+      showToast('Collaborator invited!', 'success');
+      renderCurrentView();
+    };
+  }
+
   function openAddItineraryModal(trip) {
     const html = `
       <div class="modal-overlay active" id="modal-add-it">
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('plus-circle', 'var(--accent-primary)')} Add Itinerary Event</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <form id="form-add-it" onsubmit="return false;">
@@ -1117,7 +1377,7 @@
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('compass', 'var(--accent-primary)')} Add Activity</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <form id="form-add-act" onsubmit="return false;">
@@ -1186,7 +1446,7 @@
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('plus-circle', 'var(--accent-primary)')} Add Packing Item</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <form id="form-add-pack" onsubmit="return false;">
@@ -1207,7 +1467,7 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
-            <button class="btn btn-primary submit-modal" type="button">Add Item</button>
+            <button class="btn btn-primary submit-modal" type="button">Add</button>
           </div>
         </div>
       </div>
@@ -1236,7 +1496,7 @@
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('dollar-sign', 'var(--accent-primary)')} Log Expense</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <form id="form-add-exp" onsubmit="return false;">
@@ -1293,61 +1553,14 @@
     m.querySelector('.submit-modal').onclick = handleSave;
   }
 
-  function openAddAttendeeModal(trip) {
-    const html = `
-      <div class="modal-overlay active" id="modal-add-att">
-        <div class="modal-container">
-          <div class="modal-header">
-            <h3>${icon('user-plus', 'var(--accent-primary)')} Add Attendee</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <form id="form-add-att" onsubmit="return false;">
-              <div class="form-group">
-                <label class="form-label">Name *</label>
-                <input type="text" class="form-control" name="name" placeholder="e.g. Jordan Smith" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Role</label>
-                <select class="form-control" name="role">
-                  <option value="Co-planner">Co-planner</option>
-                  <option value="Member">Member</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
-            <button class="btn btn-primary submit-modal" type="button">Add</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', html);
-    const m = document.getElementById('modal-add-att');
-    const close = () => m.remove();
-    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
-
-    const handleSave = () => {
-      const f = m.querySelector('#form-add-att');
-      const d = Object.fromEntries(new FormData(f).entries());
-      if (!d.name || !d.name.trim()) return showToast('Please enter attendee name', 'info');
-      appStore.addAttendee(trip.id, d);
-      close();
-      showToast('Attendee added!', 'success');
-      renderCurrentView();
-    };
-    m.querySelector('.submit-modal').onclick = handleSave;
-  }
-
   function openSettingsModal() {
     const settings = appStore.loadSettings();
     const html = `
       <div class="modal-overlay active" id="modal-settings">
         <div class="modal-container">
           <div class="modal-header">
-            <h3>${icon('database', 'var(--accent-primary)')} Cloud Storage & Settings</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
+            <h3>${icon('settings', 'var(--accent-primary)')} Database & Settings</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
@@ -1360,7 +1573,7 @@
             </div>
             <form id="form-settings" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Supabase URL</label>
+                <label class="form-label">Supabase Project URL</label>
                 <input type="url" class="form-control" name="supabaseUrl" placeholder="https://your-project.supabase.co" value="${settings.supabaseUrl || ''}" />
               </div>
               <div class="form-group">
@@ -1385,7 +1598,7 @@
       const f = m.querySelector('#form-settings');
       appStore.saveSettings(Object.fromEntries(new FormData(f).entries()));
       close();
-      showToast('Supabase Cloud Sync Settings saved!', 'success');
+      showToast('Cloud Database Settings saved!', 'success');
     };
   }
 
@@ -1458,12 +1671,16 @@
     if (!mainEl) return;
     if (currentView === 'dashboard') renderDashboard(mainEl);
     else if (currentView === 'trip-detail') renderTripDetail(mainEl);
+    else if (currentView === 'personal-space') renderPersonalSpace(mainEl);
   }
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
     const themeBtn = document.getElementById('theme-toggle-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsFooterBtn = document.getElementById('footer-settings-btn');
     const brandEl = document.querySelector('.nav-brand');
+    const navSpaceBtn = document.getElementById('nav-space-btn');
 
     if (themeBtn) {
       themeBtn.innerHTML = icon('moon');
@@ -1474,6 +1691,25 @@
         themeBtn.innerHTML = icon(next === 'dark' ? 'moon' : 'sun');
         appStore.saveSettings({ theme: next });
         showToast(`Theme switched to ${next}`, 'info');
+      });
+    }
+
+    if (settingsBtn) {
+      settingsBtn.innerHTML = icon('settings');
+      settingsBtn.addEventListener('click', openSettingsModal);
+    }
+
+    if (settingsFooterBtn) {
+      settingsFooterBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSettingsModal();
+      });
+    }
+
+    if (navSpaceBtn) {
+      navSpaceBtn.addEventListener('click', () => {
+        currentView = 'personal-space';
+        renderCurrentView();
       });
     }
 
