@@ -40,7 +40,9 @@
     'sun': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
     'copy': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
     'cloud': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19x-9c-2.5 0-4.5-2-4.5-4.5 0-2 1.3-3.7 3.2-4.2C7.7 7.7 10 5.5 13 5.5c2.7 0 5 1.8 5.7 4.3 1.8.3 3.3 1.8 3.3 3.7 0 2.5-2 4.5-4.5 4.5z"/></svg>`,
-    'check-circle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
+    'check-circle': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    'more-horizontal': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
+    'edit': `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`
   };
 
   function icon(name, color = '') {
@@ -397,21 +399,47 @@
       return matchesFilter && matchesSearch;
     });
 
+    const nextUpcomingTrip = trips.find(t => t.status === 'upcoming' || t.status === 'active') || trips[0];
+
     containerEl.innerHTML = `
       <section class="hero-banner">
-        <img src="assets/images/hero.png" alt="Travel Header" class="hero-bg-img" />
-        <div class="hero-content">
-          <span class="badge badge-upcoming" style="margin-bottom: 0.75rem;">Explore & Plan</span>
-          <h1 class="hero-title">Your Next Unforgettable <span class="gradient-text">Adventure Awaits</span></h1>
-          <p class="hero-subtitle">Organize travel details, day-by-day itineraries, group expenses, and packing checklists in one sleek dashboard.</p>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button id="btn-create-trip" class="btn btn-primary">
-              ${icon('plus-circle')} Create Travel Plan
-            </button>
-            <button id="btn-go-space" class="btn btn-secondary">
-              ${icon('user')} My Personal Space
-            </button>
+        <div class="hero-banner-grid">
+          <div class="hero-content">
+            <span class="badge badge-upcoming" style="margin-bottom: 0.75rem;">${icon('plane')} Travel Workspace</span>
+            <h1 class="hero-title">Your Next Unforgettable <span class="gradient-text">Adventure Awaits</span></h1>
+            <p class="hero-subtitle">Organize travel details, day-by-day itineraries, group expenses, and packing checklists in one sleek dashboard.</p>
+            <div style="display: flex; gap: 0.85rem; flex-wrap: wrap;">
+              <button id="btn-create-trip" class="btn btn-primary">
+                ${icon('plus-circle')} Create Travel Plan
+              </button>
+              <button id="btn-explore-destinations" class="btn btn-secondary">
+                ${icon('compass')} Explore Destinations
+              </button>
+            </div>
           </div>
+
+          ${nextUpcomingTrip ? `
+            <div class="hero-countdown-card">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span class="badge badge-upcoming" style="font-size: 0.7rem;">Upcoming Journey</span>
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-secondary);">${getDaysUntil(nextUpcomingTrip.startDate)}</span>
+              </div>
+              
+              <div style="height: 110px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 0.75rem; position: relative;">
+                <img src="${nextUpcomingTrip.coverImage}" alt="${nextUpcomingTrip.title}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div style="position: absolute; bottom: 0.35rem; left: 0.35rem; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 0.2rem 0.5rem; border-radius: var(--radius-full); font-size: 0.7rem; color: #fff;">
+                  📍 ${nextUpcomingTrip.destination}
+                </div>
+              </div>
+
+              <h4 style="font-size: 0.95rem; margin-bottom: 0.25rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${nextUpcomingTrip.title}</h4>
+              <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">${formatDate(nextUpcomingTrip.startDate)} - ${formatDate(nextUpcomingTrip.endDate)}</p>
+
+              <button class="btn btn-secondary btn-sm" id="btn-hero-jump-trip" data-id="${nextUpcomingTrip.id}" style="width: 100%; justify-content: center; font-size: 0.8rem;">
+                View Trip Itinerary &rarr;
+              </button>
+            </div>
+          ` : ''}
         </div>
       </section>
 
@@ -462,15 +490,22 @@
     const createBtn = containerEl.querySelector('#btn-create-trip') || containerEl.querySelector('#btn-create-trip-empty');
     if (createBtn) createBtn.addEventListener('click', () => openCreateTripModal(false));
 
-    const spaceBtn = containerEl.querySelector('#btn-go-space');
-    if (spaceBtn) spaceBtn.addEventListener('click', () => {
-      currentView = 'personal-space';
-      renderCurrentView();
-    });
+    const exploreBtn = containerEl.querySelector('#btn-explore-destinations');
+    if (exploreBtn) exploreBtn.addEventListener('click', () => openCreateTripModal(false));
+
+    const heroJumpBtn = containerEl.querySelector('#btn-hero-jump-trip');
+    if (heroJumpBtn) {
+      heroJumpBtn.addEventListener('click', () => {
+        const id = heroJumpBtn.getAttribute('data-id');
+        appStore.setCurrentTripId(id);
+        currentView = 'trip-detail';
+        renderCurrentView();
+      });
+    }
 
     containerEl.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-delete-trip')) return;
+        if (e.target.closest('.kebab-menu-container')) return;
         const tripId = card.getAttribute('data-trip-id');
         appStore.setCurrentTripId(tripId);
         currentView = 'trip-detail';
@@ -478,11 +513,37 @@
       });
     });
 
-    containerEl.querySelectorAll('.btn-delete-trip').forEach(btn => {
+    // Wire Kebab Dropdown toggles & actions
+    containerEl.querySelectorAll('.kebab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parent = btn.closest('.kebab-menu-container');
+        const dropdown = parent.querySelector('.kebab-dropdown');
+        document.querySelectorAll('.kebab-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
+        dropdown.classList.toggle('active');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.kebab-menu-container')) {
+        document.querySelectorAll('.kebab-dropdown').forEach(d => d.classList.remove('active'));
+      }
+    });
+
+    containerEl.querySelectorAll('.kebab-action-edit').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const tripId = btn.getAttribute('data-trip-id');
-        if (confirm('Delete this trip project?')) {
+        const trip = appStore.getTrips().find(t => t.id === tripId);
+        if (trip) openEditTripModal(trip);
+      });
+    });
+
+    containerEl.querySelectorAll('.kebab-action-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tripId = btn.getAttribute('data-trip-id');
+        if (confirm('Are you sure you want to delete this trip project?')) {
           appStore.deleteTrip(tripId);
           showToast('Trip deleted', 'info');
           renderDashboard(containerEl);
@@ -500,25 +561,39 @@
           <span class="badge badge-${trip.status} trip-card-badge">${trip.status}</span>
         </div>
         <div class="trip-card-body">
-          <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-            <h3 class="trip-card-title">${trip.title}</h3>
-            <button class="btn btn-icon-only btn-secondary btn-delete-trip" data-trip-id="${trip.id}" title="Delete">
-              ${icon('trash-2', '#ef4444')}
-            </button>
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+            <div>
+              <h3 class="trip-card-title">${trip.title}</h3>
+              <div class="trip-card-location">
+                ${icon('map-pin', 'var(--accent-secondary)')}
+                <span>${trip.destination}</span>
+              </div>
+            </div>
+
+            <!-- Kebab Menu Trigger -->
+            <div class="kebab-menu-container">
+              <button class="kebab-btn" type="button" title="Trip Options">
+                ${icon('more-horizontal')}
+              </button>
+              <div class="kebab-dropdown">
+                <button class="kebab-item kebab-action-edit" data-trip-id="${trip.id}" type="button">
+                  ${icon('edit')} Edit Details
+                </button>
+                <button class="kebab-item danger kebab-action-delete" data-trip-id="${trip.id}" type="button">
+                  ${icon('trash-2')} Delete Trip
+                </button>
+              </div>
+            </div>
           </div>
           
-          <div class="trip-card-dates">
-            ${icon('map-pin', 'var(--accent-primary)')}
-            <span>${trip.destination}</span>
-          </div>
-
-          <div class="trip-card-dates">
-            ${icon('calendar', 'var(--text-muted)')}
-            <span>${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}</span>
-          </div>
-
-          <div style="margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
-            <span style="font-weight: 700; color: var(--accent-secondary);">${daysUntil}</span>
+          <div style="margin-top: 0.5rem; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+            <div class="trip-card-dates">
+              ${icon('calendar', 'var(--text-muted)')}
+              <span>${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}</span>
+            </div>
+            <div class="trip-card-countdown-tag">
+              ${daysUntil}
+            </div>
           </div>
 
           <div class="trip-card-meta">
@@ -674,12 +749,12 @@
                 ${icon('calendar', 'var(--text-muted)')} ${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}
               </p>
             </div>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button class="btn btn-secondary btn-sm" id="btn-edit-trip-info">
-                ${icon('settings')} Edit Trip & Photo
-              </button>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
               <button class="btn btn-primary btn-sm" id="btn-invite-collaborator">
                 ${icon('share-2')} Invite Collaborators
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-edit-trip-info">
+                ${icon('edit')} Edit Trip & Photo
               </button>
               <button class="btn btn-secondary btn-sm" id="btn-open-logistics">
                 ${icon('file-text')} Logistics & Notes
@@ -772,10 +847,20 @@
       </div>
 
       ${dayNumbers.length === 0 ? `
-        <div class="card" style="text-align: center; padding: 3rem;">
-          <div style="margin-bottom: 1rem;">${icon('calendar', 'var(--text-muted)')}</div>
-          <h3>No itinerary events scheduled yet</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Click "Add Itinerary Event" to create your day-by-day itinerary.</p>
+        <div class="empty-canvas-container">
+          <div style="font-weight: 800; color: var(--accent-primary); font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+            Day 1 — Getting Started
+          </div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Your Itinerary Canvas is Blank</h3>
+          <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 1.25rem auto; font-size: 0.9rem;">
+            Start building your day-by-day travel schedule! Click a quick category below or add a custom event.
+          </p>
+          <div class="empty-chips-group">
+            <button class="action-chip" data-cat="transit">✈️ + Add Flight / Transit</button>
+            <button class="action-chip" data-cat="sightseeing">🏨 + Add Lodging / Hotel</button>
+            <button class="action-chip" data-cat="culture">🎟️ + Add Activity / Tour</button>
+            <button class="action-chip" data-cat="dining">🍽️ + Add Dining / Meal</button>
+          </div>
         </div>
       ` : `
         <div>
@@ -821,6 +906,13 @@
     `;
 
     container.querySelector('#btn-add-itinerary')?.addEventListener('click', () => openAddItineraryModal(trip));
+
+    container.querySelectorAll('.action-chip[data-cat]').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        const cat = e.currentTarget.getAttribute('data-cat');
+        openAddItineraryModal(trip, cat);
+      });
+    });
 
     container.querySelectorAll('.btn-del-it').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1683,7 +1775,7 @@
     };
   }
 
-  function openAddItineraryModal(trip) {
+  function openAddItineraryModal(trip, defaultCategory = 'sightseeing') {
     const html = `
       <div class="modal-overlay active" id="modal-add-it">
         <div class="modal-container">
@@ -1711,11 +1803,11 @@
                 <div class="form-group">
                   <label class="form-label">Category</label>
                   <select class="form-control" name="category">
-                    <option value="sightseeing">Sightseeing</option>
-                    <option value="culture">Culture</option>
-                    <option value="dining">Dining</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="transit">Transit</option>
+                    <option value="sightseeing" ${defaultCategory === 'sightseeing' ? 'selected' : ''}>Sightseeing / Hotel</option>
+                    <option value="culture" ${defaultCategory === 'culture' ? 'selected' : ''}>Culture / Activity</option>
+                    <option value="dining" ${defaultCategory === 'dining' ? 'selected' : ''}>Dining / Meal</option>
+                    <option value="adventure" ${defaultCategory === 'adventure' ? 'selected' : ''}>Adventure / Tour</option>
+                    <option value="transit" ${defaultCategory === 'transit' ? 'selected' : ''}>Transit / Flight</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -2061,6 +2153,14 @@
     const brandEl = document.querySelector('.nav-brand');
     const navSpaceBtn = document.getElementById('nav-space-btn');
 
+    function syncNavProfile() {
+      const p = appStore.loadProfile();
+      const avatarEl = document.getElementById('nav-user-avatar');
+      const nameEl = document.getElementById('nav-user-name');
+      if (avatarEl) avatarEl.textContent = p.avatar || 'AR';
+      if (nameEl) nameEl.textContent = p.name || 'Alex Rivers';
+    }
+
     if (themeBtn) {
       themeBtn.innerHTML = icon('moon');
       themeBtn.addEventListener('click', () => {
@@ -2085,8 +2185,9 @@
       });
     }
 
-    if (navSpaceBtn) {
-      navSpaceBtn.addEventListener('click', () => {
+    const navProfileTrigger = document.getElementById('nav-profile-trigger') || document.getElementById('nav-space-btn');
+    if (navProfileTrigger) {
+      navProfileTrigger.addEventListener('click', () => {
         currentView = 'personal-space';
         renderCurrentView();
       });
@@ -2099,6 +2200,7 @@
       });
     }
 
+    syncNavProfile();
     renderCurrentView();
   });
 
