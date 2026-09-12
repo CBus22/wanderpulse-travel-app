@@ -339,7 +339,46 @@
     }
     addPackingItem(tripId, itemObj) {
       const t = this.trips.find(x => x.id === tripId);
-      if (t) { t.packingList.push({ id: 'pack-' + Date.now(), packed: false, ...itemObj }); this.saveTrips(); }
+      if (t) {
+        t.packingList.push({
+          id: 'pack-' + Date.now(),
+          packed: false,
+          quantity: itemObj.quantity || 1,
+          bagTag: itemObj.bagTag || 'Carry-On',
+          isEssential: itemObj.isEssential || false,
+          category: itemObj.category || 'Clothing',
+          assignee: itemObj.assignee || this.profile.name,
+          ...itemObj
+        });
+        this.saveTrips();
+      }
+    }
+    updatePackingQuantity(tripId, packId, delta) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        const item = t.packingList.find(p => p.id === packId);
+        if (item) {
+          item.quantity = Math.max(1, (parseInt(item.quantity) || 1) + delta);
+          this.saveTrips();
+        }
+      }
+    }
+    deletePackingItem(tripId, packId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        t.packingList = t.packingList.filter(p => p.id !== packId);
+        this.saveTrips();
+      }
+    }
+    togglePackingItemEssential(tripId, packId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        const item = t.packingList.find(p => p.id === packId);
+        if (item) {
+          item.isEssential = !item.isEssential;
+          this.saveTrips();
+        }
+      }
     }
 
     togglePrepItem(tripId, prepId) {
@@ -1255,96 +1294,482 @@
     });
   }
 
-  function renderPackingPane(container, trip) {
-    const packingList = trip.packingList || [];
-    const prepList = trip.prepChecklist || [];
-    const packedCount = packingList.filter(p => p.packed).length;
-    const packPct = packingList.length > 0 ? Math.round((packedCount / packingList.length) * 100) : 0;
-    const prepCount = prepList.filter(pr => pr.completed).length;
-    const prepPct = prepList.length > 0 ? Math.round((prepCount / prepList.length) * 100) : 0;
+  function parseNaturalLanguagePackingInput(rawText) {
+    let text = (rawText || '').trim();
+    let quantity = 1;
+    let bagTag = 'Carry-On';
+    let isEssential = false;
 
-    container.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <h3 style="display: flex; align-items: center; gap: 0.5rem;">${icon('luggage', 'var(--accent-primary)')} Packing Progress</h3>
-            <span style="font-weight: 700; color: var(--accent-primary); font-size: 1.2rem;">${packPct}%</span>
-          </div>
-          <div class="progress-bar-bg" style="margin-bottom: 0.75rem;">
-            <div class="progress-bar-fill" style="width: ${packPct}%;"></div>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">${packedCount} of ${packingList.length} items packed into luggage.</p>
-        </div>
+    const qtyMatchEnd = text.match(/\s+x\s*(\d+)$/i);
+    const qtyMatchFront = text.match(/^(\d+)\s*x\s+/i);
+    const qtyMatchParen = text.match(/\((\d+)\)$/);
 
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <h3 style="display: flex; align-items: center; gap: 0.5rem;">${icon('shield-check', 'var(--status-active)')} Pre-Trip Readiness</h3>
-            <span style="font-weight: 700; color: var(--status-active); font-size: 1.2rem;">${prepPct}%</span>
-          </div>
-          <div class="progress-bar-bg" style="margin-bottom: 0.75rem;">
-            <div class="progress-bar-fill" style="width: ${prepPct}%; background: var(--accent-gradient-teal);"></div>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">${prepCount} of ${prepList.length} prep tasks completed.</p>
-        </div>
-      </div>
+    if (qtyMatchEnd) {
+      quantity = parseInt(qtyMatchEnd[1]) || 1;
+      text = text.replace(/\s+x\s*(\d+)$/i, '').trim();
+    } else if (qtyMatchFront) {
+      quantity = parseInt(qtyMatchFront[1]) || 1;
+      text = text.replace(/^(\d+)\s*x\s+/i, '').trim();
+    } else if (qtyMatchParen) {
+      quantity = parseInt(qtyMatchParen[1]) || 1;
+      text = text.replace(/\((\d+)\)$/, '').trim();
+    }
 
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-            <h3>Luggage & Gear Packing List</h3>
-            <button class="btn btn-primary btn-sm" id="btn-add-packing">${icon('plus')} Add Item</button>
-          </div>
+    const lower = text.toLowerCase();
+    if (lower.includes('passport') || lower.includes('license') || lower.includes('permit') || lower.includes('ticket') || lower.includes('visa') || lower.includes('id') || lower.includes('wallet')) {
+      isEssential = true;
+      bagTag = 'Carry-On';
+    } else if (lower.includes('boot') || lower.includes('jacket') || lower.includes('coat') || lower.includes('shampoo') || lower.includes('sleeping bag') || lower.includes('suit')) {
+      bagTag = 'Checked';
+    } else if (lower.includes('charger') || lower.includes('camera') || lower.includes('phone') || lower.includes('headphones') || lower.includes('snack')) {
+      bagTag = 'Daypack';
+    }
 
-          <div style="display: grid; gap: 0.75rem;">
-            ${packingList.map(item => `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <div class="checkbox-custom ${item.packed ? 'checked' : ''}" data-pack-id="${item.id}">
-                    ${item.packed ? '✓' : ''}
+    return { item: text, quantity, bagTag, isEssential };
+  }
+
+  function openPackingTemplateModal(trip) {
+    const templates = [
+      {
+        id: 'hiking',
+        title: '🎒 National Park & Hiking Weekend',
+        desc: 'Essential trail gear, layers, navigation, and park permit documentation.',
+        items: [
+          { item: 'Waterproof Trail Hiking Boots', category: 'Clothing', quantity: 1, bagTag: 'Checked', isEssential: true },
+          { item: 'Thermal Base Layer Tops', category: 'Clothing', quantity: 2, bagTag: 'Checked', isEssential: false },
+          { item: 'Compact Wind & Rain Shell', category: 'Clothing', quantity: 1, bagTag: 'Daypack', isEssential: true },
+          { item: 'Headlamp & Spare Batteries', category: 'Tech', quantity: 1, bagTag: 'Daypack', isEssential: true },
+          { item: '3L Hydration Water Bladder', category: 'Tech', quantity: 1, bagTag: 'Daypack', isEssential: false },
+          { item: 'Trail First Aid & Blister Kit', category: 'Toiletries', quantity: 1, bagTag: 'Daypack', isEssential: true },
+          { item: 'High-Energy Protein Bars', category: 'Toiletries', quantity: 6, bagTag: 'Daypack', isEssential: false },
+          { item: 'National Park Permit & ID', category: 'Documents', quantity: 1, bagTag: 'Carry-On', isEssential: true }
+        ]
+      },
+      {
+        id: 'international',
+        title: '✈️ International Flight & City Odyssey',
+        desc: 'Passport, universal adapters, noise-canceling tech, and travel documents.',
+        items: [
+          { item: 'Valid Passport & Visa Documents', category: 'Documents', quantity: 1, bagTag: 'Carry-On', isEssential: true },
+          { item: 'Universal Worldwide Power Adapter', category: 'Tech', quantity: 1, bagTag: 'Carry-On', isEssential: true },
+          { item: 'Noise-Canceling Headphones', category: 'Tech', quantity: 1, bagTag: 'Carry-On', isEssential: false },
+          { item: 'Flight Compression Socks', category: 'Clothing', quantity: 2, bagTag: 'Carry-On', isEssential: false },
+          { item: 'Foreign Currency & Backup Cards', category: 'Documents', quantity: 1, bagTag: 'Carry-On', isEssential: true },
+          { item: 'International eSIM / Travel Data SIM', category: 'Tech', quantity: 1, bagTag: 'Carry-On', isEssential: true }
+        ]
+      },
+      {
+        id: 'beach',
+        title: '🏖️ Tropical Beach & Island Resort',
+        desc: 'Swimwear, reef-safe sunscreen, dry bags, and resort apparel.',
+        items: [
+          { item: 'Designer Swimwear / Trunks', category: 'Clothing', quantity: 3, bagTag: 'Checked', isEssential: false },
+          { item: 'Reef-Safe Sunscreen SPF 50', category: 'Toiletries', quantity: 1, bagTag: 'Checked', isEssential: true },
+          { item: 'Polarized UV Sunglasses', category: 'Tech', quantity: 1, bagTag: 'Carry-On', isEssential: true },
+          { item: 'Quick-Dry Microfiber Beach Towel', category: 'Clothing', quantity: 1, bagTag: 'Checked', isEssential: false },
+          { item: 'Waterproof Phone Dry Bag', category: 'Tech', quantity: 1, bagTag: 'Daypack', isEssential: false }
+        ]
+      },
+      {
+        id: 'cabin',
+        title: '🚗 Cabin Escape & Scenic Road Trip',
+        desc: 'Fleece layers, camp stove, car chargers, board games, and cooler.',
+        items: [
+          { item: 'Portable Camping Stove & Fuel', category: 'Tech', quantity: 1, bagTag: 'Checked', isEssential: false },
+          { item: 'Cozy Fleece Sweater / Hoodie', category: 'Clothing', quantity: 2, bagTag: 'Checked', isEssential: false },
+          { item: 'Board Games & Playing Cards', category: 'Tech', quantity: 2, bagTag: 'Checked', isEssential: false },
+          { item: 'Multi-Port USB Car Fast Charger', category: 'Tech', quantity: 1, bagTag: 'Carry-On', isEssential: true },
+          { item: 'Roadside Emergency First Aid Kit', category: 'Toiletries', quantity: 1, bagTag: 'Checked', isEssential: true }
+        ]
+      }
+    ];
+
+    const html = `
+      <div class="modal-overlay active" id="modal-packing-template">
+        <div class="modal-container" style="max-width: 640px;">
+          <div class="modal-header">
+            <h3>${icon('sparkles', 'var(--accent-primary)')} Import Packing Starter Kit</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+              Select a pre-configured travel checklist to instant-fill your trip's gear and document requirements.
+            </p>
+
+            <div style="display: grid; gap: 1rem;">
+              ${templates.map(tpl => `
+                <div class="template-card" data-template-id="${tpl.id}">
+                  <div>
+                    <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--text-primary);">${tpl.title}</h4>
+                    <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.75rem;">${tpl.desc}</p>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                      ${tpl.items.slice(0, 4).map(i => `<span class="badge" style="font-size: 0.7rem; background: rgba(255,255,255,0.06); color: var(--text-muted);">${i.item}</span>`).join('')}
+                      <span class="badge" style="font-size: 0.7rem; background: rgba(99,102,241,0.15); color: var(--accent-primary);">+${tpl.items.length - 4} more</span>
+                    </div>
                   </div>
-                  <span style="${item.packed ? 'text-decoration: line-through; color: var(--text-muted);' : 'font-weight: 600;'}">
-                    ${item.item}
-                  </span>
+                  <button class="btn btn-primary btn-sm btn-import-tpl" data-template-id="${tpl.id}" style="margin-top: 0.85rem; width: 100%; justify-content: center;">
+                    Import ${tpl.items.length} Items &rarr;
+                  </button>
                 </div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">${item.assignee || ''}</span>
-              </div>
-            `).join('')}
+              `).join('')}
+            </div>
           </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin-bottom: 1.25rem;">Travel Prep & Documents</h3>
-          <div style="display: grid; gap: 0.75rem;">
-            ${prepList.map(prep => `
-              <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div class="checkbox-custom ${prep.completed ? 'checked' : ''}" data-prep-id="${prep.id}">
-                  ${prep.completed ? '✓' : ''}
-                </div>
-                <span style="${prep.completed ? 'text-decoration: line-through; color: var(--text-muted);' : 'font-size: 0.9rem;'}">
-                  ${prep.title}
-                </span>
-              </div>
-            `).join('')}
+          <div class="modal-footer">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
           </div>
         </div>
       </div>
     `;
 
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-packing-template');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    m.querySelectorAll('.btn-import-tpl').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tplId = e.currentTarget.getAttribute('data-template-id');
+        const targetTpl = templates.find(t => t.id === tplId);
+        if (targetTpl) {
+          targetTpl.items.forEach(i => {
+            appStore.addPackingItem(trip.id, i);
+          });
+          close();
+          showToast(`Imported ${targetTpl.items.length} items from ${targetTpl.title}!`, 'success');
+          renderCurrentView();
+        }
+      });
+    });
+  }
+
+  function exportPackingListPrint(trip) {
+    const packingList = trip.packingList || [];
+    const prepList = trip.prepChecklist || [];
+
+    const printWin = window.open('', '_blank');
+    if (!printWin) return showToast('Please allow popups to print list', 'info');
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>WanderPulse — Packing Checklist (${trip.title})</title>
+        <style>
+          body { font-family: system-ui, sans-serif; padding: 2rem; color: #1e293b; }
+          h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+          .subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+          .section { border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.25rem; }
+          h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem; }
+          .item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
+          .box { width: 16px; height: 16px; border: 2px solid #64748b; border-radius: 3px; }
+          .badge { font-size: 0.7rem; padding: 2px 6px; background: #e2e8f0; border-radius: 4px; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <h1>✈️ ${trip.title} — Official Packing List</h1>
+        <div class="subtitle">Destination: ${trip.destination} • Dates: ${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}</div>
+
+        <div class="grid">
+          <div class="section">
+            <h3>Luggage &amp; Gear Checklist</h3>
+            ${packingList.map(i => `
+              <div class="item">
+                <div class="box">${i.packed ? '✓' : ''}</div>
+                <div style="flex: 1;">
+                  <strong>${i.item}</strong> (x${i.quantity || 1})
+                  ${i.isEssential ? '<span class="badge" style="background: #fef3c7; color: #d97706;">Essential</span>' : ''}
+                </div>
+                <span class="badge">${i.bagTag || 'Carry-On'}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="section">
+            <h3>Pre-Trip Readiness &amp; Permits</h3>
+            ${prepList.map(p => `
+              <div class="item">
+                <div class="box">${p.completed ? '✓' : ''}</div>
+                <div>${p.title}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); }, 500);
+  }
+
+  let packingFilterState = 'all';
+  let isWeatherDrawerOpen = true;
+
+  function renderPackingPane(container, trip) {
+    const packingList = trip.packingList || [];
+    const prepList = trip.prepChecklist || [];
+
+    const filteredPacking = packingList.filter(i => {
+      if (packingFilterState === 'personal') return !i.assignee || i.assignee === appStore.profile.name;
+      if (packingFilterState === 'group') return i.assignee && i.assignee !== appStore.profile.name;
+      return true;
+    });
+
+    const packedCount = packingList.filter(p => p.packed).length;
+    const totalCount = packingList.length + prepList.length;
+    const packedTotal = packedCount + prepList.filter(p => p.completed).length;
+    const overallPct = totalCount > 0 ? Math.round((packedTotal / totalCount) * 100) : 0;
+
+    const categories = [
+      { key: 'Clothing', title: '👕 Clothing & Apparel', desc: 'Layers, outerwear, footwear & trail apparel' },
+      { key: 'Tech', title: '⚡ Tech & Gear', desc: 'Chargers, power banks, camera & GPS devices' },
+      { key: 'Toiletries', title: '🧴 Toiletries & Health', desc: 'First aid, prescriptions, SPF & hygiene' },
+      { key: 'Documents', title: '📄 Pre-Trip Readiness & Docs', desc: 'Permits, passports, vouchers & tickets' }
+    ];
+
+    const weatherSuggestions = [
+      { item: 'Thermal Base Layer Top', category: 'Clothing', bagTag: 'Checked', isEssential: true },
+      { item: 'Compact Wind & Rain Shell', category: 'Clothing', bagTag: 'Daypack', isEssential: true },
+      { item: '20,000mAh Heavy Duty Power Bank', category: 'Tech', bagTag: 'Daypack', isEssential: true },
+      { item: 'Reef-Safe Sunscreen SPF 50', category: 'Toiletries', bagTag: 'Carry-On', isEssential: false },
+      { item: 'Waterproof Trail Hiking Boots', category: 'Clothing', bagTag: 'Checked', isEssential: false }
+    ];
+
+    container.innerHTML = `
+      <div class="packing-progress-banner">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <h2 style="font-size: 1.4rem; color: var(--text-primary);">Packing &amp; Travel Readiness</h2>
+              <span class="badge badge-active" style="font-size: 0.8rem;">${overallPct}% Complete</span>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.88rem;">
+              ${packedTotal} of ${totalCount} items packed &amp; tasks verified.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary btn-sm" id="btn-open-templates">
+              ${icon('sparkles')} Smart Templates
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-toggle-weather-drawer">
+              🌤️ Weather Suggestions
+            </button>
+            <button class="btn btn-primary btn-sm" id="btn-print-packing">
+              🖨️ Export PDF / Print
+            </button>
+          </div>
+        </div>
+
+        <div class="progress-bar-bg" style="height: 10px; margin-bottom: 1.15rem;">
+          <div class="progress-bar-fill" style="width: ${overallPct}%;"></div>
+        </div>
+
+        <div class="map-filter-bar" id="packing-filter-pills" style="display: inline-flex;">
+          <button class="map-pill-btn ${packingFilterState === 'all' ? 'active' : ''}" data-pfilter="all">All Items (${packingList.length + prepList.length})</button>
+          <button class="map-pill-btn ${packingFilterState === 'personal' ? 'active' : ''}" data-pfilter="personal">👤 My Personal Items</button>
+          <button class="map-pill-btn ${packingFilterState === 'group' ? 'active' : ''}" data-pfilter="group">👥 Shared Group Gear</button>
+          <button class="map-pill-btn ${packingFilterState === 'documents' ? 'active' : ''}" data-pfilter="documents">📄 Pre-Trip Documents</button>
+        </div>
+      </div>
+
+      ${isWeatherDrawerOpen ? `
+        <div class="weather-smart-drawer">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.2rem;">🌤️</span>
+              <div>
+                <strong style="font-size: 0.95rem; color: var(--text-primary);">Smart Weather Recommendations for ${trip.destination}</strong>
+                <div style="font-size: 0.78rem; color: var(--text-secondary);">Forecast: Low of 42°F expected — Pack warm layers &amp; power backups</div>
+              </div>
+            </div>
+            <button class="btn btn-icon-only btn-secondary btn-close-weather" type="button" style="width: 24px; height: 24px; font-size: 0.7rem;">&times;</button>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            ${weatherSuggestions.map(s => `
+              <button class="suggestion-chip btn-add-suggestion" data-item="${s.item}" data-cat="${s.category}" data-tag="${s.bagTag}" data-essential="${s.isEssential}">
+                + ${s.item} <span style="font-size: 0.7rem; opacity: 0.7;">(${s.bagTag})</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="packing-category-grid">
+        ${categories.map(cat => {
+          let categoryItems = [];
+          if (cat.key === 'Documents') {
+            categoryItems = [...filteredPacking.filter(i => (i.category || '').toLowerCase().includes('doc') || (i.category || '').toLowerCase().includes('prep')), ...prepList.map(pr => ({ id: pr.id, item: pr.title, packed: pr.completed, isPrep: true, category: 'Documents' }))];
+          } else {
+            categoryItems = filteredPacking.filter(i => (i.category || 'Clothing').toLowerCase() === cat.key.toLowerCase());
+          }
+
+          const catPackedCount = categoryItems.filter(i => i.packed).length;
+
+          return `
+            <div class="packing-category-card">
+              <div class="packing-card-header">
+                <div>
+                  <h3 style="font-size: 1.05rem; margin-bottom: 0.15rem; color: var(--text-primary);">${cat.title}</h3>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">${cat.desc}</div>
+                </div>
+                <span class="badge badge-active" style="font-size: 0.75rem;">
+                  ${catPackedCount}/${categoryItems.length} Packed
+                </span>
+              </div>
+
+              <div class="packing-card-body">
+                ${categoryItems.length === 0 ? `
+                  <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                    No items in ${cat.key} yet. Type below to add.
+                  </div>
+                ` : `
+                  ${categoryItems.map(item => `
+                    <div class="packing-item-card ${item.packed ? 'packed-done' : ''}">
+                      <div style="display: flex; align-items: center; gap: 0.65rem; flex: 1;">
+                        <div class="checkbox-custom ${item.packed ? 'checked' : ''}" data-pack-id="${item.id}" data-is-prep="${item.isPrep || false}">
+                          ${item.packed ? '✓' : ''}
+                        </div>
+                        <div style="flex: 1;">
+                          <span class="packing-item-title" style="font-weight: 600; font-size: 0.9rem;">
+                            ${item.item}
+                            ${item.isEssential ? `<span class="essential-star" title="Essential Priority Item">★</span>` : ''}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        ${!item.isPrep ? `
+                          <div class="qty-stepper">
+                            <button class="qty-btn btn-qty-minus" data-id="${item.id}">-</button>
+                            <span class="qty-count">${item.quantity || 1}</span>
+                            <button class="qty-btn btn-qty-plus" data-id="${item.id}">+</button>
+                          </div>
+
+                          <span class="bag-tag-badge ${(item.bagTag || 'Carry-On').toLowerCase().replace(' ', '-')}">
+                            ${item.bagTag || 'Carry-On'}
+                          </span>
+
+                          ${item.assignee ? `
+                            <div class="avatar" title="Packed by ${item.assignee}" style="width: 22px; height: 22px; font-size: 0.65rem;">
+                              ${item.assignee.slice(0, 2).toUpperCase()}
+                            </div>
+                          ` : ''}
+
+                          <button class="btn btn-icon-only btn-secondary btn-del-pack" data-id="${item.id}" title="Remove Item" style="padding: 2px;">
+                            ${icon('trash-2', '#ef4444')}
+                          </button>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `).join('')}
+                `}
+
+                <div style="margin-top: 0.75rem; border-top: 1px dashed var(--border-color); padding-top: 0.75rem;">
+                  <form class="form-bulk-pack" data-category="${cat.key}" onsubmit="return false;">
+                    <input type="text" class="form-control input-bulk-pack" placeholder="+ Type item (e.g., Wool socks x3) &amp; press Enter" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;" />
+                  </form>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    container.querySelectorAll('#packing-filter-pills .map-pill-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        packingFilterState = e.currentTarget.getAttribute('data-pfilter');
+        renderPackingPane(container, trip);
+      });
+    });
+
     container.querySelectorAll('.checkbox-custom[data-pack-id]').forEach(cb => {
       cb.addEventListener('click', () => {
-        appStore.togglePackingItem(trip.id, cb.getAttribute('data-pack-id'));
+        const id = cb.getAttribute('data-pack-id');
+        const isPrep = cb.getAttribute('data-is-prep') === 'true';
+        if (isPrep) appStore.togglePrepItem(trip.id, id);
+        else appStore.togglePackingItem(trip.id, id);
         renderPackingPane(container, appStore.getCurrentTrip());
       });
     });
 
-    container.querySelectorAll('.checkbox-custom[data-prep-id]').forEach(cb => {
-      cb.addEventListener('click', () => {
-        appStore.togglePrepItem(trip.id, cb.getAttribute('data-prep-id'));
+    container.querySelectorAll('.btn-qty-minus').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        appStore.updatePackingQuantity(trip.id, btn.getAttribute('data-id'), -1);
         renderPackingPane(container, appStore.getCurrentTrip());
       });
     });
 
-    container.querySelector('#btn-add-packing')?.addEventListener('click', () => openAddPackingModal(trip));
+    container.querySelectorAll('.btn-qty-plus').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        appStore.updatePackingQuantity(trip.id, btn.getAttribute('data-id'), 1);
+        renderPackingPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelectorAll('.btn-del-pack').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        appStore.deletePackingItem(trip.id, btn.getAttribute('data-id'));
+        showToast('Item removed', 'info');
+        renderPackingPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelectorAll('.form-bulk-pack').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = form.querySelector('.input-bulk-pack');
+        const val = input.value.trim();
+        const category = form.getAttribute('data-category');
+        if (val) {
+          const parsed = parseNaturalLanguagePackingInput(val);
+          parsed.category = category;
+          appStore.addPackingItem(trip.id, parsed);
+          input.value = '';
+          input.focus();
+          showToast(`Added ${parsed.item} (x${parsed.quantity})!`, 'success');
+          renderPackingPane(container, appStore.getCurrentTrip());
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-add-suggestion').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.getAttribute('data-item');
+        const category = btn.getAttribute('data-cat');
+        const bagTag = btn.getAttribute('data-tag');
+        const isEssential = btn.getAttribute('data-essential') === 'true';
+        appStore.addPackingItem(trip.id, { item, category, bagTag, isEssential, quantity: 1 });
+        showToast(`Added ${item} to checklist!`, 'success');
+        renderPackingPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelector('.btn-close-weather')?.addEventListener('click', () => {
+      isWeatherDrawerOpen = false;
+      renderPackingPane(container, trip);
+    });
+
+    container.querySelector('#btn-toggle-weather-drawer')?.addEventListener('click', () => {
+      isWeatherDrawerOpen = !isWeatherDrawerOpen;
+      renderPackingPane(container, trip);
+    });
+
+    container.querySelector('#btn-open-templates')?.addEventListener('click', () => {
+      openPackingTemplateModal(trip);
+    });
+
+    container.querySelector('#btn-print-packing')?.addEventListener('click', () => {
+      exportPackingListPrint(trip);
+    });
   }
 
   function renderExpensesPane(container, trip) {
@@ -1780,10 +2205,10 @@
 
     window._activeExplorerMap = map;
 
-    // CartoDB Dark Matter Basemap Tiles
-    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // OpenStreetMap Standard Tiles with Dark Theme Filter (100% Free, zero API key required)
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     // Add zoom control bottom right
