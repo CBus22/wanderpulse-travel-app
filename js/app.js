@@ -143,6 +143,13 @@
     allergies: 'Peanuts (Mild)',
     travelStyle: ['Solo Trekking', 'Cultural Discovery', 'Food & Photography'],
     travelPace: 'Fast & Packed Explorer',
+    // Partner & Household Duo Details
+    isLinkedDuo: true,
+    partnerName: 'Taylor Rivers',
+    partnerEmail: 'taylor@rivers.com',
+    partnerAvatar: 'TR',
+    householdAirport: 'JFK / EWR (New York Metro)',
+    householdNotes: 'Joint SkyMiles & Marriott accounts linked',
     loyaltyPrograms: [
       { name: 'Delta SkyMiles', number: 'DL-9823410', code: 'DL' },
       { name: 'Marriott Bonvoy', number: 'MB-4410921', code: 'MB' }
@@ -164,6 +171,7 @@
       startDate: '2026-10-15',
       endDate: '2026-10-25',
       status: 'upcoming',
+      tripType: 'coupled',
       coverImage: 'assets/images/tokyo.png',
       budget: 4500,
       currency: 'USD',
@@ -417,6 +425,22 @@
       const queryText = (obj.destination && obj.destination.trim()) ? obj.destination : obj.title;
       const autoCover = (obj.coverImage && obj.coverImage.trim()) ? obj.coverImage : resolveDestinationPhoto(queryText);
       const coords = resolveDestinationCoords(queryText);
+      const tripType = obj.tripType || 'coupled';
+
+      const attendees = [
+        { id: 'a-1', name: this.profile.name, role: 'Organizer', avatar: this.profile.avatar || 'AR', email: '', rsvp: 'Confirmed' }
+      ];
+
+      if (tripType === 'coupled' && this.profile.partnerName) {
+        attendees.push({
+          id: 'a-2',
+          name: this.profile.partnerName,
+          role: 'Partner / Co-Organizer',
+          avatar: this.profile.partnerAvatar || 'TR',
+          email: this.profile.partnerEmail || '',
+          rsvp: 'Confirmed'
+        });
+      }
 
       const newTrip = {
         id: 'trip-' + Date.now(),
@@ -425,6 +449,7 @@
         startDate: obj.startDate || today,
         endDate: obj.endDate || nextWeek,
         status: obj.status || 'upcoming',
+        tripType: tripType,
         coverImage: autoCover,
         budget: parseFloat(obj.budget) || 1500,
         currency: 'USD',
@@ -433,12 +458,13 @@
         logistics: { flights: [], accommodations: [], notes: '' },
         itinerary: [], activities: [],
         packingList: [
-          { id: 'p-1', category: 'Essentials', item: 'Passport & Charger', packed: false, assignee: this.profile.name }
+          { id: 'p-1', category: 'Essentials', item: 'Passports & Chargers', packed: false, assignee: this.profile.name },
+          { id: 'p-2', category: 'Essentials', item: 'Travel eSIM / Data SIM', packed: false, assignee: this.profile.partnerName || 'Partner' }
         ],
         prepChecklist: [
-          { id: 'pr-1', title: 'Passport Valid 6+ Months', completed: false }
+          { id: 'pr-1', title: 'Passports Valid 6+ Months', completed: false }
         ],
-        attendees: [{ id: 'a-1', name: this.profile.name, role: 'Organizer', avatar: this.profile.avatar, email: '', rsvp: 'Confirmed' }],
+        attendees: attendees,
         expenses: []
       };
       this.trips.unshift(newTrip);
@@ -816,11 +842,16 @@
 
   function renderTripCard(trip) {
     const daysUntil = getDaysUntil(trip.startDate);
+    const isCoupled = trip.tripType === 'coupled';
+    const profile = appStore.loadProfile();
+
     return `
       <div class="card trip-card" data-trip-id="${trip.id}">
         <div class="trip-card-cover">
           <img src="${trip.coverImage}" alt="${trip.title}" class="trip-card-img" />
-          <span class="badge badge-${trip.status} trip-card-badge">${trip.status}</span>
+          <span class="badge ${isCoupled ? 'badge-coupled' : 'badge-' + trip.status} trip-card-badge">
+            ${isCoupled ? '💑 Coupled Trip' : trip.status}
+          </span>
         </div>
         <div class="trip-card-body">
           <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
@@ -859,10 +890,18 @@
           </div>
 
           <div class="trip-card-meta">
-            <div class="avatars-group">
-              ${trip.attendees.slice(0, 4).map(att => `<div class="avatar" title="${att.name}">${att.avatar}</div>`).join('')}
-              ${trip.attendees.length > 4 ? `<div class="avatar">+${trip.attendees.length - 4}</div>` : ''}
-            </div>
+            ${isCoupled ? `
+              <div class="duo-interlocking-avatars" title="Coupled Trip with ${profile.partnerName || 'Partner'}">
+                <div class="avatar duo-avatar-1">${profile.avatar || 'AR'}</div>
+                <div class="avatar duo-avatar-2">${profile.partnerAvatar || 'TR'}</div>
+                <span class="duo-heart-badge">❤️</span>
+              </div>
+            ` : `
+              <div class="avatars-group">
+                ${trip.attendees.slice(0, 4).map(att => `<div class="avatar" title="${att.name}">${att.avatar}</div>`).join('')}
+                ${trip.attendees.length > 4 ? `<div class="avatar">+${trip.attendees.length - 4}</div>` : ''}
+              </div>
+            `}
             <div style="font-weight: 700; color: var(--text-primary);">
               $${trip.budget ? trip.budget.toLocaleString() : '0'} ${trip.currency}
             </div>
@@ -927,18 +966,33 @@
           <div class="profile-header-flex">
             <div style="display: flex; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
               <div class="profile-avatar-wrapper">
-                ${profile.customAvatarUrl ? `
-                  <img src="${profile.customAvatarUrl}" alt="${profile.name}" class="profile-avatar-large-img" />
-                ` : `
-                  <div class="profile-avatar-large">${profile.avatar}</div>
-                `}
+                <div style="display: flex; align-items: center; position: relative;">
+                  ${profile.customAvatarUrl ? `
+                    <img src="${profile.customAvatarUrl}" alt="${profile.name}" class="profile-avatar-large-img" />
+                  ` : `
+                    <div class="profile-avatar-large">${profile.avatar || 'AR'}</div>
+                  `}
+                  ${profile.partnerName ? `
+                    <div class="profile-avatar-large" style="margin-left: -20px; background: linear-gradient(135deg, #DF6A4F, #E28F38); border: 3px solid #141312; font-size: 1.3rem;" title="Partner: ${profile.partnerName}">
+                      ${profile.partnerAvatar || 'TR'}
+                    </div>
+                    <span style="position: absolute; bottom: -4px; right: -4px; background: #DF6A4F; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; border: 2px solid #141312; z-index: 3;">❤️</span>
+                  ` : ''}
+                </div>
                 <button class="avatar-upload-badge" id="btn-edit-avatar-badge" title="Change Cover or Profile Picture">
                   ${icon('camera')}
                 </button>
               </div>
 
               <div>
-                <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">${profile.name}</h1>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.25rem; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">${profile.name}</h1>
+                ${profile.partnerName ? `
+                  <div style="margin-bottom: 0.4rem;">
+                    <span class="badge" style="background: rgba(223, 106, 79, 0.25); color: #FAF8F5; border: 1px solid rgba(223, 106, 79, 0.4); font-weight: 700; font-size: 0.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+                      👩‍❤️‍👨 Linked Travel Duo: ${profile.name} (${profile.avatar || 'AR'}) &amp; ${profile.partnerName} (${profile.partnerAvatar || 'TR'})
+                    </span>
+                  </div>
+                ` : ''}
                 <p style="color: rgba(255,255,255,0.85); max-width: 620px; margin-bottom: 0.75rem; font-size: 0.95rem; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">${profile.bio}</p>
                 
                 <!-- Bright high-contrast interest tags -->
@@ -1003,7 +1057,26 @@
       </h2>
 
       <div class="bento-grid">
-        <!-- Bento Card 1: Home Airport -->
+        <!-- Bento Card 1: Travel Partner Duo -->
+        <div class="bento-card" style="border-color: rgba(223, 106, 79, 0.35);">
+          <div class="bento-header">
+            <div class="bento-title-group">
+              ${icon('user', '#DF6A4F')}
+              <span class="bento-title">Travel Partner &amp; Household</span>
+            </div>
+            <span class="badge" style="background: rgba(223, 106, 79, 0.18); color: #DF6A4F; border: 1px solid rgba(223, 106, 79, 0.3); font-weight: 800;">
+              ${profile.partnerName ? 'Linked Duo' : 'Solo Profile'}
+            </span>
+          </div>
+          <div class="bento-value" style="font-size: 1.1rem; color: #FAF8F5;">
+            ${profile.partnerName ? `${profile.partnerName} (${profile.partnerAvatar || 'TR'})` : 'No Partner Linked'}
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem;">
+            Household Hub: <strong>${profile.householdAirport || profile.homeAirport || 'JFK Metro'}</strong>
+          </div>
+        </div>
+
+        <!-- Bento Card 2: Home Airport -->
         <div class="bento-card">
           <div class="bento-header">
             <div class="bento-title-group">
@@ -1994,10 +2067,16 @@
   function renderPackingPane(container, trip) {
     const packingList = trip.packingList || [];
     const prepList = trip.prepChecklist || [];
+    const isCoupled = trip.tripType === 'coupled' || Boolean(appStore.profile.partnerName);
+    const partner1Name = appStore.profile.name || 'Alex';
+    const partner2Name = appStore.profile.partnerName || 'Taylor';
 
     const filteredPacking = packingList.filter(i => {
-      if (packingFilterState === 'personal') return !i.assignee || i.assignee === appStore.profile.name;
-      if (packingFilterState === 'group') return i.assignee && i.assignee !== appStore.profile.name;
+      if (packingFilterState === 'p1') return i.assignee === partner1Name;
+      if (packingFilterState === 'p2') return i.assignee === partner2Name;
+      if (packingFilterState === 'shared') return !i.assignee || i.assignee.toLowerCase().includes('shared') || i.assignee.toLowerCase().includes('household');
+      if (packingFilterState === 'personal') return !i.assignee || i.assignee === partner1Name;
+      if (packingFilterState === 'group') return i.assignee && i.assignee !== partner1Name;
       return true;
     });
 
@@ -2053,9 +2132,14 @@
 
         <div class="map-filter-bar" id="packing-filter-pills" style="display: inline-flex;">
           <button class="map-pill-btn ${packingFilterState === 'all' ? 'active' : ''}" data-pfilter="all">All Items (${packingList.length + prepList.length})</button>
-          <button class="map-pill-btn ${packingFilterState === 'personal' ? 'active' : ''}" data-pfilter="personal">👤 My Personal Items</button>
-          <button class="map-pill-btn ${packingFilterState === 'group' ? 'active' : ''}" data-pfilter="group">👥 Shared Group Gear</button>
-          <button class="map-pill-btn ${packingFilterState === 'documents' ? 'active' : ''}" data-pfilter="documents">📄 Pre-Trip Documents</button>
+          ${isCoupled ? `
+            <button class="map-pill-btn ${packingFilterState === 'p1' ? 'active' : ''}" data-pfilter="p1">👤 ${partner1Name}'s Bag</button>
+            <button class="map-pill-btn ${packingFilterState === 'p2' ? 'active' : ''}" data-pfilter="p2">👤 ${partner2Name}'s Bag</button>
+            <button class="map-pill-btn ${packingFilterState === 'shared' ? 'active' : ''}" data-pfilter="shared">🧳 Shared Household</button>
+          ` : `
+            <button class="map-pill-btn ${packingFilterState === 'personal' ? 'active' : ''}" data-pfilter="personal">👤 My Personal Items</button>
+            <button class="map-pill-btn ${packingFilterState === 'group' ? 'active' : ''}" data-pfilter="group">👥 Shared Group Gear</button>
+          `}
         </div>
       </div>
 
@@ -2334,24 +2418,38 @@
             </div>
           </div>
 
-          <div class="stat-card ${netCardClass}" style="position: relative; padding: 1.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem;">
-                  My Net Position (${currentUser})
-                </div>
-                <div style="font-size: 2rem; font-weight: 800; color: ${netAmountColor}; letter-spacing: -0.02em;">
-                  ${userBalance >= 0 ? '+' : ''}$${userBalance.toFixed(2)}
-                </div>
-                <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem;">
-                  ${netCardSub}
-                </div>
+          ${trip.tripType === 'coupled' ? `
+            <div class="stat-card" style="background: linear-gradient(135deg, rgba(223, 106, 79, 0.18), rgba(226, 143, 56, 0.15)); border: 1px solid rgba(223, 106, 79, 0.35); padding: 1.25rem;">
+              <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #DF6A4F; margin-bottom: 0.4rem;">
+                🏡 Joint Household Pool Mode
               </div>
-              <div style="padding: 0.6rem; background: rgba(255,255,255,0.05); border-radius: 12px;">
-                ${netCardIcon}
+              <div style="font-size: 2rem; font-weight: 800; color: #FAF8F5;">
+                $${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div style="font-size: 0.78rem; color: #D1C9BE; margin-top: 0.35rem;">
+                Shared household expenses — Zero peer splitting required
               </div>
             </div>
-          </div>
+          ` : `
+            <div class="stat-card ${netCardClass}" style="position: relative; padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem;">
+                    My Net Position (${currentUser})
+                  </div>
+                  <div style="font-size: 2rem; font-weight: 800; color: ${netAmountColor}; letter-spacing: -0.02em;">
+                    ${userBalance >= 0 ? '+' : ''}$${userBalance.toFixed(2)}
+                  </div>
+                  <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem;">
+                    ${netCardSub}
+                  </div>
+                </div>
+                <div style="padding: 0.6rem; background: rgba(255,255,255,0.05); border-radius: 12px;">
+                  ${netCardIcon}
+                </div>
+              </div>
+            </div>
+          `}
 
           <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 0.75rem; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(148,163,184,0.15); padding: 1.25rem;">
             <button class="btn btn-primary btn-md" id="btn-top-add-exp" style="width: 100%; justify-content: center; font-weight: 600; gap: 0.5rem; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; box-shadow: 0 4px 14px rgba(99,102,241,0.4);">
@@ -4222,10 +4320,11 @@
                   <input type="number" class="form-control" name="budget" placeholder="1500" min="0" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Privacy Level</label>
-                  <select class="form-control" name="isPrivate">
-                    <option value="false" ${!isPrivateByDefault ? 'selected' : ''}>Shared Group Trip (Collaborative)</option>
-                    <option value="true" ${isPrivateByDefault ? 'selected' : ''}>Private Personal Trip (Only You)</option>
+                  <label class="form-label">Trip Expedition Mode</label>
+                  <select class="form-control" name="tripType">
+                    <option value="coupled" selected>💑 Coupled / Household Trip (Joint Duo Workspace)</option>
+                    <option value="solo">👤 Solo Expedition (Personal)</option>
+                    <option value="group">👥 Group Expedition (Multi-member)</option>
                   </select>
                 </div>
               </div>
@@ -4461,10 +4560,49 @@
 
               <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
 
-              <!-- Section 2: Travel Essentials & Logistics -->
+              <!-- Section 2: Couple & Travel Partner Linking -->
+              <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: #DF6A4F; font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                  👩‍❤️‍👨 Section 2: Partner &amp; Travel Companion Linking
+                </h4>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+                  Link your partner or spouse to co-own trips, create joint household budgets, and maintain parallel packing lists.
+                </p>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Partner / Spouse Full Name</label>
+                    <input type="text" class="form-control" name="partnerName" value="${profile.partnerName || 'Taylor Rivers'}" placeholder="e.g. Taylor Rivers" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Partner Email / ID</label>
+                    <input type="email" class="form-control" name="partnerEmail" value="${profile.partnerEmail || 'taylor@rivers.com'}" placeholder="partner@example.com" />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Partner Initials Badge</label>
+                    <input type="text" class="form-control" name="partnerAvatar" value="${profile.partnerAvatar || 'TR'}" maxlength="3" placeholder="TR" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Household Primary Airport</label>
+                    <input type="text" class="form-control" name="householdAirport" value="${profile.householdAirport || 'JFK / EWR (New York Metro)'}" placeholder="e.g. JFK / EWR Metro" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Joint Household Loyalty &amp; Notes</label>
+                  <input type="text" class="form-control" name="householdNotes" value="${profile.householdNotes || ''}" placeholder="e.g. Joint Marriott Bonvoy &amp; Delta SkyMiles" />
+                </div>
+              </div>
+
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+
+              <!-- Section 3: Travel Essentials & Logistics -->
               <div style="margin-bottom: 1.5rem;">
                 <h4 style="color: #06b6d4; font-size: 0.95rem; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
-                  ✈️ Section 2: Travel Essentials &amp; Emergency Contact
+                  ✈️ Section 3: Travel Essentials &amp; Emergency Contact
                 </h4>
 
                 <div class="form-row">
@@ -4620,9 +4758,10 @@
       };
 
       appStore.saveProfile(data);
+      syncNavProfile();
       close();
-      showToast('Profile preferences saved!', 'success');
-      if (currentView === 'personal-space') renderCurrentView();
+      showToast('Profile preferences & partner duo saved!', 'success');
+      renderCurrentView();
     };
   }
 
