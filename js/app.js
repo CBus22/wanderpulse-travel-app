@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  // --- SVG Icon Library (Fallback & Instant Render) ---
+  // --- SVG Icon Library ---
   const SVG_ICONS = {
     'plane': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.7 5.2c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>`,
     'map-pin': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -41,15 +41,13 @@
 
   function icon(name, color = '') {
     const svg = SVG_ICONS[name] || `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`;
-    if (color) {
-      return svg.replace('<svg ', `<svg style="color: ${color};" `);
-    }
+    if (color) return svg.replace('<svg ', `<svg style="color: ${color};" `);
     return svg;
   }
 
-  // --- Initial Data ---
-  const STORAGE_KEY = 'wanderpulse_trips_data_v2';
-  const SETTINGS_KEY = 'wanderpulse_settings_v2';
+  // --- Storage ---
+  const STORAGE_KEY = 'wanderpulse_trips_data_v3';
+  const SETTINGS_KEY = 'wanderpulse_settings_v3';
 
   const initialTrips = [
     {
@@ -77,37 +75,27 @@
       itinerary: [
         { id: 'it-1', day: 1, date: '2026-10-15', title: 'Arrival & Shinjuku Evening', time: '16:00', category: 'sightseeing', location: 'Shinjuku, Tokyo', notes: 'Check in hotel, explore Omoide Yokocho alleyways for ramen & yakitori.', lat: 35.6938, lng: 139.7034 },
         { id: 'it-2', day: 2, date: '2026-10-16', title: 'Meiji Shrine & Digital Art', time: '09:30', category: 'culture', location: 'Harajuku & Toyosu', notes: 'Morning stroll in Yoyogi park & Meiji Jingu. Afternoon TeamLab Planets reservation at 14:00.', lat: 35.6764, lng: 139.6993 },
-        { id: 'it-3', day: 3, date: '2026-10-19', title: 'Shinkansen to Kyoto & Fushimi Inari', time: '08:00', category: 'transit', location: 'Tokyo Station -> Kyoto', notes: 'Board Hikari Shinkansen 507. Check in Mimaru Kyoto, sunset walk through 10,000 Torii gates.', lat: 34.9671, lng: 135.7727 },
-        { id: 'it-4', day: 4, date: '2026-10-20', title: 'Arashiyama Bamboo & Monkey Park', time: '07:30', category: 'adventure', location: 'Arashiyama, Kyoto', notes: 'Early morning walk before crowds arrive. Rent electric bicycles near Saga-Arashiyama station.', lat: 35.0116, lng: 135.6777 }
+        { id: 'it-3', day: 3, date: '2026-10-19', title: 'Shinkansen to Kyoto & Fushimi Inari', time: '08:00', category: 'transit', location: 'Tokyo Station -> Kyoto', notes: 'Board Hikari Shinkansen 507. Check in Mimaru Kyoto, sunset walk through 10,000 Torii gates.', lat: 34.9671, lng: 135.7727 }
       ],
       activities: [
         { id: 'act-1', title: 'TeamLab Planets Digital Art Museum', category: 'Culture', status: 'Booked', cost: 110, duration: '2.5 hrs', rating: 4.9, notes: 'Water exhibit requires barefoot walking.', lat: 35.6491, lng: 139.7898 },
-        { id: 'act-2', title: 'Traditional Tea Ceremony in Gion', category: 'Culture', status: 'Planned', cost: 90, duration: '1.5 hrs', rating: 4.8, notes: 'Kimono fitting included.', lat: 35.0037, lng: 135.7772 },
-        { id: 'act-3', title: 'Tsukiji Outer Market Food Tour', category: 'Dining', status: 'Booked', cost: 120, duration: '3 hrs', rating: 4.9, notes: 'Fresh Wagyu beef skewers, tamagoyaki, & sea urchin.', lat: 35.6654, lng: 139.7707 }
+        { id: 'act-2', title: 'Traditional Tea Ceremony in Gion', category: 'Culture', status: 'Planned', cost: 90, duration: '1.5 hrs', rating: 4.8, notes: 'Kimono fitting included.', lat: 35.0037, lng: 135.7772 }
       ],
       packingList: [
         { id: 'pack-1', category: 'Documents', item: 'Passport & Japan Rail Pass Voucher', packed: true, assignee: 'Alex Rivers' },
-        { id: 'pack-2', category: 'Electronics', item: 'Universal Travel Adapter & Power Bank 20,000mAh', packed: true, assignee: 'Alex Rivers' },
-        { id: 'pack-3', category: 'Clothing', item: 'Comfortable Walking Shoes (Hoka/On Cloud)', packed: false, assignee: 'Elena Rostova' },
-        { id: 'pack-4', category: 'Essentials', item: 'Suica / Pasmo IC Card & eSIM setup', packed: true, assignee: 'Marcus Vance' }
+        { id: 'pack-2', category: 'Electronics', item: 'Universal Travel Adapter & Power Bank', packed: true, assignee: 'Alex Rivers' }
       ],
       prepChecklist: [
         { id: 'prep-1', title: 'Passport Valid 6+ Months', completed: true },
-        { id: 'prep-2', title: 'Visit Japan Web Customs & Immigration QR', completed: true },
-        { id: 'prep-3', title: 'Travel Medical Insurance (Allianz)', completed: true },
-        { id: 'prep-4', title: 'Yen Cash Currency Exchange (¥50,000)', completed: false }
+        { id: 'prep-2', title: 'Visit Japan Web Customs QR', completed: true }
       ],
       attendees: [
         { id: 'att-1', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' },
-        { id: 'att-2', name: 'Elena Rostova', role: 'Co-planner', avatar: 'ER', email: 'elena@example.com', rsvp: 'Confirmed' },
-        { id: 'att-3', name: 'Marcus Vance', role: 'Member', avatar: 'MV', email: 'marcus@example.com', rsvp: 'Confirmed' },
-        { id: 'att-4', name: 'Sophia Chen', role: 'Member', avatar: 'SC', email: 'sophia@example.com', rsvp: 'Confirmed' }
+        { id: 'att-2', name: 'Elena Rostova', role: 'Co-planner', avatar: 'ER', email: 'elena@example.com', rsvp: 'Confirmed' }
       ],
       expenses: [
-        { id: 'exp-1', title: 'Shinkansen Bullet Train Tickets', amount: 480, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-10-10', splitWith: ['Alex Rivers', 'Elena Rostova', 'Marcus Vance', 'Sophia Chen'] },
-        { id: 'exp-2', title: 'Tokyo Park Hyatt Accommodation', amount: 1200, paidBy: 'Elena Rostova', category: 'Lodging', date: '2026-10-12', splitWith: ['Alex Rivers', 'Elena Rostova', 'Marcus Vance', 'Sophia Chen'] },
-        { id: 'exp-3', title: 'Izakaya Welcome Omoide Yokocho', amount: 160, paidBy: 'Marcus Vance', category: 'Dining', date: '2026-10-15', splitWith: ['Alex Rivers', 'Elena Rostova', 'Marcus Vance', 'Sophia Chen'] },
-        { id: 'exp-4', title: 'TeamLab Planets Tickets', amount: 110, paidBy: 'Sophia Chen', category: 'Activities', date: '2026-10-14', splitWith: ['Alex Rivers', 'Elena Rostova', 'Marcus Vance', 'Sophia Chen'] }
+        { id: 'exp-1', title: 'Shinkansen Bullet Train Tickets', amount: 480, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-10-10', splitWith: ['Alex Rivers', 'Elena Rostova'] },
+        { id: 'exp-2', title: 'Tokyo Park Hyatt Accommodation', amount: 1200, paidBy: 'Elena Rostova', category: 'Lodging', date: '2026-10-12', splitWith: ['Alex Rivers', 'Elena Rostova'] }
       ]
     },
     {
@@ -120,55 +108,12 @@
       coverImage: 'assets/images/amalfi.png',
       budget: 5200,
       currency: 'USD',
-      lat: 40.6281,
-      lng: 14.4850,
-      logistics: { flights: [], accommodations: [], notes: 'Private boat charter booked.' },
-      itinerary: [
-        { id: 'it-10', day: 1, date: '2026-07-11', title: 'Check in Positano Cliffside Villa', time: '14:00', category: 'lodging', location: 'Positano Pier', notes: 'Balcony aperitivo over Spiaggia Grande.', lat: 40.6281, lng: 14.4850 }
-      ],
-      activities: [
-        { id: 'act-10', title: 'Capri Private Boat & Blue Grotto', category: 'Adventure', status: 'Booked', cost: 650, duration: '6 hrs', rating: 5.0, notes: 'Includes Prosecco & fruit platter.', lat: 40.5507, lng: 14.2426 }
-      ],
-      packingList: [
-        { id: 'pack-10', category: 'Clothing', item: 'Linen Shirts & Summer Dresses', packed: true, assignee: 'Alex Rivers' }
-      ],
-      prepChecklist: [
-        { id: 'prep-10', title: 'EU eSIM Data Roaming Activation', completed: true }
-      ],
-      attendees: [
-        { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' },
-        { id: 'att-11', name: 'Sophia Chen', role: 'Co-planner', avatar: 'SC', email: 'sophia@example.com', rsvp: 'Confirmed' }
-      ],
-      expenses: [
-        { id: 'exp-10', title: 'Private Yacht Capri Charter', amount: 650, paidBy: 'Alex Rivers', category: 'Activities', date: '2026-07-13', splitWith: ['Alex Rivers', 'Sophia Chen'] },
-        { id: 'exp-11', title: 'Positano Villa Accommodation', amount: 1800, paidBy: 'Sophia Chen', category: 'Lodging', date: '2026-07-11', splitWith: ['Alex Rivers', 'Sophia Chen'] }
-      ]
-    },
-    {
-      id: 'trip-3',
-      title: 'Swiss Alps Hiking Adventure',
-      destination: 'Zermatt & Grindelwald, Switzerland',
-      startDate: '2026-09-02',
-      endDate: '2026-09-09',
-      status: 'draft',
-      coverImage: 'assets/images/swiss.png',
-      budget: 3800,
-      currency: 'USD',
-      lat: 45.9765,
-      lng: 7.7491,
+      lat: 40.6281, lng: 14.4850,
       logistics: { flights: [], accommodations: [], notes: '' },
-      itinerary: [],
-      activities: [],
-      packingList: [],
-      prepChecklist: [],
-      attendees: [
-        { id: 'att-20', name: 'Marcus Vance', role: 'Organizer', avatar: 'MV', email: 'marcus@example.com', rsvp: 'Confirmed' }
-      ],
-      expenses: []
+      itinerary: [], activities: [], packingList: [], prepChecklist: [], attendees: [], expenses: []
     }
   ];
 
-  // --- Store implementation ---
   class Store {
     constructor() {
       this.trips = this.loadTrips();
@@ -186,6 +131,7 @@
     saveTrips(data = this.trips) {
       this.trips = data;
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.trips)); } catch (e) {}
+      this.syncCloud();
     }
     loadSettings() {
       try {
@@ -201,17 +147,21 @@
     getTrips() { return this.trips; }
     getCurrentTrip() { return this.trips.find(t => t.id === this.currentTripId) || this.trips[0] || null; }
     setCurrentTripId(id) { this.currentTripId = id; }
+    
     addTrip(obj) {
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
       const newTrip = {
         id: 'trip-' + Date.now(),
-        title: obj.title || 'New Travel Plan',
-        destination: obj.destination || 'Uncharted Destination',
-        startDate: obj.startDate || new Date().toISOString().split('T')[0],
-        endDate: obj.endDate || new Date().toISOString().split('T')[0],
+        title: obj.title || 'My Travel Adventure',
+        destination: obj.destination || 'Dream Destination',
+        startDate: obj.startDate || today,
+        endDate: obj.endDate || nextWeek,
         status: obj.status || 'upcoming',
         coverImage: obj.coverImage || 'assets/images/hero.png',
-        budget: parseFloat(obj.budget) || 2000,
-        currency: obj.currency || 'USD',
+        budget: parseFloat(obj.budget) || 1500,
+        currency: 'USD',
         lat: 35.6762, lng: 139.6503,
         logistics: { flights: [], accommodations: [], notes: '' },
         itinerary: [], activities: [],
@@ -229,11 +179,13 @@
       this.saveTrips();
       return newTrip;
     }
+
     deleteTrip(id) {
       this.trips = this.trips.filter(t => t.id !== id);
       if (this.currentTripId === id) this.currentTripId = this.trips[0]?.id || null;
       this.saveTrips();
     }
+
     addItineraryItem(tripId, item) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) {
@@ -242,18 +194,22 @@
         this.saveTrips();
       }
     }
+
     deleteItineraryItem(tripId, itemId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.itinerary = t.itinerary.filter(i => i.id !== itemId); this.saveTrips(); }
     }
+
     addActivity(tripId, act) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.activities.push({ id: 'act-' + Date.now(), ...act }); this.saveTrips(); }
     }
+
     deleteActivity(tripId, actId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.activities = t.activities.filter(a => a.id !== actId); this.saveTrips(); }
     }
+
     togglePackingItem(tripId, packId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) {
@@ -261,10 +217,12 @@
         if (item) { item.packed = !item.packed; this.saveTrips(); }
       }
     }
+
     addPackingItem(tripId, itemObj) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.packingList.push({ id: 'pack-' + Date.now(), packed: false, ...itemObj }); this.saveTrips(); }
     }
+
     togglePrepItem(tripId, prepId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) {
@@ -272,27 +230,60 @@
         if (item) { item.completed = !item.completed; this.saveTrips(); }
       }
     }
+
     addAttendee(tripId, attendeeObj) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) {
-        const initials = attendeeObj.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const initials = attendeeObj.name ? attendeeObj.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'AT';
         t.attendees.push({ id: 'att-' + Date.now(), avatar: initials || 'AT', rsvp: 'Confirmed', ...attendeeObj });
         this.saveTrips();
       }
     }
+
     addExpense(tripId, expenseObj) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.expenses.push({ id: 'exp-' + Date.now(), date: new Date().toISOString().split('T')[0], ...expenseObj }); this.saveTrips(); }
     }
+
     deleteExpense(tripId, expId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.expenses = t.expenses.filter(e => e.id !== expId); this.saveTrips(); }
+    }
+
+    // --- Supabase Async Cloud Sync ---
+    async syncCloud() {
+      if (!this.settings.supabaseUrl || !this.settings.supabaseKey) return;
+      try {
+        const url = `${this.settings.supabaseUrl.replace(/\/$/, '')}/rest/v1/trips`;
+        const current = this.getCurrentTrip();
+        if (!current) return;
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'apikey': this.settings.supabaseKey,
+            'Authorization': `Bearer ${this.settings.supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify({
+            id: current.id,
+            title: current.title,
+            destination: current.destination,
+            start_date: current.startDate,
+            end_date: current.endDate,
+            status: current.status,
+            cover_image: current.coverImage,
+            budget: current.budget,
+            currency: current.currency
+          })
+        }).catch(err => console.log('Cloud sync background post:', err));
+      } catch (e) {}
     }
   }
 
   const appStore = new Store();
 
-  // --- Toast notification ---
   function showToast(message, type = 'info') {
     let container = document.querySelector('.toast-container');
     if (!container) {
@@ -328,7 +319,6 @@
     });
 
     containerEl.innerHTML = `
-      <!-- Hero Banner -->
       <section class="hero-banner">
         <img src="assets/images/hero.png" alt="Travel Header" class="hero-bg-img" />
         <div class="hero-content">
@@ -346,7 +336,6 @@
         </div>
       </section>
 
-      <!-- Filter Bar -->
       <div class="filter-bar">
         <div class="tabs-group">
           <button class="tab-btn ${currentFilter === 'all' ? 'active' : ''}" data-filter="all">All Trips (${trips.length})</button>
@@ -362,7 +351,6 @@
         </div>
       </div>
 
-      <!-- Trips Grid -->
       ${filteredTrips.length === 0 ? `
         <div class="card" style="text-align: center; padding: 4rem 2rem;">
           <div style="margin-bottom: 1rem;">${icon('compass', 'var(--text-muted)')}</div>
@@ -377,7 +365,6 @@
       `}
     `;
 
-    // Event listeners
     containerEl.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         currentFilter = e.currentTarget.getAttribute('data-filter');
@@ -986,35 +973,35 @@
         <div class="modal-container">
           <div class="modal-header">
             <h3>${icon('plane', 'var(--accent-primary)')} Create New Travel Plan</h3>
-            <button class="btn btn-icon-only btn-secondary" class="close-modal">&times;</button>
+            <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-create-trip">
+            <form id="form-create-trip" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Trip Title</label>
+                <label class="form-label">Trip Title *</label>
                 <input type="text" class="form-control" name="title" placeholder="e.g. Summer Vacation in Bali" required />
               </div>
               <div class="form-group">
                 <label class="form-label">Destination</label>
-                <input type="text" class="form-control" name="destination" placeholder="e.g. Ubud & Seminyak" required />
+                <input type="text" class="form-control" name="destination" placeholder="e.g. Ubud & Seminyak, Indonesia" />
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Start Date</label>
-                  <input type="date" class="form-control" name="startDate" required />
+                  <input type="date" class="form-control" name="startDate" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">End Date</label>
-                  <input type="date" class="form-control" name="endDate" required />
+                  <input type="date" class="form-control" name="endDate" />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Budget ($)</label>
-                  <input type="number" class="form-control" name="budget" placeholder="3000" min="0" required />
+                  <label class="form-label">Estimated Budget ($)</label>
+                  <input type="number" class="form-control" name="budget" placeholder="1500" min="0" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Status</label>
+                  <label class="form-label">Trip Status</label>
                   <select class="form-control" name="status">
                     <option value="upcoming">Upcoming</option>
                     <option value="active">Active</option>
@@ -1025,8 +1012,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Create Trip</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Create Trip Project</button>
           </div>
         </div>
       </div>
@@ -1034,17 +1021,27 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-create-trip');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
-      const f = m.querySelector('#form-create-trip');
-      if (!f.checkValidity()) return f.reportValidity();
-      const newTrip = appStore.addTrip(Object.fromEntries(new FormData(f).entries()));
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
+      const form = m.querySelector('#form-create-trip');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      if (!data.title || !data.title.trim()) {
+        showToast('Please enter a trip title', 'info');
+        return;
+      }
+
+      const newTrip = appStore.addTrip(data);
       close();
-      showToast('Travel project created!', 'success');
+      showToast('New travel project created!', 'success');
       currentView = 'trip-detail';
       renderCurrentView();
     };
+
+    m.querySelector('.submit-modal').onclick = handleSave;
+    m.querySelector('#form-create-trip').onsubmit = handleSave;
   }
 
   function openAddItineraryModal(trip) {
@@ -1056,7 +1053,7 @@
             <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-add-it">
+            <form id="form-add-it" onsubmit="return false;">
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Day #</label>
@@ -1068,7 +1065,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="form-label">Event Title</label>
+                <label class="form-label">Event Title *</label>
                 <input type="text" class="form-control" name="title" placeholder="e.g. Visit Senso-ji Temple" required />
               </div>
               <div class="form-row">
@@ -1090,8 +1087,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Add Event</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Add Event</button>
           </div>
         </div>
       </div>
@@ -1099,18 +1096,19 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-it');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
       const f = m.querySelector('#form-add-it');
-      if (!f.checkValidity()) return f.reportValidity();
       const data = Object.fromEntries(new FormData(f).entries());
-      data.day = parseInt(data.day);
+      if (!data.title || !data.title.trim()) return showToast('Please enter event title', 'info');
+      data.day = parseInt(data.day) || 1;
       appStore.addItineraryItem(trip.id, data);
       close();
       showToast('Itinerary event added!', 'success');
       renderCurrentView();
     };
+    m.querySelector('.submit-modal').onclick = handleSave;
   }
 
   function openAddActivityModal(trip) {
@@ -1122,9 +1120,9 @@
             <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-add-act">
+            <form id="form-add-act" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Title</label>
+                <label class="form-label">Title *</label>
                 <input type="text" class="form-control" name="title" placeholder="e.g. Helicopter Tour" required />
               </div>
               <div class="form-row">
@@ -1158,8 +1156,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Save Activity</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Save Activity</button>
           </div>
         </div>
       </div>
@@ -1167,18 +1165,19 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-act');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
       const f = m.querySelector('#form-add-act');
-      if (!f.checkValidity()) return f.reportValidity();
       const data = Object.fromEntries(new FormData(f).entries());
+      if (!data.title || !data.title.trim()) return showToast('Please enter activity title', 'info');
       data.cost = parseFloat(data.cost) || 0;
       appStore.addActivity(trip.id, data);
       close();
       showToast('Activity saved!', 'success');
       renderCurrentView();
     };
+    m.querySelector('.submit-modal').onclick = handleSave;
   }
 
   function openAddPackingModal(trip) {
@@ -1190,9 +1189,9 @@
             <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-add-pack">
+            <form id="form-add-pack" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Item Name</label>
+                <label class="form-label">Item Name *</label>
                 <input type="text" class="form-control" name="item" placeholder="e.g. Universal Adapter" required />
               </div>
               <div class="form-group">
@@ -1207,8 +1206,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Add</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Add Item</button>
           </div>
         </div>
       </div>
@@ -1216,16 +1215,18 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-pack');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
       const f = m.querySelector('#form-add-pack');
-      if (!f.checkValidity()) return f.reportValidity();
-      appStore.addPackingItem(trip.id, Object.fromEntries(new FormData(f).entries()));
+      const data = Object.fromEntries(new FormData(f).entries());
+      if (!data.item || !data.item.trim()) return showToast('Please enter item name', 'info');
+      appStore.addPackingItem(trip.id, data);
       close();
       showToast('Packing item added!', 'success');
       renderCurrentView();
     };
+    m.querySelector('.submit-modal').onclick = handleSave;
   }
 
   function openAddExpenseModal(trip) {
@@ -1238,14 +1239,14 @@
             <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-add-exp">
+            <form id="form-add-exp" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Description</label>
+                <label class="form-label">Description *</label>
                 <input type="text" class="form-control" name="title" placeholder="e.g. Welcome Dinner" required />
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Amount ($)</label>
+                  <label class="form-label">Amount ($) *</label>
                   <input type="number" step="0.01" class="form-control" name="amount" placeholder="150.00" required />
                 </div>
                 <div class="form-group">
@@ -1267,8 +1268,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Log Expense</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Log Expense</button>
           </div>
         </div>
       </div>
@@ -1276,12 +1277,12 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-exp');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
       const f = m.querySelector('#form-add-exp');
-      if (!f.checkValidity()) return f.reportValidity();
       const d = Object.fromEntries(new FormData(f).entries());
+      if (!d.title || !d.title.trim()) return showToast('Please enter expense description', 'info');
       d.amount = parseFloat(d.amount) || 0;
       d.splitWith = attendees.map(a => a.name);
       appStore.addExpense(trip.id, d);
@@ -1289,6 +1290,7 @@
       showToast('Expense logged!', 'success');
       renderCurrentView();
     };
+    m.querySelector('.submit-modal').onclick = handleSave;
   }
 
   function openAddAttendeeModal(trip) {
@@ -1300,9 +1302,9 @@
             <button class="btn btn-icon-only btn-secondary close-modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form id="form-add-att">
+            <form id="form-add-att" onsubmit="return false;">
               <div class="form-group">
-                <label class="form-label">Name</label>
+                <label class="form-label">Name *</label>
                 <input type="text" class="form-control" name="name" placeholder="e.g. Jordan Smith" required />
               </div>
               <div class="form-group">
@@ -1315,8 +1317,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Add</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Add</button>
           </div>
         </div>
       </div>
@@ -1324,16 +1326,18 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-att');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
-    m.querySelector('.submit-modal').onclick = () => {
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const handleSave = () => {
       const f = m.querySelector('#form-add-att');
-      if (!f.checkValidity()) return f.reportValidity();
-      appStore.addAttendee(trip.id, Object.fromEntries(new FormData(f).entries()));
+      const d = Object.fromEntries(new FormData(f).entries());
+      if (!d.name || !d.name.trim()) return showToast('Please enter attendee name', 'info');
+      appStore.addAttendee(trip.id, d);
       close();
       showToast('Attendee added!', 'success');
       renderCurrentView();
     };
+    m.querySelector('.submit-modal').onclick = handleSave;
   }
 
   function openSettingsModal() {
@@ -1354,20 +1358,20 @@
                 WanderPulse stores your trips locally in browser storage out of the box. Connect a free project on <strong>Supabase.com</strong> to sync across devices!
               </p>
             </div>
-            <form id="form-settings">
+            <form id="form-settings" onsubmit="return false;">
               <div class="form-group">
                 <label class="form-label">Supabase URL</label>
                 <input type="url" class="form-control" name="supabaseUrl" placeholder="https://your-project.supabase.co" value="${settings.supabaseUrl || ''}" />
               </div>
               <div class="form-group">
-                <label class="form-label">Supabase Anon Key</label>
-                <input type="text" class="form-control" name="supabaseKey" placeholder="eyJhbG..." value="${settings.supabaseKey || ''}" />
+                <label class="form-label">Supabase Anon / Publishable Key</label>
+                <input type="text" class="form-control" name="supabaseKey" placeholder="sb_publishable_..." value="${settings.supabaseKey || ''}" />
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary cancel-modal">Cancel</button>
-            <button class="btn btn-primary submit-modal">Save Settings</button>
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" type="button">Save Settings</button>
           </div>
         </div>
       </div>
@@ -1375,13 +1379,13 @@
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-settings');
     const close = () => m.remove();
-    m.querySelector('.cancel-modal').onclick = close;
-    m.querySelector('.close-modal').onclick = close;
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
     m.querySelector('.submit-modal').onclick = () => {
       const f = m.querySelector('#form-settings');
       appStore.saveSettings(Object.fromEntries(new FormData(f).entries()));
       close();
-      showToast('Settings saved!', 'success');
+      showToast('Supabase Cloud Sync Settings saved!', 'success');
     };
   }
 
@@ -1418,8 +1422,8 @@
     new window.Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: Object.keys(catMap),
-        datasets: [{ data: Object.values(catMap), backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'] }]
+        labels: Object.keys(catMap).length > 0 ? Object.keys(catMap) : ['No Expenses'],
+        datasets: [{ data: Object.values(catMap).length > 0 ? Object.values(catMap) : [1], backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'] }]
       },
       options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
     });
