@@ -125,9 +125,9 @@
   }
 
   // --- Storage ---
-  const STORAGE_KEY = 'wanderpulse_trips_data_v6';
-  const SETTINGS_KEY = 'wanderpulse_settings_v6';
-  const PROFILE_KEY = 'wanderpulse_user_profile_v6';
+  const STORAGE_KEY = 'wanderpulse_trips_data_v7';
+  const SETTINGS_KEY = 'wanderpulse_settings_v7';
+  const PROFILE_KEY = 'wanderpulse_user_profile_v7';
 
   const defaultProfile = {
     name: 'Alex Rivers',
@@ -171,12 +171,100 @@
       lat: 35.6762, lng: 139.6503,
       logistics: {
         flights: [
-          { airline: 'Japan Airlines JL005', from: 'JFK (New York)', to: 'HND (Tokyo)', date: '2026-10-15 11:30 AM', confirmation: 'JAL-982173' }
+          {
+            id: 'fl-1',
+            airline: 'Japan Airlines',
+            flightNum: 'JL 005',
+            fromIata: 'JFK',
+            fromCity: 'New York',
+            fromTime: '11:30 AM',
+            fromDate: '2026-10-15',
+            fromTerminal: 'Terminal 8, Gate 14',
+            toIata: 'HND',
+            toCity: 'Tokyo',
+            toTime: '03:25 PM (+1)',
+            toDate: '2026-10-16',
+            toTerminal: 'Terminal 3',
+            duration: '14h 55m • Non-stop',
+            cabinClass: 'Premium Economy',
+            confirmation: 'JAL-982173',
+            status: 'On Time',
+            carryOn: true,
+            checkedBags: 2,
+            checkinUrl: 'https://www.jal.co.jp/us/en/'
+          },
+          {
+            id: 'fl-2',
+            airline: 'Japan Airlines',
+            flightNum: 'JL 006',
+            fromIata: 'HND',
+            fromCity: 'Tokyo',
+            fromTime: '06:20 PM',
+            fromDate: '2026-10-25',
+            fromTerminal: 'Terminal 3, Gate 112',
+            toIata: 'JFK',
+            toCity: 'New York',
+            toTime: '06:10 PM',
+            toDate: '2026-10-25',
+            toTerminal: 'Terminal 8',
+            duration: '13h 50m • Non-stop',
+            cabinClass: 'Premium Economy',
+            confirmation: 'JAL-982173',
+            status: 'Scheduled',
+            carryOn: true,
+            checkedBags: 2,
+            checkinUrl: 'https://www.jal.co.jp/us/en/'
+          }
         ],
         accommodations: [
-          { name: 'Park Hyatt Tokyo', address: '3-7-1-2 Nishi-Shinjuku, Tokyo', checkIn: '2026-10-15', checkOut: '2026-10-19', confirmation: 'HTL-8831' }
+          {
+            id: 'acc-1',
+            name: 'Park Hyatt Tokyo',
+            photo: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+            propertyType: 'Boutique Hotel',
+            rating: '4.9 ★',
+            address: '3-7-1-2 Nishi-Shinjuku, Shinjuku City, Tokyo 160-0023',
+            checkIn: '2026-10-15 • 3:00 PM',
+            checkOut: '2026-10-20 • 11:00 AM',
+            nights: '5 Nights',
+            roomDetails: 'Park Deluxe King Room • 2 Guests',
+            confirmation: 'HTL-883194',
+            accessCode: 'Front Desk Keycard • Code: 4920#',
+            cancellationAlert: 'Free cancellation until Oct 12, 2026',
+            paymentStatus: 'Paid in Full',
+            cost: 1850
+          },
+          {
+            id: 'acc-2',
+            name: 'Suiran Luxury Collection Hotel Kyoto',
+            photo: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+            propertyType: 'Resort / Ryokan',
+            rating: '4.95 ★',
+            address: '12 Susukinobaba-cho, Saga-Tenryuji, Ukyo-ku, Kyoto 616-8385',
+            checkIn: '2026-10-20 • 3:00 PM',
+            checkOut: '2026-10-25 • 11:00 AM',
+            nights: '5 Nights',
+            roomDetails: 'Onsen Villa Suite • 2 Guests',
+            confirmation: 'HTL-994012',
+            accessCode: 'Ryokan Concierge Access',
+            cancellationAlert: 'Non-refundable after Oct 10',
+            paymentStatus: 'Paid in Full',
+            cost: 2100
+          }
         ],
-        notes: 'Pick up Pocket Wi-Fi at Haneda Terminal 3.'
+        rentalCars: [
+          {
+            id: 'car-1',
+            provider: 'JR East Rail',
+            vehicleType: 'Shinkansen Bullet Train (Nozomi Green Car)',
+            pickupLoc: 'Tokyo Station • Oct 20, 09:30 AM',
+            dropoffLoc: 'Kyoto Station • Oct 20, 11:45 AM',
+            confirmation: 'JR-773104',
+            fuelPolicy: 'Electric Rail',
+            insuranceTag: 'Reserved Seats Included'
+          }
+        ],
+        notes: 'Pick up Pocket Wi-Fi router at Haneda Airport Terminal 3 Arrivals Hall counter B.'
       },
       itinerary: [
         { id: 'it-1', day: 1, date: '2026-10-15', title: 'Arrival & Shinjuku Evening', time: '16:00', category: 'sightseeing', location: 'Shinjuku, Tokyo', notes: 'Explore Omoide Yokocho alleyways for ramen & yakitori.', lat: 35.6938, lng: 139.7034 }
@@ -210,7 +298,64 @@
       currency: 'USD',
       isPrivate: false,
       lat: 21.1619, lng: -86.8515,
-      logistics: { flights: [], accommodations: [], notes: '' },
+      logistics: {
+        flights: [
+          {
+            id: 'fl-10',
+            airline: 'United Airlines',
+            flightNum: 'UA 1432',
+            fromIata: 'CMH',
+            fromCity: 'Columbus',
+            fromTime: '06:15 AM',
+            fromDate: '2026-11-01',
+            fromTerminal: 'Terminal 2, Gate B14',
+            toIata: 'CUN',
+            toCity: 'Cancún',
+            toTime: '11:00 AM',
+            toDate: '2026-11-01',
+            toTerminal: 'Terminal 3',
+            duration: '5h 45m • 1 Stop in IAH (1h 15m layover)',
+            cabinClass: 'Economy / Main Cabin',
+            confirmation: 'P8X9LK',
+            status: 'On Time',
+            carryOn: true,
+            checkedBags: 1,
+            checkinUrl: 'https://www.united.com'
+          }
+        ],
+        accommodations: [
+          {
+            id: 'acc-10',
+            name: 'Nizuc Resort & Spa Cancún',
+            photo: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+            propertyType: 'Luxury Resort',
+            rating: '4.8 ★',
+            address: 'Km 21.2 Blvd. Kukulcan, Punta Nizuc, 77500 Cancún, Q.R., Mexico',
+            checkIn: '2026-11-01 • 3:00 PM',
+            checkOut: '2026-11-07 • 12:00 PM',
+            nights: '6 Nights',
+            roomDetails: 'Ocean View Villa with Private Plunge Pool • 2 Guests',
+            confirmation: 'NZC-40912',
+            accessCode: 'Access Code: 8391#',
+            cancellationAlert: 'Free cancellation until Oct 25, 2026',
+            paymentStatus: 'Pay at Property',
+            cost: 1950
+          }
+        ],
+        rentalCars: [
+          {
+            id: 'car-10',
+            provider: 'Hertz',
+            vehicleType: 'Jeep Wrangler 4x4 Convertible',
+            pickupLoc: 'Cancún Airport (CUN) • Nov 01, 11:30 AM',
+            dropoffLoc: 'Cancún Airport (CUN) • Nov 07, 10:00 AM',
+            confirmation: 'HTZ-902184',
+            fuelPolicy: 'Full-to-Full',
+            insuranceTag: 'CDW & Theft Protection Included'
+          }
+        ],
+        notes: 'Hotel shuttle pick-up at Terminal 3 Exit 4.'
+      },
       itinerary: [], activities: [], packingList: [], prepChecklist: [],
       attendees: [
         { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' }
@@ -426,6 +571,57 @@
     deleteExpense(tripId, expId) {
       const t = this.trips.find(x => x.id === tripId);
       if (t) { t.expenses = t.expenses.filter(e => e.id !== expId); this.saveTrips(); }
+    }
+
+    addFlight(tripId, flightObj) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        if (!t.logistics) t.logistics = { flights: [], accommodations: [], rentalCars: [], notes: '' };
+        if (!t.logistics.flights) t.logistics.flights = [];
+        t.logistics.flights.push({ id: 'fl-' + Date.now(), status: 'Scheduled', ...flightObj });
+        this.saveTrips();
+      }
+    }
+    deleteFlight(tripId, flightId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.logistics && t.logistics.flights) {
+        t.logistics.flights = t.logistics.flights.filter(f => f.id !== flightId);
+        this.saveTrips();
+      }
+    }
+
+    addAccommodation(tripId, hotelObj) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        if (!t.logistics) t.logistics = { flights: [], accommodations: [], rentalCars: [], notes: '' };
+        if (!t.logistics.accommodations) t.logistics.accommodations = [];
+        t.logistics.accommodations.push({ id: 'acc-' + Date.now(), ...hotelObj });
+        this.saveTrips();
+      }
+    }
+    deleteAccommodation(tripId, hotelId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.logistics && t.logistics.accommodations) {
+        t.logistics.accommodations = t.logistics.accommodations.filter(a => a.id !== hotelId);
+        this.saveTrips();
+      }
+    }
+
+    addRentalCar(tripId, carObj) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t) {
+        if (!t.logistics) t.logistics = { flights: [], accommodations: [], rentalCars: [], notes: '' };
+        if (!t.logistics.rentalCars) t.logistics.rentalCars = [];
+        t.logistics.rentalCars.push({ id: 'car-' + Date.now(), ...carObj });
+        this.saveTrips();
+      }
+    }
+    deleteRentalCar(tripId, carId) {
+      const t = this.trips.find(x => x.id === tripId);
+      if (t && t.logistics && t.logistics.rentalCars) {
+        t.logistics.rentalCars = t.logistics.rentalCars.filter(c => c.id !== carId);
+        this.saveTrips();
+      }
     }
   }
 
@@ -2885,54 +3081,933 @@
   }
 
 
+  let logisticsFilterState = 'all';
+
   function renderLogisticsPane(container, trip) {
+    const flights = (trip.logistics && trip.logistics.flights) ? trip.logistics.flights : [];
+    const accommodations = (trip.logistics && trip.logistics.accommodations) ? trip.logistics.accommodations : [];
+    const rentalCars = (trip.logistics && trip.logistics.rentalCars) ? trip.logistics.rentalCars : [];
+    const notes = (trip.logistics && trip.logistics.notes) ? trip.logistics.notes : '';
+
+    const filteredFlights = (logisticsFilterState === 'all' || logisticsFilterState === 'flights') ? flights : [];
+    const filteredAccommodations = (logisticsFilterState === 'all' || logisticsFilterState === 'lodging') ? accommodations : [];
+    const filteredCars = (logisticsFilterState === 'all' || logisticsFilterState === 'cars') ? rentalCars : [];
+
+    const totalCount = flights.length + accommodations.length + rentalCars.length;
+
     container.innerHTML = `
-      <div class="card" style="margin-bottom: 2rem;">
-        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">${icon('plane', 'var(--accent-primary)')} Flights & Transportation</h3>
-        ${trip.logistics.flights.length === 0 ? '<p style="color: var(--text-muted);">No flights added yet.</p>' : `
-          <div style="display: grid; gap: 1rem;">
-            ${trip.logistics.flights.map(f => `
-              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <strong style="font-size: 1.1rem; color: var(--text-primary);">${f.airline}</strong>
-                  <p style="color: var(--text-secondary); font-size: 0.9rem;">${f.from} ➔ ${f.to}</p>
-                </div>
-                <span class="badge badge-upcoming">Conf: ${f.confirmation}</span>
-              </div>
-            `).join('')}
-          </div>
-        `}
+      <!-- View Mode Header Bar -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem;">
+        <!-- Segmented Filter Bar -->
+        <div class="logistics-filter-bar" style="display: flex; gap: 0.4rem; background: rgba(15,23,42,0.8); padding: 0.35rem; border-radius: 9999px; border: 1px solid var(--border-color);">
+          <button class="logistics-pill-btn ${logisticsFilterState === 'all' ? 'active' : ''}" data-lfilt="all" style="padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: ${logisticsFilterState === 'all' ? 'var(--accent-primary)' : 'transparent'}; color: ${logisticsFilterState === 'all' ? '#fff' : 'var(--text-secondary)'};">
+            All Logistics (${totalCount})
+          </button>
+          <button class="logistics-pill-btn ${logisticsFilterState === 'flights' ? 'active' : ''}" data-lfilt="flights" style="padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: ${logisticsFilterState === 'flights' ? 'var(--accent-primary)' : 'transparent'}; color: ${logisticsFilterState === 'flights' ? '#fff' : 'var(--text-secondary)'};">
+            ✈️ Flights &amp; Transit (${flights.length})
+          </button>
+          <button class="logistics-pill-btn ${logisticsFilterState === 'lodging' ? 'active' : ''}" data-lfilt="lodging" style="padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: ${logisticsFilterState === 'lodging' ? 'var(--accent-primary)' : 'transparent'}; color: ${logisticsFilterState === 'lodging' ? '#fff' : 'var(--text-secondary)'};">
+            🏨 Lodging &amp; Stays (${accommodations.length})
+          </button>
+          <button class="logistics-pill-btn ${logisticsFilterState === 'cars' ? 'active' : ''}" data-lfilt="cars" style="padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: ${logisticsFilterState === 'cars' ? 'var(--accent-primary)' : 'transparent'}; color: ${logisticsFilterState === 'cars' ? '#fff' : 'var(--text-secondary)'};">
+            🚘 Rentals &amp; Shuttles (${rentalCars.length})
+          </button>
+        </div>
+
+        <!-- Fast Action CTAs -->
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" id="btn-import-confirmation" style="display: flex; align-items: center; gap: 0.45rem; border-color: rgba(99,102,241,0.4); color: var(--accent-primary);">
+            ${icon('sparkles', 'var(--accent-primary)')} Import Confirmation (Paste Email / PDF)
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-add-logistics-drawer" style="display: flex; align-items: center; gap: 0.45rem; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none;">
+            ${icon('plus')} + Add Reservation
+          </button>
+        </div>
       </div>
 
-      <div class="card" style="margin-bottom: 2rem;">
-        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">${icon('building', 'var(--accent-secondary)')} Accommodations</h3>
-        ${trip.logistics.accommodations.length === 0 ? '<p style="color: var(--text-muted);">No hotel bookings saved.</p>' : `
-          <div style="display: grid; gap: 1rem;">
-            ${trip.logistics.accommodations.map(a => `
-              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <strong style="font-size: 1.1rem; color: var(--text-primary);">${a.name}</strong>
-                  <p style="color: var(--text-secondary); font-size: 0.9rem;">${a.address}</p>
-                </div>
-                <span class="badge badge-active">Conf: ${a.confirmation}</span>
-              </div>
-            `).join('')}
-          </div>
-        `}
-      </div>
+      <!-- Main Content Sections -->
+      <div style="display: flex; flex-direction: column; gap: 2.25rem;">
+        
+        <!-- SECTION 1: FLIGHT & TRANSIT BOARDING PASSES -->
+        ${(logisticsFilterState === 'all' || logisticsFilterState === 'flights') ? `
+          <section>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                ${icon('plane', 'var(--accent-primary)')} Digital Boarding Passes &amp; Flight Legs
+              </h2>
+              <span class="badge badge-active" style="font-size: 0.75rem;">${flights.length} Scheduled Leg${flights.length === 1 ? '' : 's'}</span>
+            </div>
 
-      <div class="card">
-        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">${icon('notebook', '#f59e0b')} Trip Notes</h3>
-        <textarea class="form-control" id="trip-notes-input" rows="4">${trip.logistics.notes || ''}</textarea>
-        <button class="btn btn-primary btn-sm" id="btn-save-notes" style="margin-top: 1rem;">Save Notes</button>
+            ${filteredFlights.length === 0 ? `
+              <div class="card" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✈️</div>
+                <div style="font-weight: 600; color: var(--text-secondary);">No flights recorded yet</div>
+                <p style="font-size: 0.82rem; margin-top: 0.25rem;">Click "+ Add Reservation" or "Import Confirmation" to log flight details.</p>
+              </div>
+            ` : `
+              <div style="display: grid; gap: 1.5rem;">
+                ${filteredFlights.map(f => {
+                  const statusClass = f.status === 'On Time' ? 'status-pill-ontime' : (f.status === 'Delayed' ? 'status-pill-delayed' : 'status-pill-scheduled');
+                  
+                  return `
+                    <div class="boarding-pass-card">
+                      <!-- Left Anchor: Departure & Arrival Spine -->
+                      <div class="iata-spine-container">
+                        <div>
+                          <div class="iata-code-large">${f.fromIata || 'JFK'}</div>
+                          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">${f.fromCity || 'New York'}</div>
+                          <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.15rem;">${f.fromDate || ''} • ${f.fromTime || ''}</div>
+                          <div style="font-size: 0.72rem; color: var(--accent-primary); margin-top: 0.2rem;">${f.fromTerminal || 'Terminal 1'}</div>
+                        </div>
+
+                        <div class="flight-vector-line">
+                          <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">${f.duration || 'Direct'}</span>
+                          <div class="flight-vector-path">
+                            <span class="flight-vector-plane">✈️</span>
+                          </div>
+                          <span style="font-size: 0.68rem; color: #34d399; font-weight: 600;">Confirmed</span>
+                        </div>
+
+                        <div style="text-align: right;">
+                          <div class="iata-code-large">${f.toIata || 'HND'}</div>
+                          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">${f.toCity || 'Destination'}</div>
+                          <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.15rem;">${f.toDate || ''} • ${f.toTime || ''}</div>
+                          <div style="font-size: 0.72rem; color: var(--accent-secondary); margin-top: 0.2rem;">${f.toTerminal || 'Arrival Hall'}</div>
+                        </div>
+                      </div>
+
+                      <div class="perforated-divider"></div>
+
+                      <!-- Middle Anchor: Carrier & Confirmation -->
+                      <div style="padding: 1.35rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                            <strong style="font-size: 1.05rem; color: var(--text-primary);">${f.airline || 'Airline Carrier'}</strong>
+                            <span class="badge" style="background: rgba(99,102,241,0.15); color: #818cf8; font-size: 0.75rem;">${f.flightNum || ''}</span>
+                          </div>
+                          <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                            Cabin Class: <strong style="color: var(--text-primary);">${f.cabinClass || 'Economy'}</strong>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.25rem;">
+                            Booking Reference (PNR)
+                          </div>
+                          <div class="conf-code-chip btn-copy-conf-pnr" data-pnr="${f.confirmation || ''}" title="Click to copy confirmation code">
+                            📋 ${f.confirmation || 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="perforated-divider"></div>
+
+                      <!-- Right Anchor: Baggage & Boarding Utilities -->
+                      <div style="padding: 1.35rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between; background: rgba(15,23,42,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span class="badge ${statusClass}" style="font-size: 0.75rem; font-weight: 700;">
+                            ${f.status || 'Scheduled'}
+                          </span>
+                          <button class="btn btn-icon-only btn-secondary btn-del-flight" data-id="${f.id}" style="width: 28px; height: 28px;" title="Delete Flight">
+                            ${icon('trash-2', '#ef4444')}
+                          </button>
+                        </div>
+
+                        <div style="margin: 0.6rem 0;">
+                          <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                            🧳 Carry-on Included
+                          </div>
+                          <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem;">
+                            💼 ${f.checkedBags ? `${f.checkedBags} Checked Bag${f.checkedBags === 1 ? '' : 's'}` : 'Personal Item'}
+                          </div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                          ${f.checkinUrl ? `
+                            <a href="${f.checkinUrl}" target="_blank" class="btn btn-secondary btn-sm" style="flex: 1; justify-content: center; font-size: 0.72rem; padding: 0.3rem 0.5rem;">
+                              Airline Check-in
+                            </a>
+                          ` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `}
+          </section>
+        ` : ''}
+
+        <!-- SECTION 2: LODGING & PROPERTY HUBS -->
+        ${(logisticsFilterState === 'all' || logisticsFilterState === 'lodging') ? `
+          <section>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                ${icon('building', 'var(--accent-secondary)')} Hotel &amp; Property Hubs
+              </h2>
+              <span class="badge badge-active" style="font-size: 0.75rem;">${accommodations.length} Saved Booking${accommodations.length === 1 ? '' : 's'}</span>
+            </div>
+
+            ${filteredAccommodations.length === 0 ? `
+              <div class="card" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏨</div>
+                <div style="font-weight: 600; color: var(--text-secondary);">No hotel bookings saved</div>
+                <p style="font-size: 0.82rem; margin-top: 0.25rem;">Log hotel reservations, resorts, or Airbnb stays here.</p>
+              </div>
+            ` : `
+              <div style="display: grid; gap: 1.5rem;">
+                ${filteredAccommodations.map(acc => `
+                  <div class="stay-hub-card">
+                    <!-- Left Photo Thumbnail -->
+                    <div class="property-thumb-container">
+                      <img src="${acc.photo || 'assets/images/hero.png'}" alt="${acc.name}" />
+                      <span class="property-type-badge">${acc.propertyType || 'Hotel Stay'}</span>
+                    </div>
+
+                    <!-- Center Core Details -->
+                    <div style="padding: 1.35rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+                      <div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                          <h3 style="font-size: 1.2rem; color: var(--text-primary); margin: 0;">${acc.name}</h3>
+                          <span style="font-size: 0.82rem; color: #fbbf24; font-weight: 700;">${acc.rating || '4.8 ★'}</span>
+                        </div>
+
+                        <div style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                          ${icon('map-pin', 'var(--accent-primary)')}
+                          <span>${acc.address || 'Address provided on voucher'}</span>
+                          <a href="https://maps.google.com/?q=${encodeURIComponent(acc.address || acc.name)}" target="_blank" style="color: var(--accent-primary); font-weight: 700; text-decoration: none; font-size: 0.78rem;">
+                            Open in Maps &rarr;
+                          </a>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 0.65rem;">
+                          <span class="stay-nights-badge">📅 ${acc.checkIn} ➔ ${acc.checkOut}</span>
+                          <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-secondary); border: 1px solid var(--border-color);">
+                            ${acc.nights || 'Multi-Night Stay'}
+                          </span>
+                        </div>
+
+                        <div style="font-size: 0.82rem; color: var(--text-primary); font-weight: 600;">
+                          🛋️ ${acc.roomDetails || 'Standard Guest Room'}
+                        </div>
+                      </div>
+
+                      ${acc.cancellationAlert ? `
+                        <div style="margin-top: 0.85rem; font-size: 0.75rem; color: #fbbf24; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); padding: 0.3rem 0.65rem; border-radius: 6px; display: flex; align-items: center; gap: 0.35rem;">
+                          ⚠️ ${acc.cancellationAlert}
+                        </div>
+                      ` : ''}
+                    </div>
+
+                    <!-- Right Confirmation & Access Codes -->
+                    <div style="padding: 1.35rem; background: rgba(15,23,42,0.5); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                      <div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.65rem;">
+                          <div>
+                            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">
+                              Ref Confirmation
+                            </div>
+                            <div class="conf-code-chip btn-copy-conf-pnr" data-pnr="${acc.confirmation || ''}" style="margin-top: 0.2rem;" title="Click to copy confirmation ref">
+                              📋 ${acc.confirmation || 'N/A'}
+                            </div>
+                          </div>
+                          <button class="btn btn-icon-only btn-secondary btn-del-acc" data-id="${acc.id}" style="width: 28px; height: 28px;" title="Delete Hotel">
+                            ${icon('trash-2', '#ef4444')}
+                          </button>
+                        </div>
+
+                        ${acc.accessCode ? `
+                          <div style="margin-top: 0.75rem;">
+                            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.2rem;">
+                              Front Desk / Door Access
+                            </div>
+                            <div class="access-code-badge">
+                              🔑 ${acc.accessCode}
+                            </div>
+                          </div>
+                        ` : ''}
+                      </div>
+
+                      <div style="margin-top: 1rem; text-align: right;">
+                        <span class="badge" style="background: ${acc.paymentStatus === 'Paid in Full' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)'}; color: ${acc.paymentStatus === 'Paid in Full' ? '#34d399' : '#fbbf24'}; border: 1px solid ${acc.paymentStatus === 'Paid in Full' ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}; margin-bottom: 0.25rem;">
+                          ${acc.paymentStatus || 'Confirmed'}
+                        </span>
+                        <div style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-top: 0.15rem;">
+                          $${(parseFloat(acc.cost) || 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </section>
+        ` : ''}
+
+        <!-- SECTION 3: GROUND TRANSPORTATION & RENTAL CARS -->
+        ${(logisticsFilterState === 'all' || logisticsFilterState === 'cars') ? `
+          <section>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.25rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                ${icon('compass', '#06b6d4')} Ground Transportation &amp; Car Rentals
+              </h2>
+              <span class="badge badge-active" style="font-size: 0.75rem;">${rentalCars.length} Booked</span>
+            </div>
+
+            ${filteredCars.length === 0 ? `
+              <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🚘</div>
+                <div style="font-weight: 600; color: var(--text-secondary);">No car rentals or shuttles added</div>
+                <p style="font-size: 0.82rem; margin-top: 0.25rem;">Add rental cars, train tickets, or shuttle transfers here.</p>
+              </div>
+            ` : `
+              <div style="display: grid; gap: 1rem;">
+                ${filteredCars.map(car => `
+                  <div class="ground-transit-strip">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <div class="car-provider-logo-badge">
+                        ${car.provider ? car.provider.slice(0, 2).toUpperCase() : 'RC'}
+                      </div>
+                      <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                          <strong style="font-size: 1.05rem; color: var(--text-primary);">${car.provider || 'Car Rental'}</strong>
+                          <span class="badge" style="background: rgba(6,182,212,0.15); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); font-size: 0.72rem;">
+                            ${car.vehicleType || 'Vehicle'}
+                          </span>
+                          <span class="fuel-policy-tag">${car.fuelPolicy || 'Full-to-Full'}</span>
+                          <span class="badge" style="background: rgba(148,163,184,0.12); color: var(--text-secondary); font-size: 0.7rem;">
+                            ${car.insuranceTag || 'Insurance Included'}
+                          </span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                          Pick-up: <strong>${car.pickupLoc || 'Airport Hub'}</strong> • Drop-off: <strong>${car.dropoffLoc || 'Airport Hub'}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <div class="conf-code-chip btn-copy-conf-pnr" data-pnr="${car.confirmation || ''}" title="Click to copy ref">
+                        📋 ${car.confirmation || 'N/A'}
+                      </div>
+                      <button class="btn btn-icon-only btn-secondary btn-del-car" data-id="${car.id}" style="width: 32px; height: 32px;" title="Delete Rental Car">
+                        ${icon('trash-2', '#ef4444')}
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </section>
+        ` : ''}
+
+        <!-- SECTION 4: TRIP NOTES & CONFIRMATION REMINDERS -->
+        <section class="card" style="padding: 1.35rem;">
+          <h3 style="margin-bottom: 0.75rem; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            ${icon('notebook', '#f59e0b')} General Logistics &amp; Travel Reminders
+          </h3>
+          <textarea class="form-control" id="trip-notes-input" rows="3" placeholder="Add parking tips, eSIM info, terminal transfers, or travel insurance details..." style="font-size: 0.88rem; margin-bottom: 0.85rem;">${notes}</textarea>
+          <button class="btn btn-primary btn-sm" id="btn-save-notes" style="display: flex; align-items: center; gap: 0.4rem;">
+            ${icon('save')} Save Logistics Notes
+          </button>
+        </section>
+
       </div>
     `;
 
-    container.querySelector('#btn-save-notes')?.addEventListener('click', () => {
-      trip.logistics.notes = container.querySelector('#trip-notes-input').value;
-      appStore.saveTrips();
-      showToast('Notes saved!', 'success');
+    // --- Wire Event Listeners ---
+    container.querySelectorAll('.logistics-pill-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        logisticsFilterState = e.currentTarget.getAttribute('data-lfilt');
+        renderLogisticsPane(container, trip);
+      });
     });
+
+    container.querySelector('#btn-add-logistics-drawer')?.addEventListener('click', () => {
+      openAddLogisticsDrawer(trip);
+    });
+
+    container.querySelector('#btn-import-confirmation')?.addEventListener('click', () => {
+      openSmartImportModal(trip);
+    });
+
+    container.querySelectorAll('.btn-copy-conf-pnr').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        const pnr = e.currentTarget.getAttribute('data-pnr');
+        if (pnr) {
+          navigator.clipboard.writeText(pnr);
+          showToast(`Copied Confirmation Code: ${pnr}`, 'success');
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-del-flight').forEach(btn => {
+      btn.addEventListener('click', () => {
+        appStore.deleteFlight(trip.id, btn.getAttribute('data-id'));
+        showToast('Flight leg removed', 'info');
+        renderLogisticsPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelectorAll('.btn-del-acc').forEach(btn => {
+      btn.addEventListener('click', () => {
+        appStore.deleteAccommodation(trip.id, btn.getAttribute('data-id'));
+        showToast('Hotel booking removed', 'info');
+        renderLogisticsPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelectorAll('.btn-del-car').forEach(btn => {
+      btn.addEventListener('click', () => {
+        appStore.deleteRentalCar(trip.id, btn.getAttribute('data-id'));
+        showToast('Rental car booking removed', 'info');
+        renderLogisticsPane(container, appStore.getCurrentTrip());
+      });
+    });
+
+    container.querySelector('#btn-save-notes')?.addEventListener('click', () => {
+      const val = container.querySelector('#trip-notes-input').value;
+      if (!trip.logistics) trip.logistics = { flights: [], accommodations: [], rentalCars: [], notes: '' };
+      trip.logistics.notes = val;
+      appStore.saveTrips();
+      showToast('Logistics notes saved!', 'success');
+    });
+  }
+
+  // --- Multi-Type Intake Slide-over Drawer ---
+  function openAddLogisticsDrawer(trip, defaultCat = 'flight') {
+    let activeCat = defaultCat;
+
+    const html = `
+      <div class="modal-overlay active" id="drawer-add-logistics">
+        <div class="modal-container" style="max-width: 600px;">
+          <div class="modal-header">
+            <h3>${icon('plus-circle', 'var(--accent-primary)')} Add Travel Reservation</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+            <!-- Category Tabs -->
+            <div style="display: flex; gap: 0.4rem; background: rgba(15,23,42,0.8); padding: 0.35rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+              <button type="button" class="btn-log-cat ${activeCat === 'flight' ? 'active' : ''}" data-cat="flight" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; background: ${activeCat === 'flight' ? 'var(--accent-primary)' : 'transparent'}; color: ${activeCat === 'flight' ? '#fff' : 'var(--text-secondary)'};">
+                ✈️ Flight
+              </button>
+              <button type="button" class="btn-log-cat ${activeCat === 'hotel' ? 'active' : ''}" data-cat="hotel" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; background: ${activeCat === 'hotel' ? 'var(--accent-primary)' : 'transparent'}; color: ${activeCat === 'hotel' ? '#fff' : 'var(--text-secondary)'};">
+                🏨 Hotel / Stay
+              </button>
+              <button type="button" class="btn-log-cat ${activeCat === 'car' ? 'active' : ''}" data-cat="car" style="flex: 1; padding: 0.45rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; background: ${activeCat === 'car' ? 'var(--accent-primary)' : 'transparent'}; color: ${activeCat === 'car' ? '#fff' : 'var(--text-secondary)'};">
+                🚘 Car Rental / Transit
+              </button>
+            </div>
+
+            <form id="form-logistics-intake" onsubmit="return false;">
+              <div id="logistics-dynamic-form-fields">
+                <!-- Injected dynamically -->
+              </div>
+
+              <!-- Shared Attach Cost to Trip Expenses Switch -->
+              <div style="background: rgba(15,23,42,0.6); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-top: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 0.88rem; font-weight: 600; color: var(--text-primary);">Attach to Trip Expenses</div>
+                  <div style="font-size: 0.75rem; color: var(--text-secondary);">Auto-logs booking cost under Group Expense tab</div>
+                </div>
+                <input type="checkbox" id="chk-sync-expense" checked style="width: 18px; height: 18px; cursor: pointer;" />
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer" style="justify-content: space-between;">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" id="btn-save-logistics-item" type="button">
+              Save Reservation
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('drawer-add-logistics');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const fieldsContainer = m.querySelector('#logistics-dynamic-form-fields');
+    const catBtns = m.querySelectorAll('.btn-log-cat');
+
+    const renderFormFields = () => {
+      if (activeCat === 'flight') {
+        fieldsContainer.innerHTML = `
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Airline Name *</label>
+              <input type="text" class="form-control" id="inp-fl-airline" placeholder="e.g. United Airlines" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Flight # *</label>
+              <input type="text" class="form-control" id="inp-fl-num" placeholder="e.g. UA 1432" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Departure Airport Code (IATA) *</label>
+              <input type="text" class="form-control" id="inp-fl-from-iata" placeholder="e.g. JFK" maxlength="4" style="text-transform: uppercase;" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Arrival Airport Code (IATA) *</label>
+              <input type="text" class="form-control" id="inp-fl-to-iata" placeholder="e.g. HND" maxlength="4" style="text-transform: uppercase;" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Departure Date &amp; Time</label>
+              <input type="datetime-local" class="form-control" id="inp-fl-from-time" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Arrival Date &amp; Time</label>
+              <input type="datetime-local" class="form-control" id="inp-fl-to-time" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Confirmation Code (PNR) *</label>
+              <input type="text" class="form-control" id="inp-fl-conf" placeholder="e.g. P8X9LK" style="text-transform: uppercase;" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cabin Class</label>
+              <select class="form-control" id="inp-fl-class">
+                <option value="Economy / Main Cabin">Economy / Main Cabin</option>
+                <option value="Premium Economy">Premium Economy</option>
+                <option value="Business Class">Business Class</option>
+                <option value="First Class">First Class</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Total Cost ($)</label>
+              <input type="number" step="0.01" class="form-control" id="inp-fl-cost" placeholder="450.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Airline Check-in URL</label>
+              <input type="url" class="form-control" id="inp-fl-url" placeholder="https://united.com" />
+            </div>
+          </div>
+        `;
+      } else if (activeCat === 'hotel') {
+        fieldsContainer.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">Property / Hotel Name *</label>
+            <input type="text" class="form-control" id="inp-acc-name" placeholder="e.g. Park Hyatt Tokyo" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Street Address *</label>
+            <input type="text" class="form-control" id="inp-acc-addr" placeholder="e.g. 3-7-1-2 Nishi-Shinjuku, Shinjuku City, Tokyo" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Property Type</label>
+              <select class="form-control" id="inp-acc-type">
+                <option value="Boutique Hotel">Boutique Hotel</option>
+                <option value="Luxury Resort">Luxury Resort</option>
+                <option value="Airbnb / Rental">Airbnb / Rental</option>
+                <option value="Cabin / Lodge">Cabin / Lodge</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmation Ref *</label>
+              <input type="text" class="form-control" id="inp-acc-conf" placeholder="e.g. HTL-883194" style="text-transform: uppercase;" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Check-in Date</label>
+              <input type="date" class="form-control" id="inp-acc-checkin" value="${trip.startDate || ''}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Check-out Date</label>
+              <input type="date" class="form-control" id="inp-acc-checkout" value="${trip.endDate || ''}" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Door Access / Key Code</label>
+              <input type="text" class="form-control" id="inp-acc-code" placeholder="e.g. Code: 4920#" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total Stay Cost ($)</label>
+              <input type="number" step="0.01" class="form-control" id="inp-acc-cost" placeholder="1200.00" />
+            </div>
+          </div>
+        `;
+      } else if (activeCat === 'car') {
+        fieldsContainer.innerHTML = `
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Provider Name *</label>
+              <input type="text" class="form-control" id="inp-car-provider" placeholder="e.g. Hertz, Enterprise, Shuttle" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vehicle Type</label>
+              <input type="text" class="form-control" id="inp-car-vehicle" placeholder="e.g. SUV, Convertible 4x4" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Pick-up Location &amp; Time *</label>
+              <input type="text" class="form-control" id="inp-car-pickup" placeholder="e.g. Cancún Airport • Nov 01, 11:30 AM" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Drop-off Location</label>
+              <input type="text" class="form-control" id="inp-car-dropoff" placeholder="e.g. Cancún Airport • Nov 07, 10:00 AM" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Confirmation Code *</label>
+              <input type="text" class="form-control" id="inp-car-conf" placeholder="e.g. HTZ-902184" style="text-transform: uppercase;" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rental Cost ($)</label>
+              <input type="number" step="0.01" class="form-control" id="inp-car-cost" placeholder="380.00" />
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        catBtns.forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'transparent';
+          b.style.color = 'var(--text-secondary)';
+        });
+        const b = e.currentTarget;
+        b.classList.add('active');
+        b.style.background = 'var(--accent-primary)';
+        b.style.color = '#fff';
+        activeCat = b.getAttribute('data-cat');
+        renderFormFields();
+      });
+    });
+
+    renderFormFields();
+
+    m.querySelector('#btn-save-logistics-item').onclick = () => {
+      const syncExp = m.querySelector('#chk-sync-expense')?.checked;
+
+      if (activeCat === 'flight') {
+        const airline = m.querySelector('#inp-fl-airline').value.trim();
+        const flightNum = m.querySelector('#inp-fl-num').value.trim();
+        const fromIata = m.querySelector('#inp-fl-from-iata').value.trim().toUpperCase();
+        const toIata = m.querySelector('#inp-fl-to-iata').value.trim().toUpperCase();
+        const conf = m.querySelector('#inp-fl-conf').value.trim().toUpperCase();
+        const cost = parseFloat(m.querySelector('#inp-fl-cost').value) || 0;
+
+        if (!airline || !flightNum || !fromIata || !toIata || !conf) {
+          return showToast('Please fill in Airline, Flight #, Airport codes, and Confirmation Code', 'info');
+        }
+
+        const flightData = {
+          airline,
+          flightNum,
+          fromIata,
+          toIata,
+          confirmation: conf,
+          cabinClass: m.querySelector('#inp-fl-class').value,
+          checkinUrl: m.querySelector('#inp-fl-url').value,
+          status: 'Scheduled',
+          carryOn: true,
+          checkedBags: 1
+        };
+
+        appStore.addFlight(trip.id, flightData);
+        if (syncExp && cost > 0) {
+          appStore.addExpense(trip.id, {
+            title: `Flight: ${airline} ${flightNum} (${fromIata}➔${toIata})`,
+            amount: cost,
+            category: 'Transit',
+            paidBy: appStore.profile.name,
+            splitWith: (trip.attendees || []).map(a => a.name)
+          });
+        }
+
+        close();
+        showToast(`Saved Flight ${airline} ${flightNum}!`, 'success');
+        renderCurrentView();
+
+      } else if (activeCat === 'hotel') {
+        const name = m.querySelector('#inp-acc-name').value.trim();
+        const address = m.querySelector('#inp-acc-addr').value.trim();
+        const conf = m.querySelector('#inp-acc-conf').value.trim().toUpperCase();
+        const cost = parseFloat(m.querySelector('#inp-acc-cost').value) || 0;
+
+        if (!name || !address || !conf) {
+          return showToast('Please fill in Property Name, Address, and Confirmation Ref', 'info');
+        }
+
+        const hotelData = {
+          name,
+          address,
+          confirmation: conf,
+          propertyType: m.querySelector('#inp-acc-type').value,
+          checkIn: m.querySelector('#inp-acc-checkin').value,
+          checkOut: m.querySelector('#inp-acc-checkout').value,
+          accessCode: m.querySelector('#inp-acc-code').value,
+          cost,
+          paymentStatus: 'Paid in Full'
+        };
+
+        appStore.addAccommodation(trip.id, hotelData);
+        if (syncExp && cost > 0) {
+          appStore.addExpense(trip.id, {
+            title: `Hotel Stay: ${name}`,
+            amount: cost,
+            category: 'Lodging',
+            paidBy: appStore.profile.name,
+            splitWith: (trip.attendees || []).map(a => a.name)
+          });
+        }
+
+        close();
+        showToast(`Saved Stay at "${name}"!`, 'success');
+        renderCurrentView();
+
+      } else if (activeCat === 'car') {
+        const provider = m.querySelector('#inp-car-provider').value.trim();
+        const pickupLoc = m.querySelector('#inp-car-pickup').value.trim();
+        const conf = m.querySelector('#inp-car-conf').value.trim().toUpperCase();
+        const cost = parseFloat(m.querySelector('#inp-car-cost').value) || 0;
+
+        if (!provider || !pickupLoc || !conf) {
+          return showToast('Please fill in Provider, Pick-up details, and Confirmation Code', 'info');
+        }
+
+        const carData = {
+          provider,
+          pickupLoc,
+          dropoffLoc: m.querySelector('#inp-car-dropoff').value.trim() || pickupLoc,
+          vehicleType: m.querySelector('#inp-car-vehicle').value.trim() || 'Rental Vehicle',
+          confirmation: conf,
+          fuelPolicy: 'Full-to-Full',
+          insuranceTag: 'CDW Included'
+        };
+
+        appStore.addRentalCar(trip.id, carData);
+        if (syncExp && cost > 0) {
+          appStore.addExpense(trip.id, {
+            title: `Rental Car: ${provider}`,
+            amount: cost,
+            category: 'Transit',
+            paidBy: appStore.profile.name,
+            splitWith: (trip.attendees || []).map(a => a.name)
+          });
+        }
+
+        close();
+        showToast(`Saved Rental Car booking with ${provider}!`, 'success');
+        renderCurrentView();
+      }
+    };
+  }
+
+  // --- Smart Client-Side Confirmation Email & PDF Parser ---
+  function parseConfirmationText(rawText) {
+    const text = (rawText || '').trim();
+    if (!text) return null;
+
+    const lower = text.toLowerCase();
+
+    // 1. Detect Category
+    let category = 'flight';
+    if (lower.includes('hotel') || lower.includes('check-in') || lower.includes('resort') || lower.includes('airbnb') || lower.includes('booking.com') || lower.includes('room')) {
+      category = 'hotel';
+    } else if (lower.includes('rental car') || lower.includes('hertz') || lower.includes('enterprise') || lower.includes('avis') || lower.includes('vehicle')) {
+      category = 'car';
+    }
+
+    // 2. Extract Confirmation Code (PNR)
+    let confirmation = '';
+    const pnrMatch = text.match(/(?:conf(?:irmation)?|pnr|record locator|ref(?:erence)?)\s*#?:?\s*([A-Z0-9]{5,8})/i);
+    if (pnrMatch) {
+      confirmation = pnrMatch[1].toUpperCase();
+    } else {
+      const codeMatch = text.match(/\b([A-Z0-9]{6})\b/);
+      if (codeMatch && codeMatch[1] !== 'UNITED' && codeMatch[1] !== 'FLIGHT') confirmation = codeMatch[1];
+    }
+
+    // 3. Extract IATA Codes / Airline
+    let airline = 'United Airlines';
+    let fromIata = 'JFK';
+    let toIata = 'HND';
+
+    if (lower.includes('japan airlines') || lower.includes('jal')) airline = 'Japan Airlines';
+    else if (lower.includes('delta')) airline = 'Delta Air Lines';
+    else if (lower.includes('american')) airline = 'American Airlines';
+    else if (lower.includes('united')) airline = 'United Airlines';
+    else if (lower.includes('emirates')) airline = 'Emirates';
+
+    const flightNumMatch = text.match(/\b([A-Z0-9]{2}\s?\d{3,4})\b/);
+    const flightNum = flightNumMatch ? flightNumMatch[1].toUpperCase() : 'UA 1432';
+
+    const iataMatches = text.match(/\b([A-Z]{3})\b/g);
+    if (iataMatches && iataMatches.length >= 2) {
+      fromIata = iataMatches[0];
+      toIata = iataMatches[1];
+    }
+
+    // 4. Extract Hotel / Property Name
+    let propertyName = 'Grand Luxury Hotel';
+    const hotelMatch = text.match(/(?:hotel|resort|villa|inn|stay)\s*:\s*([^\n\r]+)/i);
+    if (hotelMatch) propertyName = hotelMatch[1].trim();
+
+    // 5. Extract Total Amount
+    let amount = 0;
+    const amtMatch = text.match(/\$\s?(\d+(?:\.\d{2})?)/);
+    if (amtMatch) amount = parseFloat(amtMatch[1]) || 0;
+
+    return {
+      category,
+      airline,
+      flightNum,
+      fromIata,
+      toIata,
+      confirmation: confirmation || 'CONF-8910',
+      propertyName,
+      amount
+    };
+  }
+
+  function openSmartImportModal(trip) {
+    const html = `
+      <div class="modal-overlay active" id="modal-smart-import">
+        <div class="modal-container" style="max-width: 650px;">
+          <div class="modal-header">
+            <h3>${icon('sparkles', 'var(--accent-primary)')} Smart Confirmation Import</h3>
+            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Paste your flight booking email, hotel voucher, or rental car confirmation text below. WanderPulse will auto-extract flight numbers, IATA codes, dates, and confirmation PNR codes!
+            </p>
+
+            <div class="form-group">
+              <label class="form-label">Raw Confirmation Email / PDF Text Body</label>
+              <textarea class="smart-parse-textarea" id="inp-raw-conf-text" placeholder="Paste booking confirmation email body here...&#10;&#10;Example:&#10;United Airlines Flight UA 1432&#10;Confirmation PNR: P8X9LK&#10;Depart: JFK (New York) to CUN (Cancún)&#10;Total Paid: $450.00"></textarea>
+            </div>
+
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-run-smart-parser" style="margin-bottom: 1.25rem; font-weight: 700; color: var(--accent-primary);">
+              ⚡ Run Client-Side Smart Parser
+            </button>
+
+            <!-- Extracted Preview Box -->
+            <div id="smart-parse-results-box" style="display: none; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem;">
+              <!-- Extracted Fields Injected Here -->
+            </div>
+          </div>
+
+          <div class="modal-footer" style="justify-content: space-between;">
+            <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
+            <button class="btn btn-primary submit-modal" id="btn-save-parsed-record" type="button" disabled style="opacity: 0.5;">
+              Save Extracted Reservation
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    const m = document.getElementById('modal-smart-import');
+    const close = () => m.remove();
+    m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
+
+    const txtArea = m.querySelector('#inp-raw-conf-text');
+    const runBtn = m.querySelector('#btn-run-smart-parser');
+    const resultsBox = m.querySelector('#smart-parse-results-box');
+    const saveBtn = m.querySelector('#btn-save-parsed-record');
+
+    let parsedData = null;
+
+    const executeParser = () => {
+      const raw = txtArea.value.trim();
+      if (!raw) return showToast('Please paste confirmation text first', 'info');
+
+      parsedData = parseConfirmationText(raw);
+      if (parsedData) {
+        resultsBox.style.display = 'block';
+        resultsBox.innerHTML = `
+          <div style="font-size: 0.8rem; font-weight: 700; color: #34d399; text-transform: uppercase; margin-bottom: 0.5rem;">
+            ✓ Successfully Extracted Booking Fields
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; color: var(--text-primary);">
+            <div><strong>Type:</strong> ${parsedData.category.toUpperCase()}</div>
+            <div><strong>Confirmation Code:</strong> <span style="color: #818cf8; font-family: monospace;">${parsedData.confirmation}</span></div>
+            ${parsedData.category === 'flight' ? `
+              <div><strong>Airline:</strong> ${parsedData.airline}</div>
+              <div><strong>Flight #:</strong> ${parsedData.flightNum}</div>
+              <div><strong>Route:</strong> ${parsedData.fromIata} ➔ ${parsedData.toIata}</div>
+            ` : `
+              <div><strong>Property:</strong> ${parsedData.propertyName}</div>
+            `}
+            <div><strong>Amount:</strong> $${parsedData.amount.toFixed(2)}</div>
+          </div>
+        `;
+
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = '1';
+        showToast('Extracted booking details!', 'success');
+      }
+    };
+
+    runBtn.onclick = executeParser;
+
+    saveBtn.onclick = () => {
+      if (!parsedData) return;
+
+      if (parsedData.category === 'flight') {
+        appStore.addFlight(trip.id, {
+          airline: parsedData.airline,
+          flightNum: parsedData.flightNum,
+          fromIata: parsedData.fromIata,
+          toIata: parsedData.toIata,
+          confirmation: parsedData.confirmation,
+          status: 'Scheduled',
+          carryOn: true,
+          checkedBags: 1
+        });
+      } else if (parsedData.category === 'hotel') {
+        appStore.addAccommodation(trip.id, {
+          name: parsedData.propertyName,
+          address: trip.destination,
+          confirmation: parsedData.confirmation,
+          checkIn: trip.startDate,
+          checkOut: trip.endDate,
+          cost: parsedData.amount,
+          paymentStatus: 'Paid in Full'
+        });
+      } else {
+        appStore.addRentalCar(trip.id, {
+          provider: 'Hertz Car Rental',
+          vehicleType: 'SUV Rental',
+          pickupLoc: trip.destination,
+          dropoffLoc: trip.destination,
+          confirmation: parsedData.confirmation,
+          fuelPolicy: 'Full-to-Full'
+        });
+      }
+
+      close();
+      showToast('Imported reservation to trip logistics!', 'success');
+      renderCurrentView();
+    };
   }
 
   // --- Cover Photo Gallery Picker Helper ---
