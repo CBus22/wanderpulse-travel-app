@@ -2046,71 +2046,440 @@
     };
   }
 
-  function openAddItineraryModal(trip, defaultCategory = 'sightseeing') {
+  function resolveDestinationTimezone(destinationText) {
+    if (!destinationText) return 'Destination Local Timezone (Auto-locked)';
+    const query = destinationText.toLowerCase();
+    if (query.includes('tokyo') || query.includes('japan') || query.includes('kyoto') || query.includes('osaka')) return 'Asia/Tokyo (JST, UTC+9)';
+    if (query.includes('cancun') || query.includes('mexico') || query.includes('playa')) return 'America/Cancun (EST, UTC-5)';
+    if (query.includes('paris') || query.includes('france') || query.includes('rome') || query.includes('italy') || query.includes('spain') || query.includes('barcelona') || query.includes('swiss') || query.includes('alps') || query.includes('amsterdam')) return 'Europe/Paris (CEST, UTC+2)';
+    if (query.includes('london') || query.includes('uk') || query.includes('edinburgh') || query.includes('dublin')) return 'Europe/London (BST, UTC+1)';
+    if (query.includes('new york') || query.includes('nyc') || query.includes('miami') || query.includes('orlando')) return 'America/New_York (EDT, UTC-4)';
+    if (query.includes('hawaii') || query.includes('honolulu') || query.includes('maui')) return 'Pacific/Honolulu (HST, UTC-10)';
+    if (query.includes('bali') || query.includes('indonesia')) return 'Asia/Makassar (WITA, UTC+8)';
+    if (query.includes('phuket') || query.includes('thailand') || query.includes('bangkok')) return 'Asia/Bangkok (ICT, UTC+7)';
+    if (query.includes('sydney') || query.includes('australia')) return 'Australia/Sydney (AEST, UTC+10)';
+    if (query.includes('dubai') || query.includes('uae')) return 'Asia/Dubai (GST, UTC+4)';
+    return 'Destination Local Timezone (Auto-locked)';
+  }
+
+  function formatDayDateLabel(trip, dayNum) {
+    if (!trip || !trip.startDate) return `Day ${dayNum}`;
+    const start = new Date(trip.startDate + 'T00:00:00');
+    start.setDate(start.getDate() + (dayNum - 1));
+    const dayName = start.toLocaleDateString('en-US', { weekday: 'short' });
+    const monthName = start.toLocaleDateString('en-US', { month: 'short' });
+    const dateNum = start.getDate();
+    const yearNum = start.getFullYear();
+    return `Day ${dayNum} • ${dayName}, ${monthName} ${dateNum}, ${yearNum}`;
+  }
+
+  function getCategoryIcon(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c === 'transit') return 'plane';
+    if (c === 'lodging') return 'building';
+    if (c === 'dining') return 'star';
+    if (c === 'note') return 'file-text';
+    return 'compass';
+  }
+
+  function getTitlePlaceholder(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c === 'transit') return 'e.g. Flight JL005 to Tokyo or Shinkansen Express';
+    if (c === 'lodging') return 'e.g. Check-in Park Hyatt Tokyo';
+    if (c === 'dining') return 'e.g. Sukiyabashi Jiro Omakase Dinner';
+    if (c === 'note') return 'e.g. Pick up Pocket Wi-Fi at Haneda Airport';
+    return 'e.g. Hike to Alum Cave Bluffs or Visit Senso-ji Temple';
+  }
+
+  function buildConditionalFieldsHTML(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c === 'transit') {
+      return `
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Carrier / Transport Type</label>
+            <input type="text" class="form-control" name="transitCarrier" placeholder="e.g. Japan Airlines / Shinkansen" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Flight / Train #</label>
+            <input type="text" class="form-control" name="transitNumber" placeholder="e.g. JL005 / Nozomi 12" />
+          </div>
+        </div>
+      `;
+    }
+    if (c === 'lodging') {
+      return `
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Accommodation Type</label>
+            <select class="form-control" name="lodgingType">
+              <option value="Hotel">Hotel</option>
+              <option value="Resort">Resort</option>
+              <option value="Airbnb / Villa">Airbnb / Villa</option>
+              <option value="Hostel">Hostel</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Room / Booking Ref</label>
+            <input type="text" class="form-control" name="lodgingRef" placeholder="e.g. Deluxe Suite / Conf #883" />
+          </div>
+        </div>
+      `;
+    }
+    if (c === 'dining') {
+      return `
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Cuisine / Dining Type</label>
+            <input type="text" class="form-control" name="diningType" placeholder="e.g. Japanese Ramen, Seafood, Omakase" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Party Size / Reservation Name</label>
+            <input type="text" class="form-control" name="partySize" placeholder="e.g. Party of 4 under Rivers" />
+          </div>
+        </div>
+      `;
+    }
+    if (c === 'note') {
+      return `
+        <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: var(--radius-md); padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--text-secondary);">
+          📝 <strong>Travel Note:</strong> Memos and reminders will anchor directly to your day timeline feed.
+        </div>
+      `;
+    }
+    return `
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Estimated Duration</label>
+          <input type="text" class="form-control" name="duration" placeholder="e.g. 2.5 hrs" />
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Activity Type</label>
+          <select class="form-control" name="activityType">
+            <option value="Sightseeing">Sightseeing</option>
+            <option value="Culture & Art">Culture & Art</option>
+            <option value="Outdoor & Hiking">Outdoor & Hiking</option>
+            <option value="Guided Tour">Guided Tour</option>
+            <option value="Entertainment">Entertainment</option>
+          </select>
+        </div>
+      </div>
+    `;
+  }
+
+  function openAddItineraryModal(trip, defaultCategory = 'activity', initialDay = 1, initialTime = '09:00') {
+    let currentCategory = defaultCategory || 'activity';
+    let isAllDay = false;
+    let isAccordionExpanded = false;
+
+    let totalDays = 7;
+    if (trip.startDate && trip.endDate) {
+      const s = new Date(trip.startDate + 'T00:00:00');
+      const e = new Date(trip.endDate + 'T00:00:00');
+      const diff = Math.max(1, Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1);
+      totalDays = Math.max(diff, 14);
+    }
+    const daysList = Array.from({ length: totalDays }, (_, i) => i + 1);
+    const tzLabel = resolveDestinationTimezone(trip.destination || trip.title);
+
     const html = `
       <div class="modal-overlay active" id="modal-add-it">
-        <div class="modal-container">
-          <div class="modal-header">
-            <h3>${icon('plus-circle', 'var(--accent-primary)')} Add Itinerary Event</h3>
-            <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+        <div class="modal-container" style="max-width: 640px;">
+          <div class="modal-header" style="align-items: flex-start;">
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span>Trip: ${trip.title}</span>
+              </div>
+              <h3 style="font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span id="modal-category-icon">${icon(getCategoryIcon(currentCategory), 'var(--accent-primary)')}</span>
+                <span>Add Activity / Event</span>
+              </h3>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="kbd-badge" title="Press Esc key to cancel">Esc</span>
+              <button class="btn btn-icon-only btn-secondary close-modal" type="button">&times;</button>
+            </div>
           </div>
+
           <div class="modal-body">
             <form id="form-add-it" onsubmit="return false;">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Day #</label>
-                  <input type="number" class="form-control" name="day" value="1" min="1" required />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Time</label>
-                  <input type="time" class="form-control" name="time" value="09:00" required />
-                </div>
+              <div class="category-segmented-bar" id="it-category-bar">
+                <button type="button" class="cat-tab-btn ${currentCategory === 'transit' ? 'active' : ''}" data-category="transit">
+                  ✈️ Transit
+                </button>
+                <button type="button" class="cat-tab-btn ${currentCategory === 'lodging' ? 'active' : ''}" data-category="lodging">
+                  🏨 Stay
+                </button>
+                <button type="button" class="cat-tab-btn ${currentCategory === 'dining' ? 'active' : ''}" data-category="dining">
+                  🍽️ Food &amp; Drink
+                </button>
+                <button type="button" class="cat-tab-btn ${currentCategory === 'activity' || currentCategory === 'sightseeing' || currentCategory === 'culture' ? 'active' : ''}" data-category="activity">
+                  🎟️ Activity
+                </button>
+                <button type="button" class="cat-tab-btn ${currentCategory === 'note' ? 'active' : ''}" data-category="note">
+                  📝 General Note
+                </button>
               </div>
+
+              <input type="hidden" name="category" id="hidden-it-category" value="${currentCategory}" />
+
               <div class="form-group">
-                <label class="form-label">Event Title *</label>
-                <input type="text" class="form-control" name="title" placeholder="e.g. Visit Senso-ji Temple" required />
+                <label class="form-label" id="label-title">Activity / Event Name *</label>
+                <input type="text" class="form-control" id="input-it-title" name="title" placeholder="${getTitlePlaceholder(currentCategory)}" required />
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Category</label>
-                  <select class="form-control" name="category">
-                    <option value="sightseeing" ${defaultCategory === 'sightseeing' ? 'selected' : ''}>Sightseeing / Hotel</option>
-                    <option value="culture" ${defaultCategory === 'culture' ? 'selected' : ''}>Culture / Activity</option>
-                    <option value="dining" ${defaultCategory === 'dining' ? 'selected' : ''}>Dining / Meal</option>
-                    <option value="adventure" ${defaultCategory === 'adventure' ? 'selected' : ''}>Adventure / Tour</option>
-                    <option value="transit" ${defaultCategory === 'transit' ? 'selected' : ''}>Transit / Flight</option>
+
+              <div id="conditional-fields-container" style="margin-bottom: 1.25rem;">
+                ${buildConditionalFieldsHTML(currentCategory)}
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>Location / Address</span>
+                  <a href="https://maps.google.com" target="_blank" id="link-maps-preview" style="font-size: 0.78rem; color: var(--accent-primary); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
+                    ${icon('map-pin', 'var(--accent-primary)')} Open Maps &rarr;
+                  </a>
+                </label>
+                <input type="text" class="form-control" id="input-it-location" name="location" placeholder="e.g. Asakusa, Tokyo, Japan or 123 Main St" />
+              </div>
+
+              <div class="card" style="background: rgba(15, 23, 42, 0.4); border-color: var(--border-color); padding: 1rem; margin-bottom: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 0.85rem;">
+                  <label class="form-label">Day Schedule Target</label>
+                  <select class="form-control" name="day" id="select-it-day">
+                    ${daysList.map(d => `
+                      <option value="${d}" ${d === initialDay ? 'selected' : ''}>
+                        ${formatDayDateLabel(trip, d)}
+                      </option>
+                    `).join('')}
                   </select>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Location</label>
-                  <input type="text" class="form-control" name="location" placeholder="e.g. Asakusa, Tokyo" />
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Scheduling Times</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-all-day" class="toggle-switch-input" style="display: none;" />
+                    <span class="toggle-switch-track">
+                      <span class="toggle-switch-thumb"></span>
+                    </span>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">All Day / Flexible Time</span>
+                  </label>
                 </div>
+
+                <div class="form-row" id="time-pickers-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" class="form-control" id="input-start-time" name="time" value="${initialTime}" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">End Time (Optional)</label>
+                    <input type="time" class="form-control" id="input-end-time" name="endTime" value="10:30" />
+                  </div>
+                </div>
+
+                <div class="tz-lock-badge">
+                  🌐 Destination Timezone: <strong>${tzLabel}</strong>
+                </div>
+              </div>
+
+              <div class="accordion-wrapper">
+                <button type="button" class="accordion-trigger" id="btn-toggle-logistics">
+                  <span style="display: flex; align-items: center; gap: 0.5rem;">
+                    ⚙️ Logistics, Reservation &amp; Expenses (Optional)
+                  </span>
+                  <span id="accordion-chevron" style="transition: transform 0.2s ease;">▼</span>
+                </button>
+                <div class="accordion-content" id="logistics-accordion-body">
+                  <div class="form-group">
+                    <label class="form-label">Confirmation / Reservation Code</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="text" class="form-control" id="input-it-conf" name="confirmation" placeholder="e.g. JAL-982173 or HTL-8831" style="font-family: monospace;" />
+                      <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-conf" style="white-space: nowrap;">
+                        ${icon('copy')} Copy
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Cost / Expense ($)</label>
+                      <input type="number" step="0.01" class="form-control" id="input-it-cost" name="cost" placeholder="0.00" min="0" />
+                    </div>
+                    <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                      <label class="toggle-switch" style="margin-bottom: 0.6rem;">
+                        <input type="checkbox" id="toggle-attach-expense" name="attachExpense" class="toggle-switch-input" style="display: none;" checked />
+                        <span class="toggle-switch-track">
+                          <span class="toggle-switch-thumb"></span>
+                        </span>
+                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Attach to Trip Expenses</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Ticket / Booking URL Attachment</label>
+                    <input type="url" class="form-control" id="input-it-url" name="attachmentUrl" placeholder="https://booking.com/ticket.pdf..." style="font-size: 0.8rem;" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 1.25rem;">
+                <label class="form-label">Notes &amp; Reminders</label>
+                <textarea class="form-control" id="input-it-notes" name="notes" rows="3" placeholder="Add parking tips, trail notes, voucher details, or packing reminders..."></textarea>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
+
+          <div class="modal-footer" style="justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
             <button class="btn btn-secondary cancel-modal" type="button">Cancel</button>
-            <button class="btn btn-primary submit-modal" type="button">Add Event</button>
+
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary" id="btn-save-add-another" type="button">
+                ➕ Save &amp; Add Another
+              </button>
+              <button class="btn btn-primary submit-modal" id="btn-submit-it" type="button" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>Add to Timeline</span>
+                <span class="kbd-badge">Ctrl + Enter</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     `;
+
     document.body.insertAdjacentHTML('beforeend', html);
     const m = document.getElementById('modal-add-it');
-    const close = () => m.remove();
+    const titleInput = m.querySelector('#input-it-title');
+    const locationInput = m.querySelector('#input-it-location');
+    const mapsLink = m.querySelector('#link-maps-preview');
+    const hiddenCategoryInput = m.querySelector('#hidden-it-category');
+    const categoryIconEl = m.querySelector('#modal-category-icon');
+    const conditionalContainer = m.querySelector('#conditional-fields-container');
+
+    setTimeout(() => titleInput?.focus(), 100);
+
+    const close = () => {
+      document.removeEventListener('keydown', handleKeydown);
+      m.remove();
+    };
+
     m.querySelectorAll('.cancel-modal, .close-modal').forEach(b => b.onclick = close);
 
-    const handleSave = () => {
-      const f = m.querySelector('#form-add-it');
-      const data = Object.fromEntries(new FormData(f).entries());
-      if (!data.title || !data.title.trim()) return showToast('Please enter event title', 'info');
+    locationInput?.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      const query = val ? (val + ' ' + (trip.destination || '')) : (trip.destination || '');
+      mapsLink.href = `https://maps.google.com/?q=${encodeURIComponent(query)}`;
+    });
+
+    m.querySelectorAll('.cat-tab-btn').forEach(tabBtn => {
+      tabBtn.addEventListener('click', (e) => {
+        m.querySelectorAll('.cat-tab-btn').forEach(b => b.classList.remove('active'));
+        const btn = e.currentTarget;
+        btn.classList.add('active');
+        const cat = btn.getAttribute('data-category');
+        currentCategory = cat;
+        hiddenCategoryInput.value = cat;
+        categoryIconEl.innerHTML = icon(getCategoryIcon(cat), 'var(--accent-primary)');
+        titleInput.placeholder = getTitlePlaceholder(cat);
+        conditionalContainer.innerHTML = buildConditionalFieldsHTML(cat);
+      });
+    });
+
+    const allDayToggle = m.querySelector('#toggle-all-day');
+    const timePickersRow = m.querySelector('#time-pickers-row');
+    allDayToggle?.addEventListener('change', () => {
+      isAllDay = allDayToggle.checked;
+      if (isAllDay) {
+        timePickersRow.style.opacity = '0.4';
+        timePickersRow.style.pointerEvents = 'none';
+      } else {
+        timePickersRow.style.opacity = '1';
+        timePickersRow.style.pointerEvents = 'auto';
+      }
+    });
+
+    const accordionBtn = m.querySelector('#btn-toggle-logistics');
+    const accordionBody = m.querySelector('#logistics-accordion-body');
+    const accordionChevron = m.querySelector('#accordion-chevron');
+    accordionBtn?.addEventListener('click', () => {
+      isAccordionExpanded = !isAccordionExpanded;
+      if (isAccordionExpanded) {
+        accordionBody.classList.add('expanded');
+        accordionChevron.style.transform = 'rotate(180deg)';
+      } else {
+        accordionBody.classList.remove('expanded');
+        accordionChevron.style.transform = 'rotate(0deg)';
+      }
+    });
+
+    m.querySelector('#btn-copy-conf')?.addEventListener('click', () => {
+      const confVal = m.querySelector('#input-it-conf')?.value;
+      if (confVal) {
+        navigator.clipboard.writeText(confVal);
+        showToast('Confirmation code copied!', 'success');
+      } else {
+        showToast('Please enter a confirmation code first', 'info');
+      }
+    });
+
+    const handleSave = (keepOpen = false) => {
+      const form = m.querySelector('#form-add-it');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      if (!data.title || !data.title.trim()) {
+        showToast('Please enter an activity title', 'info');
+        titleInput?.focus();
+        return;
+      }
+
       data.day = parseInt(data.day) || 1;
+      data.time = isAllDay ? 'All Day' : (data.time || '09:00');
+      data.category = currentCategory;
+
       appStore.addItineraryItem(trip.id, data);
-      close();
-      showToast('Itinerary event added!', 'success');
-      renderCurrentView();
+
+      const attachExp = m.querySelector('#toggle-attach-expense')?.checked;
+      const costVal = parseFloat(data.cost) || 0;
+      if (attachExp && costVal > 0) {
+        appStore.addExpense(trip.id, {
+          title: data.title,
+          amount: costVal,
+          category: currentCategory === 'dining' ? 'Dining' : (currentCategory === 'transit' ? 'Transit' : 'Activities'),
+          paidBy: appStore.profile.name,
+          splitWith: (trip.attendees || []).map(a => a.name)
+        });
+      }
+
+      if (keepOpen) {
+        showToast(`Saved "${data.title}"! Add another...`, 'success');
+        titleInput.value = '';
+        if (locationInput) locationInput.value = '';
+        const costInput = m.querySelector('#input-it-cost');
+        if (costInput) costInput.value = '';
+        const confInput = m.querySelector('#input-it-conf');
+        if (confInput) confInput.value = '';
+        titleInput.focus();
+        renderCurrentView();
+      } else {
+        close();
+        showToast(`Added "${data.title}" to Day ${data.day} timeline!`, 'success');
+        renderCurrentView();
+      }
     };
-    m.querySelector('.submit-modal').onclick = handleSave;
+
+    m.querySelector('#btn-submit-it').onclick = () => handleSave(false);
+    m.querySelector('#btn-save-add-another').onclick = () => handleSave(true);
+
+    const handleKeydown = (e) => {
+      if (e.key === 'Escape') {
+        close();
+      } else if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSave(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeydown);
   }
 
   function openAddActivityModal(trip) {
