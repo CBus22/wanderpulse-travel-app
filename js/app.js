@@ -1477,16 +1477,443 @@
     });
   }
 
+  let mapExplorerState = {
+    selectedDay: 'all',
+    selectedCategory: 'all',
+    layerMode: 'route', // 'route' or 'explore'
+    searchQuery: ''
+  };
+
+  function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
+    const R = 3958.8; // Radius of earth in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c * 10) / 10;
+  }
+
+  function getCategoryColor(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c.includes('transit') || c.includes('flight') || c.includes('drive')) return '#06b6d4'; // Cyan
+    if (c.includes('lodging') || c.includes('hotel') || c.includes('stay')) return '#f59e0b'; // Amber
+    if (c.includes('dining') || c.includes('food') || c.includes('meal')) return '#ec4899'; // Rose
+    if (c.includes('note')) return '#8b5cf6'; // Violet
+    return '#10b981'; // Emerald Activity
+  }
+
+  function exportGoogleMapsRoute(trip, items) {
+    if (!items || items.length === 0) return showToast('No stops to export', 'info');
+    const validLocs = items.map(i => i.location || i.title).filter(Boolean);
+    if (validLocs.length === 0) return showToast('No location names found', 'info');
+
+    const origin = encodeURIComponent(validLocs[0] + ' ' + trip.destination);
+    const destination = encodeURIComponent(validLocs[validLocs.length - 1] + ' ' + trip.destination);
+    let waypointsParam = '';
+    if (validLocs.length > 2) {
+      const waypoints = validLocs.slice(1, -1).map(l => encodeURIComponent(l + ' ' + trip.destination)).join('|');
+      waypointsParam = `&waypoints=${waypoints}`;
+    }
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam}`;
+    window.open(url, '_blank');
+    showToast('Opening Google Maps Multi-stop Route!', 'success');
+  }
+
+  function exportGPXRoute(trip, items) {
+    if (!items || items.length === 0) return showToast('No itinerary stops to export', 'info');
+
+    let gpx = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    gpx += `<gpx version="1.1" creator="WanderPulse Travel Engine" xmlns="http://www.topografix.com/GPX/1/1">\n`;
+    gpx += `  <metadata>\n    <name>${trip.title} — Waypoint Route</name>\n    <desc>Day-by-day itinerary route exported from WanderPulse</desc>\n  </metadata>\n`;
+
+    items.forEach((item, idx) => {
+      const lat = item.lat || 35.6762;
+      const lng = item.lng || 139.6503;
+      gpx += `  <wpt lat="${lat}" lon="${lng}">\n`;
+      gpx += `    <name>Stop ${idx + 1}: ${item.title}</name>\n`;
+      gpx += `    <desc>${item.location || ''} • Day ${item.day || 1} ${item.time || ''}</desc>\n`;
+      gpx += `    <sym>Flag</sym>\n`;
+      gpx += `  </wpt>\n`;
+    });
+
+    gpx += `</gpx>`;
+
+    const blob = new Blob([gpx], { type: 'application/gpx+xml;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${trip.title.replace(/[^a-z0-9]/gi, '_')}_Route.gpx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded GPX Route File!', 'success');
+  }
+
   function renderMapPane(container, trip) {
+    const itinerary = trip.itinerary || [];
+    let totalDays = 7;
+    if (trip.startDate && trip.endDate) {
+      const s = new Date(trip.startDate + 'T00:00:00');
+      const e = new Date(trip.endDate + 'T00:00:00');
+      const diff = Math.max(1, Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1);
+      totalDays = Math.max(diff, 14);
+    }
+    const daysList = Array.from({ length: totalDays }, (_, i) => i + 1);
+
     container.innerHTML = `
-      <div class="card">
-        <h3>Interactive Destination Map & Pins</h3>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Explore trip locations, hotels, and itinerary activities.</p>
-        <div id="map-container"></div>
+      <div class="map-explorer-grid">
+        <!-- Left Sidebar Panel -->
+        <aside class="map-sidebar-panel">
+          <div class="map-sidebar-header">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+                ${icon('map', 'var(--accent-primary)')} Stop Sequence
+              </h3>
+              <span class="badge badge-upcoming" id="stop-count-badge" style="font-size: 0.75rem;">
+                ${itinerary.length} Stops
+              </span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+              Synchronized day itinerary stops &amp; live navigation.
+            </p>
+
+            <div class="search-box" style="padding: 0.35rem 0.75rem;">
+              ${icon('search', 'var(--text-muted)')}
+              <input type="text" id="sidebar-stop-search" placeholder="Filter stops or places..." value="${mapExplorerState.searchQuery}" style="font-size: 0.8rem;" />
+            </div>
+          </div>
+
+          <div class="map-sidebar-feed" id="map-sidebar-feed">
+            <!-- Rendered dynamically -->
+          </div>
+        </aside>
+
+        <!-- Right Map Canvas Panel -->
+        <main class="map-canvas-panel">
+          <!-- Floating Controls Overlay Bar -->
+          <div class="map-floating-controls">
+            <div class="map-filter-bar" id="map-day-pills">
+              <button class="map-pill-btn ${mapExplorerState.selectedDay === 'all' ? 'active' : ''}" data-day="all">All Days</button>
+              ${daysList.map(d => `<button class="map-pill-btn ${mapExplorerState.selectedDay === String(d) ? 'active' : ''}" data-day="${d}">Day ${d}</button>`).join('')}
+            </div>
+
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <div class="map-filter-bar" id="map-cat-chips">
+                <button class="map-pill-btn ${mapExplorerState.selectedCategory === 'all' ? 'active' : ''}" data-cat="all">All Types</button>
+                <button class="map-pill-btn ${mapExplorerState.selectedCategory === 'lodging' ? 'active' : ''}" data-cat="lodging">🏨 Stay</button>
+                <button class="map-pill-btn ${mapExplorerState.selectedCategory === 'dining' ? 'active' : ''}" data-cat="dining">🍽️ Food</button>
+                <button class="map-pill-btn ${mapExplorerState.selectedCategory === 'activity' ? 'active' : ''}" data-cat="activity">🎟️ Activity</button>
+                <button class="map-pill-btn ${mapExplorerState.selectedCategory === 'transit' ? 'active' : ''}" data-cat="transit">✈️ Transit</button>
+              </div>
+
+              <div class="map-filter-bar">
+                <button class="map-pill-btn active" id="btn-mode-toggle" type="button">
+                  ${mapExplorerState.layerMode === 'route' ? '🛣️ Route View' : '📍 Exploration View'}
+                </button>
+              </div>
+
+              <div class="map-filter-bar">
+                <button class="map-pill-btn" id="btn-gmaps-route" type="button" title="Open Multi-stop Route in Google Maps">
+                  🗺️ Google Maps
+                </button>
+                <button class="map-pill-btn" id="btn-export-gpx" type="button" title="Download GPX file for GPS">
+                  📥 GPX Export
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="map-container-explorer"></div>
+        </main>
       </div>
     `;
-    setTimeout(() => initMap(trip), 100);
+
+    // Wire Controls
+    const dayPills = container.querySelectorAll('#map-day-pills .map-pill-btn');
+    dayPills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        dayPills.forEach(p => p.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        mapExplorerState.selectedDay = e.currentTarget.getAttribute('data-day');
+        updateExplorerView(trip, container);
+      });
+    });
+
+    const catChips = container.querySelectorAll('#map-cat-chips .map-pill-btn');
+    catChips.forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        catChips.forEach(c => c.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        mapExplorerState.selectedCategory = e.currentTarget.getAttribute('data-cat');
+        updateExplorerView(trip, container);
+      });
+    });
+
+    const modeBtn = container.querySelector('#btn-mode-toggle');
+    if (modeBtn) {
+      modeBtn.addEventListener('click', () => {
+        mapExplorerState.layerMode = mapExplorerState.layerMode === 'route' ? 'explore' : 'route';
+        modeBtn.textContent = mapExplorerState.layerMode === 'route' ? '🛣️ Route View' : '📍 Exploration View';
+        updateExplorerView(trip, container);
+      });
+    }
+
+    const searchInput = container.querySelector('#sidebar-stop-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        mapExplorerState.searchQuery = e.target.value;
+        updateExplorerView(trip, container);
+      });
+    }
+
+    const gmapsBtn = container.querySelector('#btn-gmaps-route');
+    if (gmapsBtn) {
+      gmapsBtn.addEventListener('click', () => {
+        const filtered = getFilteredStops(trip);
+        exportGoogleMapsRoute(trip, filtered);
+      });
+    }
+
+    const gpxBtn = container.querySelector('#btn-export-gpx');
+    if (gpxBtn) {
+      gpxBtn.addEventListener('click', () => {
+        const filtered = getFilteredStops(trip);
+        exportGPXRoute(trip, filtered);
+      });
+    }
+
+    setTimeout(() => updateExplorerView(trip, container), 100);
   }
+
+  function getFilteredStops(trip) {
+    const itinerary = trip.itinerary || [];
+    return itinerary.filter(item => {
+      const matchesDay = mapExplorerState.selectedDay === 'all' || String(item.day || 1) === mapExplorerState.selectedDay;
+      const cat = (item.category || '').toLowerCase();
+      const matchesCat = mapExplorerState.selectedCategory === 'all' ||
+                         (mapExplorerState.selectedCategory === 'lodging' && (cat.includes('lodging') || cat.includes('hotel') || cat.includes('stay'))) ||
+                         (mapExplorerState.selectedCategory === 'dining' && (cat.includes('dining') || cat.includes('food') || cat.includes('meal'))) ||
+                         (mapExplorerState.selectedCategory === 'transit' && (cat.includes('transit') || cat.includes('flight') || cat.includes('drive'))) ||
+                         (mapExplorerState.selectedCategory === 'activity' && (!cat.includes('lodging') && !cat.includes('dining') && !cat.includes('transit')));
+      const query = mapExplorerState.searchQuery.toLowerCase();
+      const matchesSearch = !query || item.title.toLowerCase().includes(query) || (item.location && item.location.toLowerCase().includes(query));
+      return matchesDay && matchesCat && matchesSearch;
+    });
+  }
+
+  async function updateExplorerView(trip, container) {
+    const stopsFeed = container.querySelector('#map-sidebar-feed');
+    const stopCountBadge = container.querySelector('#stop-count-badge');
+    const filteredStops = getFilteredStops(trip);
+
+    if (stopCountBadge) stopCountBadge.textContent = `${filteredStops.length} Stops`;
+
+    // Render Sidebar Feed Cards
+    if (filteredStops.length === 0) {
+      stopsFeed.innerHTML = `
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
+          <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">No matching itinerary stops found.</p>
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">Try adjusting your day or category filters.</span>
+        </div>
+      `;
+    } else {
+      stopsFeed.innerHTML = filteredStops.map((item, idx) => {
+        const nextItem = filteredStops[idx + 1];
+        const catColor = getCategoryColor(item.category);
+        return `
+          <div class="map-stop-card" data-stop-id="${item.id}" data-idx="${idx}">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
+              <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex: 1;">
+                <div class="stop-sequence-badge">${idx + 1}</div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 800; font-size: 0.8rem; color: var(--accent-secondary);">Day ${item.day || 1} • ${item.time || '09:00'}</span>
+                    <span class="badge" style="background: rgba(255,255,255,0.06); color: ${catColor}; border: 1px solid rgba(255,255,255,0.1); font-size: 0.68rem;">
+                      ${item.category || 'Activity'}
+                    </span>
+                  </div>
+                  <strong style="font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom: 0.2rem;">${item.title}</strong>
+                  ${item.location ? `
+                    <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.3rem;">
+                      ${icon('map-pin', 'var(--accent-primary)')} ${item.location}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+
+            ${nextItem ? `
+              <div style="margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 0.75rem; color: #38bdf8; display: flex; align-items: center; gap: 0.35rem;">
+                🚘 Estimated Leg to Stop #${idx + 2} (${nextItem.title.slice(0, 18)}...)
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Initialize/Update Map Engine Canvas
+    await initExplorerMapEngine(trip, filteredStops, container);
+  }
+
+  async function initExplorerMapEngine(trip, stops, container) {
+    const el = document.getElementById('map-container-explorer');
+    if (!el || !window.L) return;
+
+    if (window._activeExplorerMap) {
+      try { window._activeExplorerMap.remove(); } catch(e) {}
+      window._activeExplorerMap = null;
+    }
+
+    const mainCoords = resolveDestinationCoords(trip.destination || trip.title);
+
+    // Initialize Leaflet map with Dark Carto Basemap
+    const map = window.L.map('map-container-explorer', {
+      scrollWheelZoom: true,
+      zoomControl: false
+    }).setView([mainCoords.lat, mainCoords.lng], 11);
+
+    window._activeExplorerMap = map;
+
+    // CartoDB Dark Matter Basemap Tiles
+    window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(map);
+
+    // Add zoom control bottom right
+    window.L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 250);
+
+    const bounds = [];
+    const markerStore = {};
+    const routeCoordsList = [];
+
+    // Geocode & Render Numbered Pins
+    for (let idx = 0; idx < stops.length; idx++) {
+      const item = stops[idx];
+      let itemCoords = null;
+      if (item.location) {
+        itemCoords = await geocodeLocation(item.location);
+      }
+      if (!itemCoords) {
+        itemCoords = {
+          lat: mainCoords.lat + (Math.sin(idx + 1) * 0.018),
+          lng: mainCoords.lng + (Math.cos(idx + 1) * 0.018)
+        };
+      }
+
+      item.lat = itemCoords.lat;
+      item.lng = itemCoords.lng;
+      bounds.push([itemCoords.lat, itemCoords.lng]);
+      routeCoordsList.push({ coords: [itemCoords.lat, itemCoords.lng], title: item.title, day: item.day });
+
+      const catColor = getCategoryColor(item.category);
+
+      const pinIcon = window.L.divIcon({
+        className: 'numbered-map-pin',
+        html: `
+          <div style="background: ${catColor}; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; box-shadow: 0 3px 10px rgba(0,0,0,0.5); border: 2.5px solid #ffffff;">
+            ${idx + 1}
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+
+      const marker = window.L.marker([itemCoords.lat, itemCoords.lng], { icon: pinIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div style="font-family: var(--font-family-base); padding: 4px; max-width: 240px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-size: 0.72rem; font-weight: 800; color: ${catColor}; text-transform: uppercase;">Stop #${idx + 1} • Day ${item.day || 1}</span>
+              <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">${item.time || '09:00'}</span>
+            </div>
+            <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; color: #0f172a;">${item.title}</h4>
+            ${item.location ? `<p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #475569;">📍 ${item.location}</p>` : ''}
+            <div style="display: flex; gap: 0.5rem; margin-top: 6px;">
+              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((item.location || item.title) + ' ' + trip.destination)}" target="_blank" style="color: #6366f1; font-size: 0.78rem; font-weight: 700; text-decoration: none;">Directions &rarr;</a>
+            </div>
+          </div>
+        `);
+
+      markerStore[item.id] = marker;
+
+      // Right-to-Left Sync (Marker click -> highlight sidebar card & scroll)
+      marker.on('click', () => {
+        container.querySelectorAll('.map-stop-card').forEach(c => c.classList.remove('active-highlight'));
+        const card = container.querySelector(`.map-stop-card[data-stop-id="${item.id}"]`);
+        if (card) {
+          card.classList.add('active-highlight');
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+
+    // Draw Glowing Route Lines in Route Mode
+    if (mapExplorerState.layerMode === 'route' && routeCoordsList.length > 1) {
+      const linePath = routeCoordsList.map(r => r.coords);
+      const polyline = window.L.polyline(linePath, {
+        color: '#38bdf8',
+        weight: 4,
+        opacity: 0.85,
+        dashArray: '8, 8',
+        lineCap: 'round'
+      }).addTo(map);
+
+      // Mid-path Distance Chips
+      for (let i = 0; i < routeCoordsList.length - 1; i++) {
+        const p1 = routeCoordsList[i].coords;
+        const p2 = routeCoordsList[i + 1].coords;
+        const dist = calculateDistanceMiles(p1[0], p1[1], p2[0], p2[1]);
+        const midLat = (p1[0] + p2[0]) / 2;
+        const midLng = (p1[1] + p2[1]) / 2;
+
+        const distanceIcon = window.L.divIcon({
+          className: 'route-distance-chip',
+          html: `🚘 ${dist} mi`,
+          iconSize: [60, 20],
+          iconAnchor: [30, 10]
+        });
+        window.L.marker([midLat, midLng], { icon: distanceIcon }).addTo(map);
+      }
+    }
+
+    // Fit Bounds
+    if (bounds.length > 0) {
+      try {
+        if (bounds.length === 1) map.setView(bounds[0], 13);
+        else map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      } catch(e) {}
+    } else {
+      map.setView([mainCoords.lat, mainCoords.lng], 11);
+    }
+
+    // Left-to-Right Sync (Sidebar card hover/click -> map flyTo & open popup)
+    container.querySelectorAll('.map-stop-card').forEach(card => {
+      const stopId = card.getAttribute('data-stop-id');
+      const marker = markerStore[stopId];
+
+      card.addEventListener('click', () => {
+        container.querySelectorAll('.map-stop-card').forEach(c => c.classList.remove('active-highlight'));
+        card.classList.add('active-highlight');
+        if (marker) {
+          const latLng = marker.getLatLng();
+          map.flyTo([latLng.lat, latLng.lng], 14, { animate: true, duration: 1.2 });
+          marker.openPopup();
+        }
+      });
+    });
+  }
+
 
   function renderLogisticsPane(container, trip) {
     container.innerHTML = `
@@ -2898,120 +3325,10 @@
   }
 
   async function initMap(trip) {
-    const el = document.getElementById('map-container');
-    if (!el || !window.L) return;
-
-    if (window._activeLeafletMap) {
-      try { window._activeLeafletMap.remove(); } catch(e) {}
-      window._activeLeafletMap = null;
-    }
-
-    let mainCoords = (trip.lat && trip.lng && (trip.lat !== 21.1619 || (trip.destination && trip.destination.toLowerCase().includes('cancun'))))
-      ? { lat: trip.lat, lng: trip.lng }
-      : resolveDestinationCoords(trip.destination || trip.title);
-
-    const map = window.L.map('map-container', {
-      scrollWheelZoom: true,
-      zoomControl: true
-    }).setView([mainCoords.lat, mainCoords.lng], 11);
-    
-    window._activeLeafletMap = map;
-
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Invalidate size after container renders in tab
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
-    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 250);
-
-    // Custom main destination marker
-    const mainIcon = window.L.divIcon({
-      className: 'custom-map-pin main-pin',
-      html: `<div style="background: linear-gradient(135deg, #6366f1, #06b6d4); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(99,102,241,0.5); border: 2px solid #ffffff;">📍</div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
-      popupAnchor: [0, -18]
-    });
-
-    const mainMarker = window.L.marker([mainCoords.lat, mainCoords.lng], { icon: mainIcon })
-      .addTo(map)
-      .bindPopup(`
-        <div style="font-family: var(--font-family-base); padding: 4px;">
-          <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: #0f172a;">📍 ${trip.title}</h4>
-          <p style="margin: 0; font-size: 0.85rem; color: #475569;">${trip.destination}</p>
-        </div>
-      `)
-      .openPopup();
-
-    const bounds = [[mainCoords.lat, mainCoords.lng]];
-
-    // Real-time geocoding check for trip destination
-    const geocodedMain = await geocodeLocation(trip.destination || trip.title);
-    if (geocodedMain && (geocodedMain.lat !== mainCoords.lat || geocodedMain.lng !== mainCoords.lng)) {
-      mainCoords = geocodedMain;
-      trip.lat = geocodedMain.lat;
-      trip.lng = geocodedMain.lng;
-      appStore.saveTrips();
-      mainMarker.setLatLng([geocodedMain.lat, geocodedMain.lng]);
-      map.setView([geocodedMain.lat, geocodedMain.lng], 11);
-      bounds[0] = [geocodedMain.lat, geocodedMain.lng];
-    }
-
-    // Process Itinerary Markers
-    const itinerary = trip.itinerary || [];
-    for (let idx = 0; idx < itinerary.length; idx++) {
-      const item = itinerary[idx];
-      if (item.location || item.title) {
-        let itemCoords = null;
-        if (item.location) {
-          itemCoords = await geocodeLocation(item.location);
-        }
-        if (!itemCoords) {
-          itemCoords = {
-            lat: mainCoords.lat + (Math.sin(idx + 1) * 0.015),
-            lng: mainCoords.lng + (Math.cos(idx + 1) * 0.015)
-          };
-        }
-
-        bounds.push([itemCoords.lat, itemCoords.lng]);
-
-        const cat = (item.category || '').toLowerCase();
-        let pinEmoji = '🎟️';
-        let pinColor = '#10b981';
-        if (cat.includes('transit') || cat.includes('flight')) { pinEmoji = '✈️'; pinColor = '#06b6d4'; }
-        else if (cat.includes('lodging') || cat.includes('hotel')) { pinEmoji = '🏨'; pinColor = '#f59e0b'; }
-        else if (cat.includes('dining') || cat.includes('food')) { pinEmoji = '🍽️'; pinColor = '#ec4899'; }
-        else if (cat.includes('culture') || cat.includes('sightseeing')) { pinEmoji = '🏛️'; pinColor = '#8b5cf6'; }
-
-        const itemIcon = window.L.divIcon({
-          className: 'custom-map-pin item-pin',
-          html: `<div style="background: ${pinColor}; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid #ffffff;">${pinEmoji}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14]
-        });
-
-        window.L.marker([itemCoords.lat, itemCoords.lng], { icon: itemIcon })
-          .addTo(map)
-          .bindPopup(`
-            <div style="font-family: var(--font-family-base); padding: 4px;">
-              <span style="font-size: 0.75rem; font-weight: 700; color: ${pinColor}; text-transform: uppercase;">Day ${item.day || 1} • ${item.time || ''}</span>
-              <h4 style="margin: 2px 0 4px 0; font-size: 0.95rem; color: #0f172a;">${item.title}</h4>
-              ${item.location ? `<p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #475569;">📍 ${item.location}</p>` : ''}
-              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((item.location || item.title) + ' ' + trip.destination)}" target="_blank" style="color: #6366f1; font-size: 0.8rem; font-weight: 700; text-decoration: none;">Get Directions &rarr;</a>
-            </div>
-          `);
-      }
-    }
-
-    if (bounds.length > 1) {
-      try {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
-      } catch(e) {}
-    }
+    const mainEl = document.getElementById('subtab-pane') || document.getElementById('app-main');
+    if (mainEl) renderMapPane(mainEl, trip);
   }
+
 
   function formatDate(dStr) {
     if (!dStr) return '';
