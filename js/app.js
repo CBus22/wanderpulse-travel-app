@@ -250,6 +250,7 @@
       // Dynamic resolution based on Destination OR Title if custom photo not manually selected
       const queryText = (obj.destination && obj.destination.trim()) ? obj.destination : obj.title;
       const autoCover = (obj.coverImage && obj.coverImage.trim()) ? obj.coverImage : resolveDestinationPhoto(queryText);
+      const coords = resolveDestinationCoords(queryText);
 
       const newTrip = {
         id: 'trip-' + Date.now(),
@@ -262,7 +263,7 @@
         budget: parseFloat(obj.budget) || 1500,
         currency: 'USD',
         isPrivate: obj.isPrivate === 'true' || obj.isPrivate === true,
-        lat: 21.1619, lng: -86.8515,
+        lat: coords.lat, lng: coords.lng,
         logistics: { flights: [], accommodations: [], notes: '' },
         itinerary: [], activities: [],
         packingList: [
@@ -290,7 +291,12 @@
       const trip = this.trips.find(t => t.id === id);
       if (trip) {
         if (obj.title !== undefined) trip.title = obj.title;
-        if (obj.destination !== undefined) trip.destination = obj.destination;
+        if (obj.destination !== undefined) {
+          trip.destination = obj.destination;
+          const coords = resolveDestinationCoords(obj.destination || trip.title);
+          trip.lat = coords.lat;
+          trip.lng = coords.lng;
+        }
         if (obj.startDate !== undefined) trip.startDate = obj.startDate;
         if (obj.endDate !== undefined) trip.endDate = obj.endDate;
         if (obj.coverImage !== undefined) trip.coverImage = obj.coverImage;
@@ -829,88 +835,260 @@
   function renderItineraryPane(container, trip) {
     const itinerary = trip.itinerary || [];
     const daysMap = {};
-    itinerary.forEach(item => {
-      if (!daysMap[item.day]) daysMap[item.day] = [];
-      daysMap[item.day].push(item);
-    });
+    
+    // Default at least Day 1 if empty
+    if (itinerary.length === 0) {
+      daysMap[1] = [];
+    } else {
+      itinerary.forEach(item => {
+        const d = item.day || 1;
+        if (!daysMap[d]) daysMap[d] = [];
+        daysMap[d].push(item);
+      });
+    }
+
     const dayNumbers = Object.keys(daysMap).map(Number).sort((a, b) => a - b);
+
+    const weatherPresets = [
+      '☀️ 74°F Sunny', '⛅ 71°F Partly Cloudy', '🌤️ 75°F Clear & Warm',
+      '🌧️ 68°F Light Rain', '☀️ 77°F Golden Hour', '🌤️ 72°F Breezy'
+    ];
+
+    function getNodeDetails(category = '') {
+      const cat = (category || '').toLowerCase();
+      if (cat.includes('transit') || cat.includes('flight') || cat.includes('drive')) return { nodeClass: 'node-transit', iconName: 'plane', label: 'Transit' };
+      if (cat.includes('lodging') || cat.includes('hotel') || cat.includes('stay')) return { nodeClass: 'node-lodging', iconName: 'building', label: 'Lodging' };
+      if (cat.includes('dining') || cat.includes('food') || cat.includes('meal') || cat.includes('restaurant')) return { nodeClass: 'node-dining', iconName: 'star', label: 'Dining' };
+      if (cat.includes('culture') || cat.includes('sightseeing') || cat.includes('art') || cat.includes('museum')) return { nodeClass: 'node-culture', iconName: 'sparkles', label: 'Culture' };
+      return { nodeClass: 'node-activity', iconName: 'compass', label: 'Activity' };
+    }
+
+    function calculateDayHours(items) {
+      if (!items || items.length === 0) return '0 hrs';
+      return `${(items.length * 1.5).toFixed(1)} hrs scheduled`;
+    }
 
     container.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h2>Day-by-Day Itinerary Timeline</h2>
-          <p style="color: var(--text-secondary); font-size: 0.9rem;">Schedule activities, tours, transport, and reservations per day.</p>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">Chronological timeline, real-time conflict warnings, and transit buffers.</p>
         </div>
-        <button class="btn btn-primary" id="btn-add-itinerary">
-          ${icon('plus')} Add Itinerary Event
-        </button>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" id="btn-open-bucket-drawer">
+            🎒 Bucket List (${(trip.activities || []).length})
+          </button>
+          <button class="btn btn-primary" id="btn-add-itinerary">
+            ${icon('plus')} Add Event
+          </button>
+        </div>
       </div>
 
-      ${dayNumbers.length === 0 ? `
-        <div class="empty-canvas-container">
-          <div style="font-weight: 800; color: var(--accent-primary); font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
-            Day 1 — Getting Started
+      <div class="itinerary-split-grid">
+        <!-- Left Rail Sticky Day Navigation -->
+        <aside class="itinerary-day-rail">
+          <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <span>Day Anchors</span>
+            <span>${dayNumbers.length} Days</span>
           </div>
-          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Your Itinerary Canvas is Blank</h3>
-          <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 1.25rem auto; font-size: 0.9rem;">
-            Start building your day-by-day travel schedule! Click a quick category below or add a custom event.
-          </p>
-          <div class="empty-chips-group">
-            <button class="action-chip" data-cat="transit">✈️ + Add Flight / Transit</button>
-            <button class="action-chip" data-cat="sightseeing">🏨 + Add Lodging / Hotel</button>
-            <button class="action-chip" data-cat="culture">🎟️ + Add Activity / Tour</button>
-            <button class="action-chip" data-cat="dining">🍽️ + Add Dining / Meal</button>
-          </div>
-        </div>
-      ` : `
-        <div>
-          ${dayNumbers.map(dayNum => `
-            <div style="margin-bottom: 2.5rem;">
-              <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <span style="background: var(--accent-gradient); color: #fff; padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.85rem;">
-                  Day ${dayNum}
-                </span>
-              </div>
 
-              <div class="timeline">
-                ${daysMap[dayNum].map(item => `
-                  <div class="timeline-item">
-                    <div class="timeline-node"></div>
-                    <div class="timeline-card">
-                      <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.35rem;">
-                          <span style="color: var(--accent-secondary); font-weight: 700; font-size: 0.9rem;">${item.time}</span>
-                          <h4 style="font-size: 1.1rem; color: var(--text-primary);">${item.title}</h4>
-                          <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3);">
-                            ${item.category}
-                          </span>
-                        </div>
-                        ${item.location ? `
-                          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem;">
-                            ${icon('map-pin', 'var(--text-muted)')} ${item.location}
-                          </p>
-                        ` : ''}
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">${item.notes || ''}</p>
+          ${dayNumbers.map((dayNum, idx) => {
+            const itemsCount = (daysMap[dayNum] || []).length;
+            const weather = weatherPresets[idx % weatherPresets.length];
+            const hoursStr = calculateDayHours(daysMap[dayNum]);
+            return `
+              <button class="day-anchor-btn ${idx === 0 ? 'active' : ''}" data-day="${dayNum}">
+                <div class="day-anchor-title">Day ${dayNum} • ${formatDate(trip.startDate)}</div>
+                <div class="day-anchor-weather">${weather}</div>
+                <div class="day-anchor-stats">${itemsCount} events • ${hoursStr}</div>
+              </button>
+            `;
+          }).join('')}
+        </aside>
+
+        <!-- Right Main Timeline Feed -->
+        <main class="itinerary-main-feed">
+          ${dayNumbers.map((dayNum, idx) => {
+            const dayItems = daysMap[dayNum] || [];
+            const weather = weatherPresets[idx % weatherPresets.length];
+            
+            // Conflict detector pass
+            const processedItems = dayItems.map((item, i) => {
+              const prev = dayItems[i - 1];
+              const isConflict = prev && (prev.time === item.time);
+              return { ...item, isConflict, conflictWith: isConflict ? prev.title : null };
+            });
+
+            return `
+              <section id="day-section-${dayNum}" style="margin-bottom: 3rem; scroll-margin-top: 100px;">
+                <!-- Day Section Sticky Header -->
+                <div class="card" style="padding: 1rem 1.25rem; margin-bottom: 1rem; border-color: var(--border-glow); background: var(--bg-secondary); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 0.85rem;">
+                    <span style="background: var(--accent-gradient); color: #fff; padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-weight: 800; font-size: 0.9rem;">
+                      Day ${dayNum}
+                    </span>
+                    <div>
+                      <strong style="font-size: 1.1rem; color: var(--text-primary);">Day ${dayNum} Schedule</strong>
+                      <div style="font-size: 0.8rem; color: var(--accent-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>${weather}</span>
+                        <span>•</span>
+                        <span>${dayItems.length} planned events</span>
                       </div>
-                      <button class="btn btn-icon-only btn-secondary btn-del-it" data-id="${item.id}">
-                        ${icon('x', '#ef4444')}
-                      </button>
                     </div>
                   </div>
-                `).join('')}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `}
+
+                  <button class="btn btn-secondary btn-sm btn-quick-add-day" data-day="${dayNum}">
+                    ${icon('plus')} Add to Day ${dayNum}
+                  </button>
+                </div>
+
+                ${dayItems.length === 0 ? `
+                  <div class="empty-canvas-container">
+                    <div style="font-weight: 800; color: var(--accent-primary); font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+                      Day ${dayNum} — Empty Canvas
+                    </div>
+                    <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No events scheduled for Day ${dayNum}</h4>
+                    <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 1rem auto; font-size: 0.85rem;">
+                      Add a flight, hotel check-in, or bucket list activity to build this day's itinerary.
+                    </p>
+                    <div class="empty-chips-group">
+                      <button class="action-chip" data-day="${dayNum}" data-cat="transit">✈️ + Add Flight</button>
+                      <button class="action-chip" data-day="${dayNum}" data-cat="lodging">🏨 + Add Lodging</button>
+                      <button class="action-chip" data-day="${dayNum}" data-cat="activity">🎟️ + Add Activity</button>
+                      <button class="action-chip" data-day="${dayNum}" data-cat="dining">🍽️ + Add Meal</button>
+                    </div>
+                  </div>
+                ` : `
+                  <div class="time-spine">
+                    ${processedItems.map((item, itemIdx) => {
+                      const node = getNodeDetails(item.category);
+                      const prevItem = processedItems[itemIdx - 1];
+
+                      return `
+                        ${prevItem ? `
+                          <!-- Transit Buffer Pill -->
+                          <div class="transit-buffer-pill">
+                            🚘 ~${20 + (itemIdx * 5)} min estimated transit between <strong>${prevItem.title}</strong> &amp; <strong>${item.title}</strong>
+                          </div>
+                        ` : ''}
+
+                        <!-- Inline Insert Divider (Before Card) -->
+                        <div class="inline-insert-divider btn-inline-insert" data-day="${dayNum}" data-time="${item.time}">
+                          <div class="inline-insert-line"></div>
+                          <button class="inline-insert-btn" type="button">+ Insert Event</button>
+                          <div class="inline-insert-line"></div>
+                        </div>
+
+                        <!-- Spine Event Card -->
+                        <div class="spine-card ${item.isConflict ? 'conflict-alert' : ''}">
+                          <!-- Color Coded Spine Node -->
+                          <div class="spine-node ${node.nodeClass}" title="${node.label}">
+                            ${icon(node.iconName)}
+                          </div>
+
+                          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;">
+                            <div style="flex: 1;">
+                              <!-- Header: Time & Badges -->
+                              <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 0.4rem;">
+                                <span style="font-weight: 800; font-size: 0.95rem; color: var(--accent-secondary);">${item.time || '09:00'}</span>
+                                <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-secondary); border: 1px solid var(--border-color); font-size: 0.7rem;">
+                                  ⏱️ 1h 30m duration
+                                </span>
+                                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3);">
+                                  ${item.category || 'Sightseeing'}
+                                </span>
+                                ${item.isConflict ? `
+                                  <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4);">
+                                    ⚠️ Time overlap with ${item.conflictWith}
+                                  </span>
+                                ` : ''}
+                              </div>
+
+                              <h4 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">${item.title}</h4>
+
+                              ${item.location ? `
+                                <div style="margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                  ${icon('map-pin', 'var(--accent-primary)')}
+                                  <span>${item.location}</span>
+                                  <a href="https://maps.google.com/?q=${encodeURIComponent(item.location)}" target="_blank" style="color: var(--accent-primary); font-weight: 600; font-size: 0.8rem; text-decoration: none;">
+                                    Google Maps &rarr;
+                                  </a>
+                                </div>
+                              ` : ''}
+
+                              ${item.notes ? `
+                                <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">${item.notes}</p>
+                              ` : ''}
+
+                              <!-- Card Footer Metadata -->
+                              <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; color: var(--text-muted);">
+                                <div class="avatars-group">
+                                  ${trip.attendees.slice(0, 3).map(a => `<div class="avatar" title="${a.name}">${a.avatar}</div>`).join('')}
+                                </div>
+                                <span style="font-weight: 700; color: var(--text-primary);">$45 / person</span>
+                              </div>
+                            </div>
+
+                            <!-- Card Action Buttons -->
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                              <button class="btn btn-icon-only btn-secondary btn-del-it" data-id="${item.id}" title="Remove Event">
+                                ${icon('trash-2', '#ef4444')}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+
+                    <!-- End of Day Inline Insert -->
+                    <div class="inline-insert-divider btn-inline-insert" data-day="${dayNum}">
+                      <div class="inline-insert-line"></div>
+                      <button class="inline-insert-btn" type="button">+ Insert Event to Day ${dayNum}</button>
+                      <div class="inline-insert-line"></div>
+                    </div>
+                  </div>
+                `}
+              </section>
+            `;
+          }).join('')}
+        </main>
+      </div>
     `;
 
+    // --- Wire Event Listeners ---
     container.querySelector('#btn-add-itinerary')?.addEventListener('click', () => openAddItineraryModal(trip));
+    container.querySelector('#btn-open-bucket-drawer')?.addEventListener('click', () => openBucketListDrawer(trip));
+
+    // Day Anchor smooth scrolling
+    container.querySelectorAll('.day-anchor-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        container.querySelectorAll('.day-anchor-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const dayNum = e.currentTarget.getAttribute('data-day');
+        const sec = container.querySelector(`#day-section-${dayNum}`);
+        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    container.querySelectorAll('.btn-quick-add-day').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const d = parseInt(btn.getAttribute('data-day')) || 1;
+        openAddItineraryModal(trip, 'sightseeing', d);
+      });
+    });
 
     container.querySelectorAll('.action-chip[data-cat]').forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        const cat = e.currentTarget.getAttribute('data-cat');
-        openAddItineraryModal(trip, cat);
+      chip.addEventListener('click', () => {
+        const cat = chip.getAttribute('data-cat');
+        const dayNum = parseInt(chip.getAttribute('data-day')) || 1;
+        openAddItineraryModal(trip, cat, dayNum);
+      });
+    });
+
+    container.querySelectorAll('.btn-inline-insert').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dayNum = parseInt(btn.getAttribute('data-day')) || 1;
+        openAddItineraryModal(trip, 'sightseeing', dayNum);
       });
     });
 
@@ -920,6 +1098,99 @@
         appStore.deleteItineraryItem(trip.id, id);
         showToast('Itinerary event removed', 'info');
         renderItineraryPane(container, appStore.getCurrentTrip());
+      });
+    });
+  }
+
+  // --- Unscheduled Bucket List Drawer ---
+  function openBucketListDrawer(trip) {
+    const activities = trip.activities || [];
+    const html = `
+      <div class="bucket-drawer-overlay active" id="bucket-drawer">
+        <div class="bucket-drawer-content">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <h3>🎒 Bucket List & Ideas</h3>
+            <button class="btn btn-icon-only btn-secondary close-drawer" type="button">&times;</button>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Unassigned activity ideas! Click <strong>+ Assign</strong> to place any idea directly onto your day-by-day itinerary.
+          </p>
+
+          ${activities.length === 0 ? `
+            <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+              ${icon('compass')}
+              <p style="margin-top: 0.5rem; font-size: 0.9rem;">No bucket list items added yet. Add activities from the Activities tab!</p>
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 0.85rem; flex: 1; overflow-y: auto;">
+              ${activities.map(act => `
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.4rem;">
+                    <strong style="font-size: 0.95rem; color: var(--text-primary);">${act.title}</strong>
+                    <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); font-size: 0.7rem;">${act.category}</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    Cost: $${act.cost || 0} • Duration: ${act.duration || '1.5 hrs'}
+                  </div>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-primary btn-sm btn-assign-act" data-title="${act.title}" data-cat="${act.category}" style="flex: 1; font-size: 0.78rem;">
+                      + Assign to Day 1
+                    </button>
+                    <button class="btn btn-secondary btn-sm btn-assign-act-d2" data-title="${act.title}" data-cat="${act.category}" style="flex: 1; font-size: 0.78rem;">
+                      + Assign to Day 2
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <button class="btn btn-secondary close-drawer" style="width: 100%;">Close Drawer</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+    const drawer = document.getElementById('bucket-drawer');
+    const close = () => drawer.remove();
+    drawer.querySelectorAll('.close-drawer').forEach(b => b.onclick = close);
+
+    drawer.querySelectorAll('.btn-assign-act').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const title = btn.getAttribute('data-title');
+        const cat = btn.getAttribute('data-cat');
+        appStore.addItineraryItem(trip.id, {
+          day: 1,
+          time: '10:00',
+          title: title,
+          category: cat || 'sightseeing',
+          location: trip.destination,
+          notes: 'Assigned from Bucket List'
+        });
+        close();
+        showToast(`Assigned "${title}" to Day 1!`, 'success');
+        renderCurrentView();
+      });
+    });
+
+    drawer.querySelectorAll('.btn-assign-act-d2').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const title = btn.getAttribute('data-title');
+        const cat = btn.getAttribute('data-cat');
+        appStore.addItineraryItem(trip.id, {
+          day: 2,
+          time: '14:00',
+          title: title,
+          category: cat || 'sightseeing',
+          location: trip.destination,
+          notes: 'Assigned from Bucket List'
+        });
+        close();
+        showToast(`Assigned "${title}" to Day 2!`, 'success');
+        renderCurrentView();
       });
     });
   }
@@ -2113,12 +2384,264 @@
     });
   }
 
-  function initMap(trip) {
+  // --- Geocoding Destination & Event Coordinates ---
+  const DESTINATION_COORDINATES_MAP = {
+    'cancun': { lat: 21.1619, lng: -86.8515 },
+    'cozumel': { lat: 20.4230, lng: -86.9223 },
+    'playa del carmen': { lat: 20.6296, lng: -87.0739 },
+    'tulum': { lat: 20.2114, lng: -87.4654 },
+    'cabo': { lat: 22.8905, lng: -109.9167 },
+    'puerto vallarta': { lat: 20.6534, lng: -105.2253 },
+    'mexico': { lat: 19.4326, lng: -99.1332 },
+    'paris': { lat: 48.8566, lng: 2.3522 },
+    'nice': { lat: 43.7102, lng: 7.2620 },
+    'lyon': { lat: 45.7640, lng: 4.8357 },
+    'france': { lat: 48.8566, lng: 2.3522 },
+    'rome': { lat: 41.9028, lng: 12.4964 },
+    'florence': { lat: 43.7696, lng: 11.2558 },
+    'venice': { lat: 45.4408, lng: 12.3155 },
+    'amalfi': { lat: 40.6340, lng: 14.6027 },
+    'positano': { lat: 40.6281, lng: 14.4850 },
+    'milan': { lat: 45.4642, lng: 9.1900 },
+    'italy': { lat: 41.9028, lng: 12.4964 },
+    'tokyo': { lat: 35.6762, lng: 139.6503 },
+    'kyoto': { lat: 35.0116, lng: 135.7681 },
+    'osaka': { lat: 34.6937, lng: 135.5023 },
+    'japan': { lat: 35.6762, lng: 139.6503 },
+    'bali': { lat: -8.4095, lng: 115.1889 },
+    'ubud': { lat: -8.5069, lng: 115.2625 },
+    'indonesia': { lat: -8.4095, lng: 115.1889 },
+    'hawaii': { lat: 21.3069, lng: -157.8583 },
+    'honolulu': { lat: 21.3069, lng: -157.8583 },
+    'maui': { lat: 20.7984, lng: -156.3319 },
+    'kauai': { lat: 22.0964, lng: -159.5261 },
+    'new york': { lat: 40.7128, lng: -74.0060 },
+    'nyc': { lat: 40.7128, lng: -74.0060 },
+    'manhattan': { lat: 40.7831, lng: -73.9712 },
+    'london': { lat: 51.5074, lng: -0.1278 },
+    'edinburgh': { lat: 55.9533, lng: -3.1883 },
+    'uk': { lat: 51.5074, lng: -0.1278 },
+    'barcelona': { lat: 41.3851, lng: 2.1734 },
+    'madrid': { lat: 40.4168, lng: -3.7038 },
+    'seville': { lat: 37.3891, lng: -5.9845 },
+    'ibiza': { lat: 38.9067, lng: 1.4206 },
+    'spain': { lat: 40.4168, lng: -3.7038 },
+    'dubai': { lat: 25.2048, lng: 55.2708 },
+    'abu dhabi': { lat: 24.4539, lng: 54.3773 },
+    'uae': { lat: 25.2048, lng: 55.2708 },
+    'iceland': { lat: 64.1466, lng: -21.9426 },
+    'reykjavik': { lat: 64.1466, lng: -21.9426 },
+    'sydney': { lat: -33.8688, lng: 151.2093 },
+    'melbourne': { lat: -37.8136, lng: 144.9631 },
+    'australia': { lat: -33.8688, lng: 151.2093 },
+    'cairo': { lat: 30.0444, lng: 31.2357 },
+    'egypt': { lat: 30.0444, lng: 31.2357 },
+    'phuket': { lat: 7.8804, lng: 98.3923 },
+    'bangkok': { lat: 13.7563, lng: 100.5018 },
+    'krabi': { lat: 8.0863, lng: 98.9063 },
+    'thailand': { lat: 13.7563, lng: 100.5018 },
+    'santorini': { lat: 36.3932, lng: 25.4615 },
+    'athens': { lat: 37.9838, lng: 23.7275 },
+    'mykonos': { lat: 37.4467, lng: 25.3289 },
+    'greece': { lat: 37.9838, lng: 23.7275 },
+    'miami': { lat: 25.7617, lng: -80.1918 },
+    'orlando': { lat: 28.5383, lng: -81.3792 },
+    'key west': { lat: 24.5551, lng: -81.7800 },
+    'florida': { lat: 25.7617, lng: -80.1918 },
+    'venice': { lat: 45.4408, lng: 12.3155 },
+    'amsterdam': { lat: 52.3676, lng: 4.9041 },
+    'swiss': { lat: 46.8182, lng: 8.2275 },
+    'switzerland': { lat: 46.8182, lng: 8.2275 },
+    'zermatt': { lat: 46.0207, lng: 7.7491 },
+    'zurich': { lat: 47.3769, lng: 8.5417 },
+    'alps': { lat: 46.8182, lng: 8.2275 },
+    'las vegas': { lat: 36.1699, lng: -115.1398 },
+    'vegas': { lat: 36.1699, lng: -115.1398 },
+    'chicago': { lat: 41.8781, lng: -87.6298 },
+    'san francisco': { lat: 37.7749, lng: -122.4194 },
+    'los angeles': { lat: 34.0522, lng: -118.2437 },
+    'seattle': { lat: 47.6062, lng: -122.3321 },
+    'yosemite': { lat: 37.8651, lng: -119.5383 },
+    'grand canyon': { lat: 36.1069, lng: -112.1129 },
+    'maldives': { lat: 3.2028, lng: 73.2207 },
+    'bora bora': { lat: -16.5004, lng: -151.7415 },
+    'singapore': { lat: 1.3521, lng: 103.8198 },
+    'hong kong': { lat: 22.3193, lng: 114.1694 },
+    'seoul': { lat: 37.5665, lng: 126.9780 },
+    'vienna': { lat: 48.2082, lng: 16.3738 },
+    'prague': { lat: 50.0755, lng: 14.4378 },
+    'budapest': { lat: 47.4979, lng: 19.0402 },
+    'lisbon': { lat: 38.7223, lng: -9.1393 },
+    'dublin': { lat: 53.3498, lng: -6.2603 },
+    'vancouver': { lat: 49.2827, lng: -123.1207 },
+    'toronto': { lat: 43.6532, lng: -79.3832 },
+    'rio': { lat: -22.9068, lng: -43.1729 },
+    'buenos aires': { lat: -34.6037, lng: -58.3816 },
+    'machu picchu': { lat: -13.1631, lng: -72.5450 },
+    'costa rica': { lat: 9.7489, lng: -83.7534 },
+    'marrakech': { lat: 31.6295, lng: -7.9811 },
+    'cape town': { lat: -33.9249, lng: 18.4241 }
+  };
+
+  const GEO_CACHE_KEY = 'wanderpulse_geocache_v1';
+  function getGeoCache() {
+    try { return JSON.parse(localStorage.getItem(GEO_CACHE_KEY)) || {}; } catch(e) { return {}; }
+  }
+  function saveGeoCache(cache) {
+    try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify(cache)); } catch(e) {}
+  }
+
+  function resolveDestinationCoords(destinationText) {
+    if (!destinationText || !destinationText.trim()) return { lat: 35.6762, lng: 139.6503 };
+    const query = destinationText.toLowerCase().trim();
+    for (const [key, coords] of Object.entries(DESTINATION_COORDINATES_MAP)) {
+      if (query.includes(key)) return coords;
+    }
+    const cache = getGeoCache();
+    if (cache[query]) return cache[query];
+    return { lat: 48.8566, lng: 2.3522 };
+  }
+
+  async function geocodeLocation(locationText) {
+    if (!locationText || !locationText.trim()) return null;
+    const query = locationText.trim().toLowerCase();
+
+    for (const [key, coords] of Object.entries(DESTINATION_COORDINATES_MAP)) {
+      if (query.includes(key)) return coords;
+    }
+
+    const cache = getGeoCache();
+    if (cache[query]) return cache[query];
+
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        cache[query] = coords;
+        saveGeoCache(cache);
+        return coords;
+      }
+    } catch(e) {
+      console.warn('Nominatim geocode lookup error:', e);
+    }
+    return null;
+  }
+
+  async function initMap(trip) {
     const el = document.getElementById('map-container');
     if (!el || !window.L) return;
-    const map = window.L.map('map-container').setView([trip.lat || 35.6762, trip.lng || 139.6503], 11);
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    window.L.marker([trip.lat || 35.6762, trip.lng || 139.6503]).addTo(map).bindPopup(`<b>${trip.title}</b><br/>${trip.destination}`).openPopup();
+
+    if (window._activeLeafletMap) {
+      try { window._activeLeafletMap.remove(); } catch(e) {}
+      window._activeLeafletMap = null;
+    }
+
+    let mainCoords = (trip.lat && trip.lng && (trip.lat !== 21.1619 || (trip.destination && trip.destination.toLowerCase().includes('cancun'))))
+      ? { lat: trip.lat, lng: trip.lng }
+      : resolveDestinationCoords(trip.destination || trip.title);
+
+    const map = window.L.map('map-container', {
+      scrollWheelZoom: true,
+      zoomControl: true
+    }).setView([mainCoords.lat, mainCoords.lng], 11);
+    
+    window._activeLeafletMap = map;
+
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Invalidate size after container renders in tab
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 50);
+    setTimeout(() => { try { map.invalidateSize(); } catch(e) {} }, 250);
+
+    // Custom main destination marker
+    const mainIcon = window.L.divIcon({
+      className: 'custom-map-pin main-pin',
+      html: `<div style="background: linear-gradient(135deg, #6366f1, #06b6d4); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(99,102,241,0.5); border: 2px solid #ffffff;">📍</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
+    });
+
+    const mainMarker = window.L.marker([mainCoords.lat, mainCoords.lng], { icon: mainIcon })
+      .addTo(map)
+      .bindPopup(`
+        <div style="font-family: var(--font-family-base); padding: 4px;">
+          <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: #0f172a;">📍 ${trip.title}</h4>
+          <p style="margin: 0; font-size: 0.85rem; color: #475569;">${trip.destination}</p>
+        </div>
+      `)
+      .openPopup();
+
+    const bounds = [[mainCoords.lat, mainCoords.lng]];
+
+    // Real-time geocoding check for trip destination
+    const geocodedMain = await geocodeLocation(trip.destination || trip.title);
+    if (geocodedMain && (geocodedMain.lat !== mainCoords.lat || geocodedMain.lng !== mainCoords.lng)) {
+      mainCoords = geocodedMain;
+      trip.lat = geocodedMain.lat;
+      trip.lng = geocodedMain.lng;
+      appStore.saveTrips();
+      mainMarker.setLatLng([geocodedMain.lat, geocodedMain.lng]);
+      map.setView([geocodedMain.lat, geocodedMain.lng], 11);
+      bounds[0] = [geocodedMain.lat, geocodedMain.lng];
+    }
+
+    // Process Itinerary Markers
+    const itinerary = trip.itinerary || [];
+    for (let idx = 0; idx < itinerary.length; idx++) {
+      const item = itinerary[idx];
+      if (item.location || item.title) {
+        let itemCoords = null;
+        if (item.location) {
+          itemCoords = await geocodeLocation(item.location);
+        }
+        if (!itemCoords) {
+          itemCoords = {
+            lat: mainCoords.lat + (Math.sin(idx + 1) * 0.015),
+            lng: mainCoords.lng + (Math.cos(idx + 1) * 0.015)
+          };
+        }
+
+        bounds.push([itemCoords.lat, itemCoords.lng]);
+
+        const cat = (item.category || '').toLowerCase();
+        let pinEmoji = '🎟️';
+        let pinColor = '#10b981';
+        if (cat.includes('transit') || cat.includes('flight')) { pinEmoji = '✈️'; pinColor = '#06b6d4'; }
+        else if (cat.includes('lodging') || cat.includes('hotel')) { pinEmoji = '🏨'; pinColor = '#f59e0b'; }
+        else if (cat.includes('dining') || cat.includes('food')) { pinEmoji = '🍽️'; pinColor = '#ec4899'; }
+        else if (cat.includes('culture') || cat.includes('sightseeing')) { pinEmoji = '🏛️'; pinColor = '#8b5cf6'; }
+
+        const itemIcon = window.L.divIcon({
+          className: 'custom-map-pin item-pin',
+          html: `<div style="background: ${pinColor}; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 2px solid #ffffff;">${pinEmoji}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14]
+        });
+
+        window.L.marker([itemCoords.lat, itemCoords.lng], { icon: itemIcon })
+          .addTo(map)
+          .bindPopup(`
+            <div style="font-family: var(--font-family-base); padding: 4px;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: ${pinColor}; text-transform: uppercase;">Day ${item.day || 1} • ${item.time || ''}</span>
+              <h4 style="margin: 2px 0 4px 0; font-size: 0.95rem; color: #0f172a;">${item.title}</h4>
+              ${item.location ? `<p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #475569;">📍 ${item.location}</p>` : ''}
+              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((item.location || item.title) + ' ' + trip.destination)}" target="_blank" style="color: #6366f1; font-size: 0.8rem; font-weight: 700; text-decoration: none;">Get Directions &rarr;</a>
+            </div>
+          `);
+      }
+    }
+
+    if (bounds.length > 1) {
+      try {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      } catch(e) {}
+    }
   }
 
   function formatDate(dStr) {
