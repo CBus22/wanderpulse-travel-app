@@ -778,91 +778,148 @@
 
   function renderDashboard(containerEl) {
     const trips = appStore.getTrips();
-    const filteredTrips = trips.filter(t => {
-      const matchesFilter = currentFilter === 'all' || t.status === currentFilter;
-      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            t.destination.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
+    const profile = appStore.loadProfile();
+    const partnerName = profile.partnerName || 'Taylor';
+    const p1Short = (profile.name || 'Alex').split(' ')[0];
+    const p2Short = partnerName.split(' ')[0];
 
-    const nextUpcomingTrip = trips.find(t => t.status === 'upcoming' || t.status === 'active') || trips[0];
+    const nextTrip = trips.find(t => t.status === 'upcoming' || t.status === 'active') || trips[0];
+    const featuredTrip = trips[0] || nextTrip;
+    const sideTrips = trips.slice(1);
+
+    const weatherMap = {
+      'Great Smoky Mountains': { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' },
+      'Cancun, Mexico': { temp: '84°F • Coastal Sun', gps: '21.16° N, 86.85° W' },
+      'Tokyo, Japan': { temp: '68°F • Clear Sky', gps: '35.67° N, 139.65° E' }
+    };
+    const weatherInfo = weatherMap[nextTrip.destination] || { temp: '72°F • Mild Breeze', gps: '35.61° N, 83.55° W' };
+
+    const memories = [
+      { caption: 'Amalfi Coast Sunset', photo: 'assets/images/amalfi.png', stamp: 'ENTRY • AMALFI 2025' },
+      { caption: 'Swiss Alps Trail', photo: 'assets/images/swiss.png', stamp: 'ENTRY • SWISS ALPS 2024' },
+      { caption: 'Kyoto Bamboo Grove', photo: 'assets/images/tokyo.png', stamp: 'ENTRY • KYOTO 2023' },
+      { caption: 'Smokies Ridge Overlook', photo: 'assets/images/hero.png', stamp: 'ENTRY • SMOKIES 2026' }
+    ];
 
     containerEl.innerHTML = `
-      <section class="hero-banner">
-        <div class="hero-banner-grid">
-          <div class="hero-content">
-            <span class="badge badge-upcoming" style="margin-bottom: 0.75rem;">${icon('plane')} Travel Workspace</span>
-            <h1 class="hero-title">Your Next Unforgettable <span class="gradient-text">Adventure Awaits</span></h1>
-            <p class="hero-subtitle">Organize travel details, day-by-day itineraries, group expenses, and packing checklists in one sleek dashboard.</p>
-            <div style="display: flex; gap: 0.85rem; flex-wrap: wrap;">
-              <button id="btn-create-trip" class="btn btn-primary">
-                ${icon('plus-circle')} Create Travel Plan
-              </button>
-              <button id="btn-explore-destinations" class="btn btn-secondary">
-                ${icon('compass')} Explore Destinations
-              </button>
-            </div>
+      <!-- Personalized "Next Expedition" Immersive Banner -->
+      <section class="next-expedition-banner" style="background-image: url('${nextTrip.coverImage}');">
+        <div class="next-expedition-overlay"></div>
+        <div class="next-expedition-content">
+          <div class="banner-widgets-strip">
+            <span class="countdown-pill">⏳ Departing in ${getDaysUntil(nextTrip.startDate)} • ${formatDate(nextTrip.startDate)}–${formatDate(nextTrip.endDate)}</span>
+            <span class="weather-pill">🌤️ ${weatherInfo.temp}</span>
+            <span class="gps-pill">📍 ${weatherInfo.gps}</span>
           </div>
-
-          ${nextUpcomingTrip ? `
-            <div class="hero-countdown-card">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span class="badge badge-upcoming" style="font-size: 0.7rem;">Upcoming Journey</span>
-                <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-secondary);">${getDaysUntil(nextUpcomingTrip.startDate)}</span>
-              </div>
-              
-              <div style="height: 110px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 0.75rem; position: relative;">
-                <img src="${nextUpcomingTrip.coverImage}" alt="${nextUpcomingTrip.title}" style="width: 100%; height: 100%; object-fit: cover;" />
-                <div style="position: absolute; bottom: 0.35rem; left: 0.35rem; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 0.2rem 0.5rem; border-radius: var(--radius-full); font-size: 0.7rem; color: #fff;">
-                  📍 ${nextUpcomingTrip.destination}
-                </div>
-              </div>
-
-              <h4 style="font-size: 0.95rem; margin-bottom: 0.25rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${nextUpcomingTrip.title}</h4>
-              <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">${formatDate(nextUpcomingTrip.startDate)} - ${formatDate(nextUpcomingTrip.endDate)}</p>
-
-              <button class="btn btn-secondary btn-sm" id="btn-hero-jump-trip" data-id="${nextUpcomingTrip.id}" style="width: 100%; justify-content: center; font-size: 0.8rem;">
-                View Trip Itinerary &rarr;
-              </button>
-            </div>
-          ` : ''}
+          <h1 class="next-expedition-heading">Heading to ${nextTrip.destination.split(',')[0]}</h1>
+          <button class="btn-warm-expedition" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
+            Open ${nextTrip.destination.split(',')[0]} Itinerary &rarr;
+          </button>
         </div>
       </section>
 
-      <div class="filter-bar">
-        <div class="tabs-group">
-          <button class="tab-btn ${currentFilter === 'all' ? 'active' : ''}" data-filter="all">All Trips (${trips.length})</button>
-          <button class="tab-btn ${currentFilter === 'upcoming' ? 'active' : ''}" data-filter="upcoming">Upcoming</button>
-          <button class="tab-btn ${currentFilter === 'active' ? 'active' : ''}" data-filter="active">Active</button>
-          <button class="tab-btn ${currentFilter === 'completed' ? 'active' : ''}" data-filter="completed">Completed</button>
-          <button class="tab-btn ${currentFilter === 'draft' ? 'active' : ''}" data-filter="draft">Drafts</button>
-        </div>
-
-        <div class="search-box">
-          ${icon('search', 'var(--text-muted)')}
-          <input type="text" id="trip-search-input" placeholder="Search destination or trip..." value="${searchQuery}">
+      <!-- Section Title & Fast Actions -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="font-size: 1.45rem; font-family: var(--font-family-journal); color: var(--text-primary); margin: 0;">
+          Active Journeys &amp; Journal Entries
+        </h2>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <div class="search-box" style="margin: 0; width: 220px;">
+            ${icon('search', 'var(--text-muted)')}
+            <input type="text" id="trip-search-input" placeholder="Search entries..." value="${searchQuery}" style="height: 34px; font-size: 0.8rem;">
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-create-trip" style="background: linear-gradient(135deg, #E06D53 0%, #E28F38 100%); border: none; border-radius: 9999px; font-weight: 700;">
+            + New Expedition
+          </button>
         </div>
       </div>
 
-      ${filteredTrips.length === 0 ? `
-        <div class="card" style="text-align: center; padding: 4rem 2rem;">
-          <div style="margin-bottom: 1rem;">${icon('compass', 'var(--text-muted)')}</div>
-          <h3>No travel projects found</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Start planning your next getaway by creating your first trip.</p>
-          <button id="btn-create-trip-empty" class="btn btn-primary">${icon('plus')} Create New Trip</button>
+      <!-- Asymmetric Editorial Grid (Featured Hero + Side Stack) -->
+      <div class="asymmetric-editorial-grid">
+        <!-- 2-Column Wide Featured Card -->
+        <div class="featured-trip-card" data-trip-id="${featuredTrip.id}">
+          <div class="featured-trip-photo">
+            <img src="${featuredTrip.coverImage}" alt="${featuredTrip.title}" />
+            <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
+              Featured Expedition
+            </span>
+          </div>
+          <div class="featured-trip-body">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.78rem; font-weight: 700; color: #E28F38;">📍 ${featuredTrip.destination}</span>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">${formatDate(featuredTrip.startDate)} – ${formatDate(featuredTrip.endDate)}</span>
+            </div>
+            <h3 class="featured-trip-title">${featuredTrip.title}</h3>
+            
+            <div class="personal-notes-quote">
+              📝 "Cabin booked near Cataloochee Valley • Wildlife camera &amp; trail gear prepped"
+            </div>
+
+            <div class="packing-progress-bar-wrap">
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #D6CFC4;">
+                <span>Joint Packing Readiness</span>
+                <span style="color: #E06D53; font-weight: 700;">68% Packed • ${p1Short} &amp; ${p2Short}</span>
+              </div>
+              <div class="packing-progress-track">
+                <div class="packing-progress-fill" style="width: 68%;"></div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
+              <span style="color: #E06D53; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
+                Explore Journal Entry &rarr;
+              </span>
+            </div>
+          </div>
         </div>
-      ` : `
-        <div class="trips-grid">
-          ${filteredTrips.map(trip => renderTripCard(trip)).join('')}
+
+        <!-- Side Stack Entries -->
+        <div class="side-stack-container">
+          ${sideTrips.map(trip => `
+            <div class="journal-entry-card" data-trip-id="${trip.id}">
+              <div class="journal-entry-thumb">
+                <img src="${trip.coverImage}" alt="${trip.title}" />
+              </div>
+              <div class="journal-entry-info">
+                <span style="font-size: 0.72rem; color: #E28F38; font-weight: 700;">${getDaysUntil(trip.startDate)}</span>
+                <h4 class="journal-entry-title">${trip.title}</h4>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</div>
+                <span class="journal-entry-accent-link">Open Entry &rarr;</span>
+              </div>
+            </div>
+          `).join('')}
         </div>
-      `}
+      </div>
+
+      <!-- Organic Polaroid Travel Memories Photo Strip -->
+      <section class="memories-section-container">
+        <div class="memories-header">
+          <h3 class="memories-header-title">
+            📸 Travel Memories &amp; Passport Stamp Log
+          </h3>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">4 Expeditions Logged</span>
+        </div>
+
+        <div class="polaroid-memory-strip">
+          ${memories.map(m => `
+            <div class="polaroid-card">
+              <div class="passport-stamp-badge">${m.stamp}</div>
+              <div class="polaroid-photo-wrap">
+                <img src="${m.photo}" alt="${m.caption}" />
+              </div>
+              <div class="polaroid-caption">${m.caption}</div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
     `;
 
-    containerEl.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        currentFilter = e.currentTarget.getAttribute('data-filter');
-        renderDashboard(containerEl);
-      });
+    // Attach Event Listeners
+    containerEl.querySelector('#btn-next-expedition-jump')?.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      appStore.setCurrentTripId(id);
+      currentView = 'trip-detail';
+      renderCurrentView();
     });
 
     const searchInput = containerEl.querySelector('#trip-search-input');
@@ -873,70 +930,19 @@
       });
     }
 
-    const createBtn = containerEl.querySelector('#btn-create-trip') || containerEl.querySelector('#btn-create-trip-empty');
+    const createBtn = containerEl.querySelector('#btn-create-trip');
     if (createBtn) createBtn.addEventListener('click', () => openCreateTripModal(false));
 
-    const exploreBtn = containerEl.querySelector('#btn-explore-destinations');
-    if (exploreBtn) exploreBtn.addEventListener('click', () => openCreateTripModal(false));
-
-    const heroJumpBtn = containerEl.querySelector('#btn-hero-jump-trip');
-    if (heroJumpBtn) {
-      heroJumpBtn.addEventListener('click', () => {
-        const id = heroJumpBtn.getAttribute('data-id');
-        appStore.setCurrentTripId(id);
-        currentView = 'trip-detail';
-        renderCurrentView();
-      });
-    }
-
-    containerEl.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.kebab-menu-container')) return;
+    containerEl.querySelectorAll('[data-trip-id]').forEach(card => {
+      card.addEventListener('click', () => {
         const tripId = card.getAttribute('data-trip-id');
         appStore.setCurrentTripId(tripId);
         currentView = 'trip-detail';
         renderCurrentView();
       });
     });
-
-    // Wire Kebab Dropdown toggles & actions
-    containerEl.querySelectorAll('.kebab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const parent = btn.closest('.kebab-menu-container');
-        const dropdown = parent.querySelector('.kebab-dropdown');
-        document.querySelectorAll('.kebab-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
-        dropdown.classList.toggle('active');
-      });
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.kebab-menu-container')) {
-        document.querySelectorAll('.kebab-dropdown').forEach(d => d.classList.remove('active'));
-      }
-    });
-
-    containerEl.querySelectorAll('.kebab-action-edit').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const tripId = btn.getAttribute('data-trip-id');
-        const trip = appStore.getTrips().find(t => t.id === tripId);
-        if (trip) openEditTripModal(trip);
-      });
-    });
-
-    containerEl.querySelectorAll('.kebab-action-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const tripId = btn.getAttribute('data-trip-id');
-        if (confirm('Are you sure you want to delete this trip project?')) {
-          appStore.deleteTrip(tripId);
-          showToast('Trip deleted', 'info');
-          renderDashboard(containerEl);
-        }
-      });
-    });
   }
+
 
   function renderTripCard(trip) {
     const daysUntil = getDaysUntil(trip.startDate);
@@ -6622,27 +6628,31 @@
 
     function syncNavProfile() {
       const p = appStore.loadProfile();
-      const avatarEl = document.getElementById('nav-user-avatar');
+      const duoWrap = document.getElementById('nav-duo-avatars-wrap');
       const nameEl = document.getElementById('nav-user-name');
-      if (avatarEl) avatarEl.textContent = p.avatar || 'AR';
-      if (nameEl) nameEl.textContent = p.name || 'Alex Rivers';
-    }
 
-    if (themeBtn) {
-      themeBtn.innerHTML = icon('moon');
-      themeBtn.addEventListener('click', () => {
-        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        themeBtn.innerHTML = icon(next === 'dark' ? 'moon' : 'sun');
-        appStore.saveSettings({ theme: next });
-        showToast(`Theme switched to ${next}`, 'info');
-      });
-    }
+      if (duoWrap) {
+        const p1Avatar = p.avatar || 'AR';
+        const p2Avatar = p.partnerAvatar || 'TR';
+        if (p.partnerName) {
+          duoWrap.innerHTML = `
+            <div class="profile-avatar-sm" title="${p.name}">${p1Avatar}</div>
+            <div class="profile-avatar-sm" title="${p.partnerName}">${p2Avatar}</div>
+          `;
+        } else {
+          duoWrap.innerHTML = `<div class="profile-avatar-sm">${p1Avatar}</div>`;
+        }
+      }
 
-    if (settingsBtn) {
-      settingsBtn.innerHTML = icon('settings');
-      settingsBtn.addEventListener('click', openSettingsModal);
+      if (nameEl) {
+        if (p.partnerName) {
+          const p1Short = (p.name || 'Alex').split(' ')[0];
+          const p2Short = p.partnerName.split(' ')[0];
+          nameEl.textContent = `${p1Short} & ${p2Short}`;
+        } else {
+          nameEl.textContent = p.name || 'Alex Rivers';
+        }
+      }
     }
 
     if (settingsFooterBtn) {
@@ -6652,11 +6662,51 @@
       });
     }
 
-    const navProfileTrigger = document.getElementById('nav-profile-trigger') || document.getElementById('nav-space-btn');
-    if (navProfileTrigger) {
-      navProfileTrigger.addEventListener('click', () => {
+    const navProfileTrigger = document.getElementById('nav-profile-trigger');
+    const navProfileMenu = document.getElementById('nav-profile-menu');
+    const menuItemPersonal = document.getElementById('menu-item-personal');
+    const menuItemTheme = document.getElementById('menu-item-theme');
+    const menuItemSettings = document.getElementById('menu-item-settings');
+
+    if (navProfileTrigger && navProfileMenu) {
+      navProfileTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navProfileMenu.classList.toggle('active');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-profile-dropdown-container')) {
+          navProfileMenu.classList.remove('active');
+        }
+      });
+    }
+
+    if (menuItemPersonal) {
+      menuItemPersonal.addEventListener('click', (e) => {
+        e.preventDefault();
+        navProfileMenu?.classList.remove('active');
         currentView = 'personal-space';
         renderCurrentView();
+      });
+    }
+
+    if (menuItemTheme) {
+      menuItemTheme.addEventListener('click', (e) => {
+        e.preventDefault();
+        navProfileMenu?.classList.remove('active');
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        appStore.saveSettings({ theme: next });
+        showToast(`Switched theme to ${next} mode`, 'info');
+      });
+    }
+
+    if (menuItemSettings) {
+      menuItemSettings.addEventListener('click', (e) => {
+        e.preventDefault();
+        navProfileMenu?.classList.remove('active');
+        openSettingsModal();
       });
     }
 
@@ -6666,6 +6716,7 @@
         renderCurrentView();
       });
     }
+
 
     syncNavProfile();
     renderCurrentView();
