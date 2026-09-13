@@ -806,116 +806,69 @@
       <section class="next-expedition-banner" style="background-image: url('${nextTrip.coverImage}');">
         <div class="next-expedition-overlay"></div>
         <div class="next-expedition-content">
-          <div class="preview-card-header">
-            <span class="preview-badge-next">NEXT OUTPOST</span>
-            <span class="preview-countdown-lbl">⏳ ${getDaysUntil(nextTrip.startDate)} away • ${formatDate(nextTrip.startDate)}–${formatDate(nextTrip.endDate)}</span>
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span class="preview-badge-next" style="background: rgba(226, 143, 56, 0.25); color: #F6B762; border: 1px solid rgba(226, 143, 56, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;">NEXT EXPEDITION</span>
+            <span style="font-size: 0.8rem; color: #D6CFC4; margin-left: 0.25rem;">${getDaysUntil(nextTrip.startDate)} • ${formatDate(nextTrip.startDate)} – ${formatDate(nextTrip.endDate)}</span>
           </div>
-          <div class="banner-widgets-strip" style="margin-top: 0.2rem;">
+          <div class="banner-widgets-strip" style="margin-top: 0.15rem;">
             <span class="weather-pill">🌤️ ${weatherInfo.temp}</span>
             <span class="gps-pill">📍 ${weatherInfo.gps}</span>
           </div>
-          <h1 class="next-expedition-heading" style="margin-top: 0.35rem;">Heading to ${nextTrip.destination.split(',')[0]}</h1>
-          <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}" style="padding: 0.65rem 1.35rem;">
-            View Trip Itinerary &rarr;
+          <h1 class="next-expedition-heading">Heading to ${nextTrip.destination.split(',')[0]}</h1>
+          <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
+            Open Smokies Itinerary &rarr;
           </button>
         </div>
       </section>
 
       <!-- Section Title & Fast Actions -->
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-        <h2 style="font-size: 1.45rem; font-family: var(--font-family-journal); color: var(--text-primary); margin: 0;">
-          Active Expeditions &amp; Journal Entries
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+        <h2 style="font-size: 1.35rem; font-family: var(--font-family-journal); color: var(--text-primary); margin: 0;">
+          Active Expeditions
         </h2>
         <div style="display: flex; gap: 0.75rem; align-items: center;">
           <div class="search-box" style="margin: 0; width: 220px;">
             ${icon('search', 'var(--text-muted)')}
-            <input type="text" id="trip-search-input" placeholder="Search entries..." value="${searchQuery}" style="height: 34px; font-size: 0.8rem;">
+            <input type="text" id="trip-search-input" placeholder="Search expeditions..." value="${searchQuery}" style="height: 34px; font-size: 0.8rem;">
           </div>
-          <button class="btn btn-primary btn-sm shadow-terra-btn" id="btn-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.5rem 1.1rem; color: #fff;">
+          <button class="btn btn-primary btn-sm shadow-terra-btn" id="btn-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.5rem 1.1rem; color: #fff; cursor: pointer;">
             + New Expedition
           </button>
         </div>
       </div>
 
-
-      <!-- Asymmetric Editorial Grid (Featured Hero + Side Stack) -->
-      <div class="asymmetric-editorial-grid">
-        <!-- 2-Column Wide Featured Card -->
-        <div class="featured-trip-card" data-trip-id="${featuredTrip.id}">
-          <div class="featured-trip-photo">
-            <img src="${featuredTrip.coverImage}" alt="${featuredTrip.title}" />
-            <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
-              Featured Expedition
-            </span>
-          </div>
-          <div class="featured-trip-body">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-size: 0.78rem; font-weight: 700; color: #E28F38;">📍 ${featuredTrip.destination}</span>
-              <span style="font-size: 0.78rem; color: var(--text-muted);">${formatDate(featuredTrip.startDate)} – ${formatDate(featuredTrip.endDate)}</span>
-            </div>
-            <h3 class="featured-trip-title">${featuredTrip.title}</h3>
-            
-            <div class="personal-notes-quote">
-              📝 "Cabin booked near Cataloochee Valley • Wildlife camera &amp; trail gear prepped"
-            </div>
-
-            <div class="packing-progress-bar-wrap">
-              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #D6CFC4;">
-                <span>Joint Packing Readiness</span>
-                <span style="color: #E06D53; font-weight: 700;">68% Packed • ${p1Short} &amp; ${p2Short}</span>
-              </div>
-              <div class="packing-progress-track">
-                <div class="packing-progress-fill" style="width: 68%;"></div>
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
-              <span style="color: #E06D53; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem;">
-                Explore Journal Entry &rarr;
+      <!-- 3-Column Responsive Grid -->
+      <div class="active-trips-grid">
+        ${filteredTrips.map(trip => `
+          <div class="trip-card-modern" data-trip-id="${trip.id}">
+            <div class="trip-card-thumb-wrap">
+              <img src="${trip.coverImage}" alt="${trip.title}" class="trip-card-thumb-img" />
+              <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); font-size: 0.72rem; color: #FAF8F5; text-transform: capitalize;">
+                ${trip.tripType === 'coupled' ? '💑 Coupled' : trip.status || 'Upcoming'}
               </span>
             </div>
+            <div class="trip-card-body" style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #E28F38;">📍 ${trip.destination}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</span>
+              </div>
+              <h3 style="font-family: var(--font-family-journal); font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.3;">${trip.title}</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0; line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                ${trip.description || 'Expedition itinerary, group prep, packing checklists, and expense tracking.'}
+              </p>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <div class="collaborators-avatars" style="display: flex; align-items: center;">
+                  <div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem;" title="${profile.name}">${p1Short}</div>
+                  ${profile.partnerName ? `<div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem; margin-left: -6px; border: 2px solid var(--bg-surface);" title="${profile.partnerName}">${p2Short}</div>` : ''}
+                </div>
+                <span style="color: #E06D53; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 0.25rem;">
+                  Open Expedition &rarr;
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <!-- Side Stack Entries -->
-        <div class="side-stack-container">
-          ${sideTrips.map(trip => `
-            <div class="journal-entry-card" data-trip-id="${trip.id}">
-              <div class="journal-entry-thumb">
-                <img src="${trip.coverImage}" alt="${trip.title}" />
-              </div>
-              <div class="journal-entry-info">
-                <span style="font-size: 0.72rem; color: #E28F38; font-weight: 700;">${getDaysUntil(trip.startDate)}</span>
-                <h4 class="journal-entry-title">${trip.title}</h4>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</div>
-                <span class="journal-entry-accent-link">Open Entry &rarr;</span>
-              </div>
-            </div>
-          `).join('')}
-        </div>
+        `).join('')}
       </div>
-
-      <!-- Organic Polaroid Travel Memories Photo Strip -->
-      <section class="memories-section-container">
-        <div class="memories-header">
-          <h3 class="memories-header-title">
-            📸 Travel Memories &amp; Passport Stamp Log
-          </h3>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">4 Expeditions Logged</span>
-        </div>
-
-        <div class="polaroid-memory-strip">
-          ${memories.map(m => `
-            <div class="polaroid-card">
-              <div class="passport-stamp-badge">${m.stamp}</div>
-              <div class="polaroid-photo-wrap">
-                <img src="${m.photo}" alt="${m.caption}" />
-              </div>
-              <div class="polaroid-caption">${m.caption}</div>
-            </div>
-          `).join('')}
-        </div>
-      </section>
     `;
 
     // Attach Event Listeners
@@ -6628,12 +6581,15 @@
     if (savedSettings && savedSettings.theme) {
       document.documentElement.setAttribute('data-theme', savedSettings.theme);
     }
-    const themeBtn = document.getElementById('theme-toggle-btn');
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsFooterBtn = document.getElementById('footer-settings-btn');
-    const brandEl = document.querySelector('.nav-brand');
-    const navSpaceBtn = document.getElementById('nav-space-btn');
 
+    function updateThemeBtnIcon() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (!themeBtn) return;
+      const curTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      themeBtn.innerHTML = curTheme === 'dark' ? SVG_ICONS['sun'] : SVG_ICONS['moon'];
+    }
+
+    const themeBtn = document.getElementById('theme-toggle-btn');
     if (themeBtn) {
       themeBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -6641,7 +6597,33 @@
         const next = cur === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         appStore.saveSettings({ theme: next });
+        updateThemeBtnIcon();
         showToast(`Switched theme to ${next} mode`, 'info');
+      });
+    }
+
+    const navProfileTrigger = document.getElementById('nav-profile-trigger');
+    if (navProfileTrigger) {
+      navProfileTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentView = 'personal-space';
+        renderCurrentView();
+      });
+    }
+
+    const brandEl = document.querySelector('.nav-brand');
+    if (brandEl) {
+      brandEl.addEventListener('click', () => {
+        currentView = 'dashboard';
+        renderCurrentView();
+      });
+    }
+
+    const settingsFooterBtn = document.getElementById('footer-settings-btn');
+    if (settingsFooterBtn) {
+      settingsFooterBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSettingsModal();
       });
     }
 
@@ -6674,69 +6656,7 @@
       }
     }
 
-    if (settingsFooterBtn) {
-      settingsFooterBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openSettingsModal();
-      });
-    }
-
-    const navProfileTrigger = document.getElementById('nav-profile-trigger');
-    const navProfileMenu = document.getElementById('nav-profile-menu');
-    const menuItemPersonal = document.getElementById('menu-item-personal');
-    const menuItemTheme = document.getElementById('menu-item-theme');
-    const menuItemSettings = document.getElementById('menu-item-settings');
-
-    if (navProfileTrigger && navProfileMenu) {
-      navProfileTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navProfileMenu.classList.toggle('active');
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.nav-profile-dropdown-container')) {
-          navProfileMenu.classList.remove('active');
-        }
-      });
-    }
-
-    if (menuItemPersonal) {
-      menuItemPersonal.addEventListener('click', (e) => {
-        e.preventDefault();
-        navProfileMenu?.classList.remove('active');
-        currentView = 'personal-space';
-        renderCurrentView();
-      });
-    }
-
-    if (menuItemTheme) {
-      menuItemTheme.addEventListener('click', (e) => {
-        e.preventDefault();
-        navProfileMenu?.classList.remove('active');
-        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        appStore.saveSettings({ theme: next });
-        showToast(`Switched theme to ${next} mode`, 'info');
-      });
-    }
-
-    if (menuItemSettings) {
-      menuItemSettings.addEventListener('click', (e) => {
-        e.preventDefault();
-        navProfileMenu?.classList.remove('active');
-        openSettingsModal();
-      });
-    }
-
-    if (brandEl) {
-      brandEl.addEventListener('click', () => {
-        currentView = 'dashboard';
-        renderCurrentView();
-      });
-    }
-
-
+    updateThemeBtnIcon();
     syncNavProfile();
     renderCurrentView();
   });
