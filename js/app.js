@@ -163,298 +163,7 @@
     visitedStatesCount: 28
   };
 
-  const initialTrips = [
-    {
-      id: 'trip-smokies',
-      title: 'Great Smoky Mountains Autumn Retreat',
-      destination: 'Great Smoky Mountains National Park',
-      startDate: '2026-09-18',
-      endDate: '2026-09-20',
-      status: 'upcoming',
-      tripType: 'coupled',
-      treatCoupledAsHousehold: true,
-      coverImage: 'assets/images/hero.png',
-      budget: 1800,
-      currency: 'USD',
-      isPrivate: false,
-      lat: 35.6131, lng: -83.5532,
-      description: 'Mountain lodge retreat, trail hiking to Clingmans Dome, and wildlife photography.',
-      logistics: {
-        flights: [],
-        accommodations: [
-          {
-            id: 'acc-smokies',
-            name: 'Cataloochee Valley Timber Lodge',
-            photo: 'assets/images/hero.png',
-            propertyType: 'Mountain Lodge',
-            rating: '4.95 ★',
-            address: 'Cataloochee Valley Road, Great Smoky Mountains National Park, NC',
-            checkIn: '2026-09-18 • 4:00 PM',
-            checkOut: '2026-09-20 • 11:00 AM',
-            nights: '2 Nights',
-            roomDetails: 'Private Timber Cabin • 2 Guests',
-            guests: ['Alex Rivers', 'Taylor Rivers'],
-            confirmation: 'SMK-88190',
-            accessCode: 'Keypad Code: 7492#',
-            paymentStatus: 'Paid in Full',
-            cost: 650
-          }
-        ],
-        rentalCars: [],
-        notes: 'Wildlife camera and trail hiking gear prepped.'
-      },
-      itinerary: [
-        { id: 'it-s1', day: 1, date: '2026-09-18', title: 'Cabin Check-in & Sunset Overlook', time: '16:00', category: 'sightseeing', location: 'Cataloochee Valley', notes: 'Check into timber cabin, sunset hike along ridge trail.', lat: 35.6131, lng: -83.5532 },
-        { id: 'it-s2', day: 2, date: '2026-09-19', title: 'Alum Cave Trail & Clingmans Dome', time: '08:00', category: 'adventure', location: 'Clingmans Dome', notes: 'Early morning trail hike, wildlife camera setup at valley viewpoint.', lat: 35.5628, lng: -83.4985 }
-      ],
-      activities: [
-        { id: 'act-s1', title: 'Alum Cave Trail Hiking Expedition', category: 'Adventure', status: 'Planned', cost: 0, duration: '4 hrs', rating: 5.0 }
-      ],
-      packingList: [
-        { id: 'pack-s1', category: 'Gear', item: 'Hiking Boots & Trekking Poles', packed: true, assignee: 'Alex Rivers' },
-        { id: 'pack-s2', category: 'Gear', item: 'Wildlife Camera & Lens Kit', packed: true, assignee: 'Taylor Rivers' }
-      ],
-      prepChecklist: [
-        { id: 'prep-s1', title: 'Park Pass & Cabin Keycode Saved', completed: true }
-      ],
-      attendees: [
-        { id: 'att-s1', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed', householdId: 'hh-smokies', partnerId: 'att-s2' },
-        { id: 'att-s2', name: 'Taylor Rivers', role: 'Partner / Co-Planner', avatar: 'TR', email: 'taylor@example.com', rsvp: 'Confirmed', householdId: 'hh-smokies', partnerId: 'att-s1' }
-      ],
-      expenses: [
-        { id: 'exp-s1', title: 'Cabin Rental', amount: 650, paidBy: 'Alex Rivers', category: 'Stay', date: '2026-09-18', splitWith: ['Alex Rivers', 'Taylor Rivers'] }
-      ]
-    },
-    {
-      id: 'trip-1',
-      title: 'Tokyo & Kyoto Autumn Odyssey',
-      destination: 'Tokyo & Kyoto, Japan',
-      startDate: '2026-10-15',
-      endDate: '2026-10-25',
-      status: 'upcoming',
-      tripType: 'coupled',
-      coverImage: 'assets/images/tokyo.png',
-      budget: 4500,
-      currency: 'USD',
-      isPrivate: false,
-      lat: 35.6762, lng: 139.6503,
-      logistics: {
-        flights: [
-          {
-            id: 'fl-1',
-            airline: 'Japan Airlines',
-            flightNum: 'JL 005',
-            fromIata: 'JFK',
-            fromCity: 'New York',
-            fromTime: '11:30 AM',
-            fromDate: '2026-10-15',
-            fromTerminal: 'Terminal 8, Gate 14',
-            toIata: 'HND',
-            toCity: 'Tokyo',
-            toTime: '03:25 PM (+1)',
-            toDate: '2026-10-16',
-            toTerminal: 'Terminal 3',
-            duration: '14h 55m • Non-stop',
-            cabinClass: 'Premium Economy',
-            confirmation: 'JAL-982173',
-            status: 'On Time',
-            carryOn: true,
-            checkedBags: 2,
-            checkinUrl: 'https://www.jal.co.jp/us/en/'
-          },
-          {
-            id: 'fl-2',
-            airline: 'Japan Airlines',
-            flightNum: 'JL 006',
-            fromIata: 'HND',
-            fromCity: 'Tokyo',
-            fromTime: '06:20 PM',
-            fromDate: '2026-10-25',
-            fromTerminal: 'Terminal 3, Gate 112',
-            toIata: 'JFK',
-            toCity: 'New York',
-            toTime: '06:10 PM',
-            toDate: '2026-10-25',
-            toTerminal: 'Terminal 8',
-            duration: '13h 50m • Non-stop',
-            cabinClass: 'Premium Economy',
-            confirmation: 'JAL-982173',
-            status: 'Scheduled',
-            carryOn: true,
-            checkedBags: 2,
-            checkinUrl: 'https://www.jal.co.jp/us/en/'
-          }
-        ],
-        accommodations: [
-          {
-            id: 'acc-1',
-            name: 'Park Hyatt Tokyo',
-            photo: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
-            propertyType: 'Boutique Hotel',
-            rating: '4.9 ★',
-            address: '3-7-1-2 Nishi-Shinjuku, Shinjuku City, Tokyo 160-0023',
-            checkIn: '2026-10-15 • 3:00 PM',
-            checkOut: '2026-10-20 • 11:00 AM',
-            nights: '5 Nights',
-            roomDetails: 'Park Deluxe King Room • 2 Guests',
-            confirmation: 'HTL-883194',
-            accessCode: 'Front Desk Keycard • Code: 4920#',
-            cancellationAlert: 'Free cancellation until Oct 12, 2026',
-            paymentStatus: 'Paid in Full',
-            cost: 1850
-          },
-          {
-            id: 'acc-2',
-            name: 'Suiran Luxury Collection Hotel Kyoto',
-            photo: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-            propertyType: 'Resort / Ryokan',
-            rating: '4.95 ★',
-            address: '12 Susukinobaba-cho, Saga-Tenryuji, Ukyo-ku, Kyoto 616-8385',
-            checkIn: '2026-10-20 • 3:00 PM',
-            checkOut: '2026-10-25 • 11:00 AM',
-            nights: '5 Nights',
-            roomDetails: 'Onsen Villa Suite • 2 Guests',
-            confirmation: 'HTL-994012',
-            accessCode: 'Ryokan Concierge Access',
-            cancellationAlert: 'Non-refundable after Oct 10',
-            paymentStatus: 'Paid in Full',
-            cost: 2100
-          }
-        ],
-        rentalCars: [
-          {
-            id: 'car-1',
-            provider: 'JR East Rail',
-            vehicleType: 'Shinkansen Bullet Train (Nozomi Green Car)',
-            pickupLoc: 'Tokyo Station • Oct 20, 09:30 AM',
-            dropoffLoc: 'Kyoto Station • Oct 20, 11:45 AM',
-            confirmation: 'JR-773104',
-            fuelPolicy: 'Electric Rail',
-            insuranceTag: 'Reserved Seats Included'
-          }
-        ],
-        notes: 'Pick up Pocket Wi-Fi router at Haneda Airport Terminal 3 Arrivals Hall counter B.'
-      },
-      itinerary: [
-        { id: 'it-1', day: 1, date: '2026-10-15', title: 'Arrival & Shinjuku Evening', time: '16:00', category: 'sightseeing', location: 'Shinjuku, Tokyo', notes: 'Explore Omoide Yokocho alleyways for ramen & yakitori.', lat: 35.6938, lng: 139.7034 }
-      ],
-      activities: [
-        { id: 'act-1', title: 'TeamLab Planets Digital Art', category: 'Culture', status: 'Booked', cost: 110, duration: '2.5 hrs', rating: 4.9 }
-      ],
-      packingList: [
-        { id: 'pack-1', category: 'Documents', item: 'Passport & Rail Pass', packed: true, assignee: 'Alex Rivers' }
-      ],
-      prepChecklist: [
-        { id: 'prep-1', title: 'Passport Valid 6+ Months', completed: true }
-      ],
-      attendees: [
-        { id: 'att-1', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed' },
-        { id: 'att-2', name: 'Elena Rostova', role: 'Co-planner', avatar: 'ER', email: 'elena@example.com', rsvp: 'Confirmed' }
-      ],
-      expenses: [
-        { id: 'exp-1', title: 'Shinkansen Tickets', amount: 480, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-10-10', splitWith: ['Alex Rivers', 'Elena Rostova'] }
-      ]
-    },
-    {
-      id: 'trip-2',
-      title: 'Cancún Beach Resort Getaway',
-      destination: 'Cancun, Mexico',
-      startDate: '2026-11-01',
-      endDate: '2026-11-07',
-      status: 'upcoming',
-      tripType: 'coupled',
-      treatCoupledAsHousehold: true,
-      coverImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-      budget: 3200,
-      currency: 'USD',
-      isPrivate: false,
-      lat: 21.1619, lng: -86.8515,
-      logistics: {
-        flights: [
-          {
-            id: 'fl-10',
-            airline: 'United Airlines',
-            flightNum: 'UA 1432',
-            fromIata: 'CMH',
-            fromCity: 'Columbus',
-            fromTime: '06:15 AM',
-            fromDate: '2026-11-01',
-            fromTerminal: 'Terminal 2, Gate B14',
-            toIata: 'CUN',
-            toCity: 'Cancún',
-            toTime: '11:00 AM',
-            toDate: '2026-11-01',
-            toTerminal: 'Terminal 3',
-            duration: '5h 45m • Direct',
-            cabinClass: 'Economy / Main Cabin',
-            confirmation: 'P8X9LK',
-            status: 'On Time',
-            carryOn: true,
-            checkedBags: 2,
-            seat1: '14A',
-            seat2: '14B',
-            seats: '14A & 14B',
-            passengers: ['Alex Rivers', 'Taylor Rivers'],
-            p1Passport: 'US88492014',
-            p2Passport: 'US88492015',
-            checkinUrl: 'https://www.united.com'
-          }
-        ],
-        accommodations: [
-          {
-            id: 'acc-10',
-            name: 'Nizuc Resort & Spa Cancún',
-            photo: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
-            propertyType: 'Luxury Resort',
-            rating: '4.8 ★',
-            address: 'Km 21.2 Blvd. Kukulcan, Punta Nizuc, 77500 Cancún, Q.R., Mexico',
-            checkIn: '2026-11-01 • 3:00 PM',
-            checkOut: '2026-11-07 • 12:00 PM',
-            nights: '6 Nights',
-            roomDetails: 'Ocean View Villa with Private Plunge Pool • Dual Occupancy',
-            guests: ['Alex Rivers', 'Taylor Rivers'],
-            confirmation: 'NZC-40912',
-            accessCode: 'Access Code: 8391#',
-            cancellationAlert: 'Free cancellation until Oct 25, 2026',
-            paymentStatus: 'Pay at Property',
-            cost: 1950
-          }
-        ],
-        rentalCars: [
-          {
-            id: 'car-10',
-            provider: 'Hertz',
-            vehicleType: 'Jeep Wrangler 4x4 Convertible',
-            pickupLoc: 'Cancún Airport (CUN) • Nov 01, 11:30 AM',
-            dropoffLoc: 'Cancún Airport (CUN) • Nov 07, 10:00 AM',
-            confirmation: 'HTZ-902184',
-            fuelPolicy: 'Full-to-Full',
-            insuranceTag: 'CDW & Theft Protection Included'
-          }
-        ],
-        notes: 'Hotel shuttle pick-up at Terminal 3 Exit 4.'
-      },
-      itinerary: [], activities: [],
-      packingList: [
-        { id: 'pack-10', category: 'Clothing', item: 'Linen Shirts & Trail Wear', packed: true, assignee: 'Alex Rivers' },
-        { id: 'pack-11', category: 'Clothing', item: 'Resort Wear & Swimsuits', packed: false, assignee: 'Taylor Rivers' },
-        { id: 'pack-12', category: 'Toiletries', item: 'Reef-Safe Sunscreen SPF 50 & Sun Hat', packed: false, assignee: 'Shared Household', p1Verified: true, p2Verified: false },
-        { id: 'pack-13', category: 'Tech', item: 'GoPro Hero & Waterproof Phone Pouch', packed: false, assignee: 'Shared Household', p1Verified: false, p2Verified: false }
-      ],
-      prepChecklist: [
-        { id: 'prep-10', title: 'Passport Valid 6+ Months for Both Passengers', completed: true }
-      ],
-      attendees: [
-        { id: 'att-10', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed', householdId: 'hh-cancun', partnerId: 'att-11' },
-        { id: 'att-11', name: 'Taylor Rivers', role: 'Partner / Co-Planner', avatar: 'TR', email: 'taylor@example.com', rsvp: 'Confirmed', householdId: 'hh-cancun', partnerId: 'att-10' },
-        { id: 'att-12', name: 'Jordan Lee', role: 'Travel Friend', avatar: 'JL', email: 'jordan@example.com', rsvp: 'Confirmed' }
-      ],
-      expenses: [
-        { id: 'exp-10', title: 'Jeep Rental Deposit', amount: 450, paidBy: 'Alex Rivers', category: 'Transit', date: '2026-11-01', splitWith: ['Alex Rivers', 'Taylor Rivers', 'Jordan Lee'] },
-        { id: 'exp-11', title: 'Nizuc Welcome Dinner', amount: 280, paidBy: 'Jordan Lee', category: 'Dining', date: '2026-11-02', splitWith: ['Alex Rivers', 'Taylor Rivers', 'Jordan Lee'] }
-      ]
-    }
-  ];
+  const initialTrips = [];
 
 
   class Store {
@@ -469,11 +178,11 @@
         const d = localStorage.getItem(STORAGE_KEY);
         if (d) {
           const parsed = JSON.parse(d);
-          if (Array.isArray(parsed) && parsed.length >= 3) return parsed;
+          if (Array.isArray(parsed)) return parsed;
         }
       } catch (e) {}
-      this.saveTrips(initialTrips);
-      return initialTrips;
+      this.saveTrips([]);
+      return [];
     }
     saveTrips(data = this.trips) {
       this.trips = data;
@@ -502,6 +211,7 @@
       try { localStorage.setItem(PROFILE_KEY, JSON.stringify(this.profile)); } catch (e) {}
     }
     getTrips() { return this.trips; }
+    getTripById(id) { return this.trips.find(t => t.id === id) || null; }
     getCurrentTrip() { return this.trips.find(t => t.id === this.currentTripId) || this.trips[0] || null; }
     setCurrentTripId(id) { this.currentTripId = id; }
     
@@ -856,6 +566,7 @@
     const p1Short = (profile.name || 'Alex').split(' ')[0];
     const p2Short = partnerName.split(' ')[0];
 
+    // Filter trips for search query
     let filteredTrips = trips;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -865,33 +576,69 @@
       );
     }
 
-    const nextTrip = trips.find(t => t.id === 'trip-smokies' || t.status === 'upcoming') || trips[0];
-    const weatherMap = {
-      'Great Smoky Mountains National Park': { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' },
-      'Cancun, Mexico': { temp: '84°F • Coastal Sun', gps: '21.16° N, 86.85° W' },
-      'Tokyo & Kyoto, Japan': { temp: '68°F • Clear Sky', gps: '35.67° N, 139.65° E' }
-    };
-    const weatherInfo = weatherMap[nextTrip.destination] || { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' };
+    // Dynamic Next Expedition Banner Calculation (Upcoming trips sorted by startDate ascending)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const upcomingTrips = trips.filter(t => {
+      if (!t.startDate && !t.endDate) return false;
+      const end = t.endDate ? new Date(t.endDate) : new Date(t.startDate);
+      return end >= today;
+    }).sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+    const nextTrip = upcomingTrips[0];
+
+    // Resolve Dynamic Banner HTML
+    let bannerHtml = '';
+    if (nextTrip) {
+      const coords = resolveDestinationCoords(nextTrip.destination || nextTrip.title);
+      const latStr = coords.lat ? `${Math.abs(coords.lat).toFixed(2)}° ${coords.lat >= 0 ? 'N' : 'S'}` : '35.61° N';
+      const lngStr = coords.lng ? `${Math.abs(coords.lng).toFixed(2)}° ${coords.lng >= 0 ? 'E' : 'W'}` : '83.55° W';
+      const gpsStr = `${latStr}, ${lngStr}`;
+      
+      const weatherMap = {
+        'Great Smoky Mountains National Park': '64°F • Mountain Fog',
+        'Cancun, Mexico': '84°F • Coastal Sun',
+        'Tokyo & Kyoto, Japan': '68°F • Clear Sky'
+      };
+      const weatherTemp = weatherMap[nextTrip.destination] || '72°F • Mild Breeze';
+
+      bannerHtml = `
+        <section class="next-expedition-banner" style="background-image: url('${nextTrip.coverImage || resolveDestinationPhoto(nextTrip.destination || nextTrip.title)}');">
+          <div class="next-expedition-overlay"></div>
+          <div class="next-expedition-content">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+              <span class="preview-badge-next" style="background: rgba(226, 143, 56, 0.25); color: #F6B762; border: 1px solid rgba(226, 143, 56, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;">NEXT EXPEDITION</span>
+              <span style="font-size: 0.8rem; color: #D6CFC4; margin-left: 0.25rem;">${getDaysUntil(nextTrip.startDate)} • ${formatDate(nextTrip.startDate)} – ${formatDate(nextTrip.endDate)}</span>
+            </div>
+            <div class="banner-widgets-strip" style="margin-top: 0.15rem;">
+              <span class="weather-pill">🌤️ ${weatherTemp}</span>
+              <span class="gps-pill">📍 ${gpsStr}</span>
+            </div>
+            <h1 class="next-expedition-heading" style="margin-top: 0.35rem; margin-bottom: 0.35rem;">${nextTrip.destination || nextTrip.title}</h1>
+            <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
+              View Itinerary &rarr;
+            </button>
+          </div>
+        </section>
+      `;
+    } else {
+      bannerHtml = `
+        <section class="next-expedition-banner" style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%); border: 1px solid rgba(255,255,255,0.1); min-height: 140px; padding: 1.5rem;">
+          <div style="position: relative; z-index: 2;">
+            <span class="preview-badge-next" style="background: rgba(226, 143, 56, 0.2); color: #F6B762; border: 1px solid rgba(226, 143, 56, 0.35); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">EXPLORE THE WORLD</span>
+            <h2 style="font-family: var(--font-family-journal); font-size: 1.5rem; font-weight: 700; color: #FAF8F5; margin: 0.5rem 0 0.25rem 0;">No upcoming trips scheduled. Where to next?</h2>
+            <p style="font-size: 0.85rem; color: #D6CFC4; margin: 0 0 1rem 0;">Start planning your next getaway, road trip, or international expedition.</p>
+            <button class="btn btn-primary btn-sm shadow-terra-btn" id="btn-banner-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.5rem 1.1rem; color: #fff; cursor: pointer;">
+              + Create New Expedition
+            </button>
+          </div>
+        </section>
+      `;
+    }
 
     containerEl.innerHTML = `
-      <!-- Personalized "Next Expedition" Immersive Banner -->
-      <section class="next-expedition-banner" style="background-image: url('${nextTrip.coverImage}');">
-        <div class="next-expedition-overlay"></div>
-        <div class="next-expedition-content">
-          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-            <span class="preview-badge-next" style="background: rgba(226, 143, 56, 0.25); color: #F6B762; border: 1px solid rgba(226, 143, 56, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;">NEXT EXPEDITION</span>
-            <span style="font-size: 0.8rem; color: #D6CFC4; margin-left: 0.25rem;">5 days away • Sep 18 – Sep 20, 2026</span>
-          </div>
-          <div class="banner-widgets-strip" style="margin-top: 0.15rem;">
-            <span class="weather-pill">🌤️ ${weatherInfo.temp}</span>
-            <span class="gps-pill">📍 ${weatherInfo.gps}</span>
-          </div>
-          <h1 class="next-expedition-heading" style="margin-top: 0.35rem; margin-bottom: 0.35rem;">Great Smoky Mountains National Park</h1>
-          <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
-            View Itinerary &rarr;
-          </button>
-        </div>
-      </section>
+      ${bannerHtml}
 
       <!-- Section Title & Fast Actions -->
       <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
@@ -910,33 +657,96 @@
       </div>
 
       <!-- 3-Column Responsive Grid -->
-      <div class="active-trips-grid">
-        ${filteredTrips.map(trip => {
+      <div class="active-trips-grid max-w-7xl mx-auto">
+        ${filteredTrips.length === 0 ? `
+          <div class="empty-expeditions-card" style="background: var(--bg-surface); border: 2px dashed var(--border-color); border-radius: 16px; padding: 3rem 2rem; text-align: center; grid-column: 1 / -1;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🗺️</div>
+            <h3 style="font-family: var(--font-family-journal); font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">No Expeditions Found</h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 440px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+              You don't have any active travel plans yet. Create your first expedition to start organizing itineraries, packing lists, and budgets.
+            </p>
+            <button class="btn btn-primary shadow-terra-btn" id="btn-empty-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.65rem 1.4rem; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+              + Create Your First Trip
+            </button>
+          </div>
+        ` : filteredTrips.map(trip => {
           const duration = getTripDurationDays(trip.startDate, trip.endDate);
+          const itineraryItems = trip.itinerary || [];
+          const activityItems = trip.activities || [];
+          const totalCount = itineraryItems.length + activityItems.length;
+
+          let highlightsContent = '';
+          if (itineraryItems.length > 0) {
+            highlightsContent = itineraryItems.slice(0, 2).map(it => `
+              <div style="font-size: 0.76rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;">
+                • <strong style="color: var(--text-primary);">${it.date ? formatDate(it.date).split(',')[0] : 'Day ' + it.day}:</strong> ${it.title}
+              </div>
+            `).join('');
+          } else if (activityItems.length > 0) {
+            highlightsContent = activityItems.slice(0, 2).map(act => `
+              <div style="font-size: 0.76rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;">
+                • <strong style="color: var(--text-primary);">${act.category || 'Activity'}:</strong> ${act.title}
+              </div>
+            `).join('');
+          } else {
+            highlightsContent = `<div style="font-size: 0.76rem; color: var(--text-muted); font-style: italic;">No itinerary items added yet</div>`;
+          }
+
           return `
             <div class="trip-card-modern" data-trip-id="${trip.id}">
-              <div class="trip-card-thumb-wrap">
-                <img src="${trip.coverImage}" alt="${trip.title}" class="trip-card-thumb-img" />
-                <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); font-size: 0.72rem; color: #FAF8F5; text-transform: capitalize;">
+              <!-- Top Image Header (h-40 / 160px height) -->
+              <div class="trip-card-thumb-wrap" style="height: 160px; position: relative;">
+                <img src="${trip.coverImage || resolveDestinationPhoto(trip.destination || trip.title)}" alt="${trip.title}" class="trip-card-thumb-img" style="height: 160px; width: 100%; object-fit: cover;" />
+                
+                <!-- Status Badge -->
+                <span class="badge badge-active" style="position: absolute; top: 10px; left: 10px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); font-size: 0.7rem; color: #FAF8F5; text-transform: capitalize;">
                   ${trip.tripType === 'coupled' ? '💑 Coupled' : trip.status || 'Upcoming'}
                 </span>
-                <button class="btn-card-kebab" data-trip-id="${trip.id}" title="Trip Options" style="position: absolute; top: 12px; right: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); color: #FAF8F5; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; line-height: 1;">
-                  •••
-                </button>
-              </div>
-              <div class="trip-card-body" style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
-                  <span style="font-size: 0.75rem; font-weight: 700; color: #E28F38;">📍 ${trip.destination}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">${duration} • ${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</span>
+
+                <!-- Action Buttons: Edit & Delete -->
+                <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 10;">
+                  <button class="btn-card-edit" data-trip-id="${trip.id}" title="Edit Trip" style="background: rgba(20,19,18,0.8); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2); color: #FAF8F5; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; transition: background 0.2s;">
+                    ✏️
+                  </button>
+                  <button class="btn-card-delete" data-trip-id="${trip.id}" title="Delete Trip" style="background: rgba(20,19,18,0.8); backdrop-filter: blur(6px); border: 1px solid rgba(224, 109, 83, 0.5); color: #E06D53; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; transition: background 0.2s;">
+                    🗑️
+                  </button>
                 </div>
-                <h3 style="font-family: var(--font-family-journal); font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.3;">${trip.title}</h3>
-                <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0; line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                  ${trip.description || 'Expedition itinerary, group prep, packing checklists, and expense tracking.'}
-                </p>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+
+                <!-- Overlaid Location & Date Badge -->
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(20,19,18,0.95) 0%, rgba(20,19,18,0) 100%); padding: 0.6rem 0.85rem 0.4rem 0.85rem;">
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.74rem; font-weight: 700; color: #E28F38;">📍 ${trip.destination || trip.title}</span>
+                    <span style="font-size: 0.7rem; color: #D6CFC4; background: rgba(0,0,0,0.45); padding: 2px 6px; border-radius: 9999px;">${duration}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="trip-card-body" style="padding: 1rem 1.15rem; display: flex; flex-direction: column; flex: 1;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <h3 style="font-family: var(--font-family-journal); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.3;">${trip.title}</h3>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.65rem; font-weight: 500;">
+                  📅 ${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}
+                </div>
+
+                <!-- Trip Highlights Box -->
+                <div class="trip-highlights-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 0.5rem 0.65rem; margin-bottom: 0.75rem;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Trip Highlights</span>
+                    <span style="font-size: 0.68rem; font-weight: 700; color: #E28F38; background: rgba(226,143,56,0.15); padding: 1px 6px; border-radius: 4px;">
+                      ${totalCount > 0 ? totalCount + ' Activities' : '0 Items'}
+                    </span>
+                  </div>
+                  ${highlightsContent}
+                </div>
+
+                <!-- Footer Row -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 0.6rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
                   <div class="collaborators-avatars" style="display: flex; align-items: center;">
-                    <div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem;" title="${profile.name}">${p1Short}</div>
-                    ${profile.partnerName ? `<div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem; margin-left: -6px; border: 2px solid var(--bg-surface);" title="${profile.partnerName}">${p2Short}</div>` : ''}
+                    <div class="profile-avatar-sm" style="width: 24px; height: 24px; font-size: 0.65rem;" title="${profile.name}">${p1Short}</div>
+                    ${profile.partnerName ? `<div class="profile-avatar-sm" style="width: 24px; height: 24px; font-size: 0.65rem; margin-left: -6px; border: 2px solid var(--bg-surface);" title="${profile.partnerName}">${p2Short}</div>` : ''}
                   </div>
                   <span style="color: #E06D53; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 0.25rem;">
                     Open Expedition &rarr;
@@ -957,6 +767,9 @@
       renderCurrentView();
     });
 
+    containerEl.querySelector('#btn-banner-create-trip')?.addEventListener('click', () => openCreateTripModal(false));
+    containerEl.querySelector('#btn-empty-create-trip')?.addEventListener('click', () => openCreateTripModal(false));
+
     const searchInput = containerEl.querySelector('#trip-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -968,7 +781,8 @@
     const createBtn = containerEl.querySelector('#btn-create-trip');
     if (createBtn) createBtn.addEventListener('click', () => openCreateTripModal(false));
 
-    containerEl.querySelectorAll('.btn-card-kebab').forEach(btn => {
+    // Edit Trip Action Handler
+    containerEl.querySelectorAll('.btn-card-edit').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const tripId = btn.getAttribute('data-trip-id');
@@ -977,9 +791,24 @@
       });
     });
 
+    // Delete Trip Action Handler
+    containerEl.querySelectorAll('.btn-card-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tripId = btn.getAttribute('data-trip-id');
+        const trip = appStore.getTripById(tripId);
+        if (trip && confirm(`Delete "${trip.title}"? This action cannot be undone.`)) {
+          appStore.deleteTrip(tripId);
+          showToast(`Trip "${trip.title}" deleted`, 'info');
+          renderDashboard(containerEl);
+        }
+      });
+    });
+
+    // Card View Open Handler
     containerEl.querySelectorAll('.trip-card-modern').forEach(card => {
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-card-kebab')) return;
+        if (e.target.closest('.btn-card-edit') || e.target.closest('.btn-card-delete')) return;
         const tripId = card.getAttribute('data-trip-id');
         appStore.setCurrentTripId(tripId);
         currentView = 'trip-detail';
