@@ -6,10 +6,10 @@
   <title>WanderPulse — Modern Travel Planner & Itinerary Manager</title>
   <meta name="description" content="Plan travel details, day-by-day itineraries, group expense splitting, and packing checklists with WanderPulse." />
 
-  <!-- Google Fonts: Outfit & Inter -->
+  <!-- Google Fonts: Fraunces, Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Leaflet CSS & JS CDN (Interactive Map) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -25,30 +25,37 @@
   <div class="app-container">
     <!-- Navbar Header -->
     <header class="navbar">
-      <div class="nav-brand" title="Return to Dashboard">
+      <div class="nav-brand" title="Return to Dashboard" id="nav-brand-logo">
         <div class="brand-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.7 5.2c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
         </div>
-        <span>Wander<span class="gradient-text">Pulse</span></span>
+        <span class="editorial-brand-text">Wander<span class="gradient-text">Pulse</span> <span class="brand-subtag">Journal</span></span>
       </div>
 
       <div class="nav-links">
-        <button class="nav-profile-btn" id="nav-profile-trigger" title="My Personal Space & Profile">
-          <div class="profile-avatar-sm" id="nav-user-avatar">AR</div>
-          <span class="profile-name-nav" id="nav-user-name">Alex Rivers</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-      </div>
-
-      <div class="nav-actions">
-        <button id="theme-toggle-btn" class="btn btn-icon-only btn-secondary" title="Toggle Theme (Dark/Light)">
-          <!-- Moon icon rendered via JS -->
-        </button>
-        <button id="settings-btn" class="btn btn-icon-only btn-secondary" title="Database & Cloud Settings">
-          <!-- Gear icon rendered via JS -->
-        </button>
+        <div class="nav-profile-dropdown-container" style="position: relative;">
+          <button class="nav-profile-btn" id="nav-profile-trigger" title="Travel Profile & Account Options">
+            <div class="nav-duo-avatars" id="nav-duo-avatars-wrap">
+              <div class="profile-avatar-sm" id="nav-user-avatar">AR</div>
+            </div>
+            <span class="profile-name-nav" id="nav-user-name">Alex &amp; Taylor</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav-profile-dropdown" id="nav-profile-menu">
+            <a href="#" id="menu-item-personal" class="nav-dropdown-item">
+              <span>👤 Personal Space &amp; Preferences</span>
+            </a>
+            <a href="#" id="menu-item-theme" class="nav-dropdown-item">
+              <span>🌗 Toggle Dark / Light Theme</span>
+            </a>
+            <a href="#" id="menu-item-settings" class="nav-dropdown-item">
+              <span>⚙️ Cloud Database &amp; Sync</span>
+            </a>
+          </div>
+        </div>
       </div>
     </header>
+
 
     <!-- Main Dynamic View Container -->
     <main class="main-content" id="app-main">
