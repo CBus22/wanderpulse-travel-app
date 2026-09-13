@@ -165,6 +165,67 @@
 
   const initialTrips = [
     {
+      id: 'trip-smokies',
+      title: 'Great Smoky Mountains Autumn Retreat',
+      destination: 'Great Smoky Mountains National Park',
+      startDate: '2026-09-18',
+      endDate: '2026-09-20',
+      status: 'upcoming',
+      tripType: 'coupled',
+      treatCoupledAsHousehold: true,
+      coverImage: 'assets/images/hero.png',
+      budget: 1800,
+      currency: 'USD',
+      isPrivate: false,
+      lat: 35.6131, lng: -83.5532,
+      description: 'Mountain lodge retreat, trail hiking to Clingmans Dome, and wildlife photography.',
+      logistics: {
+        flights: [],
+        accommodations: [
+          {
+            id: 'acc-smokies',
+            name: 'Cataloochee Valley Timber Lodge',
+            photo: 'assets/images/hero.png',
+            propertyType: 'Mountain Lodge',
+            rating: '4.95 ★',
+            address: 'Cataloochee Valley Road, Great Smoky Mountains National Park, NC',
+            checkIn: '2026-09-18 • 4:00 PM',
+            checkOut: '2026-09-20 • 11:00 AM',
+            nights: '2 Nights',
+            roomDetails: 'Private Timber Cabin • 2 Guests',
+            guests: ['Alex Rivers', 'Taylor Rivers'],
+            confirmation: 'SMK-88190',
+            accessCode: 'Keypad Code: 7492#',
+            paymentStatus: 'Paid in Full',
+            cost: 650
+          }
+        ],
+        rentalCars: [],
+        notes: 'Wildlife camera and trail hiking gear prepped.'
+      },
+      itinerary: [
+        { id: 'it-s1', day: 1, date: '2026-09-18', title: 'Cabin Check-in & Sunset Overlook', time: '16:00', category: 'sightseeing', location: 'Cataloochee Valley', notes: 'Check into timber cabin, sunset hike along ridge trail.', lat: 35.6131, lng: -83.5532 },
+        { id: 'it-s2', day: 2, date: '2026-09-19', title: 'Alum Cave Trail & Clingmans Dome', time: '08:00', category: 'adventure', location: 'Clingmans Dome', notes: 'Early morning trail hike, wildlife camera setup at valley viewpoint.', lat: 35.5628, lng: -83.4985 }
+      ],
+      activities: [
+        { id: 'act-s1', title: 'Alum Cave Trail Hiking Expedition', category: 'Adventure', status: 'Planned', cost: 0, duration: '4 hrs', rating: 5.0 }
+      ],
+      packingList: [
+        { id: 'pack-s1', category: 'Gear', item: 'Hiking Boots & Trekking Poles', packed: true, assignee: 'Alex Rivers' },
+        { id: 'pack-s2', category: 'Gear', item: 'Wildlife Camera & Lens Kit', packed: true, assignee: 'Taylor Rivers' }
+      ],
+      prepChecklist: [
+        { id: 'prep-s1', title: 'Park Pass & Cabin Keycode Saved', completed: true }
+      ],
+      attendees: [
+        { id: 'att-s1', name: 'Alex Rivers', role: 'Organizer', avatar: 'AR', email: 'alex@example.com', rsvp: 'Confirmed', householdId: 'hh-smokies', partnerId: 'att-s2' },
+        { id: 'att-s2', name: 'Taylor Rivers', role: 'Partner / Co-Planner', avatar: 'TR', email: 'taylor@example.com', rsvp: 'Confirmed', householdId: 'hh-smokies', partnerId: 'att-s1' }
+      ],
+      expenses: [
+        { id: 'exp-s1', title: 'Cabin Rental', amount: 650, paidBy: 'Alex Rivers', category: 'Stay', date: '2026-09-18', splitWith: ['Alex Rivers', 'Taylor Rivers'] }
+      ]
+    },
+    {
       id: 'trip-1',
       title: 'Tokyo & Kyoto Autumn Odyssey',
       destination: 'Tokyo & Kyoto, Japan',
@@ -406,7 +467,10 @@
     loadTrips() {
       try {
         const d = localStorage.getItem(STORAGE_KEY);
-        if (d) return JSON.parse(d);
+        if (d) {
+          const parsed = JSON.parse(d);
+          if (Array.isArray(parsed) && parsed.length >= 3) return parsed;
+        }
       } catch (e) {}
       this.saveTrips(initialTrips);
       return initialTrips;
@@ -776,30 +840,38 @@
   let currentFilter = 'all';
   let searchQuery = '';
 
+  function getTripDurationDays(sDate, eDate) {
+    if (!sDate || !eDate) return '3 Days';
+    const s = new Date(sDate);
+    const e = new Date(eDate);
+    const diff = Math.max(1, Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1);
+    return `${diff} Days`;
+  }
+
   function renderDashboard(containerEl) {
-    const trips = appStore.getTrips();
+    if (!containerEl) return;
+    const trips = appStore.getTrips() || [];
     const profile = appStore.loadProfile();
     const partnerName = profile.partnerName || 'Taylor';
     const p1Short = (profile.name || 'Alex').split(' ')[0];
     const p2Short = partnerName.split(' ')[0];
 
-    const nextTrip = trips.find(t => t.status === 'upcoming' || t.status === 'active') || trips[0];
-    const featuredTrip = trips[0] || nextTrip;
-    const sideTrips = trips.slice(1);
+    let filteredTrips = trips;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      filteredTrips = trips.filter(t =>
+        (t.title && t.title.toLowerCase().includes(q)) ||
+        (t.destination && t.destination.toLowerCase().includes(q))
+      );
+    }
 
+    const nextTrip = trips.find(t => t.id === 'trip-smokies' || t.status === 'upcoming') || trips[0];
     const weatherMap = {
-      'Great Smoky Mountains': { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' },
+      'Great Smoky Mountains National Park': { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' },
       'Cancun, Mexico': { temp: '84°F • Coastal Sun', gps: '21.16° N, 86.85° W' },
-      'Tokyo, Japan': { temp: '68°F • Clear Sky', gps: '35.67° N, 139.65° E' }
+      'Tokyo & Kyoto, Japan': { temp: '68°F • Clear Sky', gps: '35.67° N, 139.65° E' }
     };
-    const weatherInfo = weatherMap[nextTrip.destination] || { temp: '72°F • Mild Breeze', gps: '35.61° N, 83.55° W' };
-
-    const memories = [
-      { caption: 'Amalfi Coast Sunset', photo: 'assets/images/amalfi.png', stamp: 'ENTRY • AMALFI 2025' },
-      { caption: 'Swiss Alps Trail', photo: 'assets/images/swiss.png', stamp: 'ENTRY • SWISS ALPS 2024' },
-      { caption: 'Kyoto Bamboo Grove', photo: 'assets/images/tokyo.png', stamp: 'ENTRY • KYOTO 2023' },
-      { caption: 'Smokies Ridge Overlook', photo: 'assets/images/hero.png', stamp: 'ENTRY • SMOKIES 2026' }
-    ];
+    const weatherInfo = weatherMap[nextTrip.destination] || { temp: '64°F • Mountain Fog', gps: '35.61° N, 83.55° W' };
 
     containerEl.innerHTML = `
       <!-- Personalized "Next Expedition" Immersive Banner -->
@@ -808,15 +880,15 @@
         <div class="next-expedition-content">
           <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
             <span class="preview-badge-next" style="background: rgba(226, 143, 56, 0.25); color: #F6B762; border: 1px solid rgba(226, 143, 56, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;">NEXT EXPEDITION</span>
-            <span style="font-size: 0.8rem; color: #D6CFC4; margin-left: 0.25rem;">${getDaysUntil(nextTrip.startDate)} • ${formatDate(nextTrip.startDate)} – ${formatDate(nextTrip.endDate)}</span>
+            <span style="font-size: 0.8rem; color: #D6CFC4; margin-left: 0.25rem;">5 days away • Sep 18 – Sep 20, 2026</span>
           </div>
           <div class="banner-widgets-strip" style="margin-top: 0.15rem;">
             <span class="weather-pill">🌤️ ${weatherInfo.temp}</span>
             <span class="gps-pill">📍 ${weatherInfo.gps}</span>
           </div>
-          <h1 class="next-expedition-heading">Heading to ${nextTrip.destination.split(',')[0]}</h1>
+          <h1 class="next-expedition-heading" style="margin-top: 0.35rem; margin-bottom: 0.35rem;">Great Smoky Mountains National Park</h1>
           <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
-            Open Smokies Itinerary &rarr;
+            View Itinerary &rarr;
           </button>
         </div>
       </section>
@@ -832,42 +904,48 @@
             <input type="text" id="trip-search-input" placeholder="Search expeditions..." value="${searchQuery}" style="height: 34px; font-size: 0.8rem;">
           </div>
           <button class="btn btn-primary btn-sm shadow-terra-btn" id="btn-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.5rem 1.1rem; color: #fff; cursor: pointer;">
-            + New Expedition
+            + New Trip
           </button>
         </div>
       </div>
 
       <!-- 3-Column Responsive Grid -->
       <div class="active-trips-grid">
-        ${filteredTrips.map(trip => `
-          <div class="trip-card-modern" data-trip-id="${trip.id}">
-            <div class="trip-card-thumb-wrap">
-              <img src="${trip.coverImage}" alt="${trip.title}" class="trip-card-thumb-img" />
-              <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); font-size: 0.72rem; color: #FAF8F5; text-transform: capitalize;">
-                ${trip.tripType === 'coupled' ? '💑 Coupled' : trip.status || 'Upcoming'}
-              </span>
-            </div>
-            <div class="trip-card-body" style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: #E28F38;">📍 ${trip.destination}</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</span>
-              </div>
-              <h3 style="font-family: var(--font-family-journal); font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.3;">${trip.title}</h3>
-              <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0; line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                ${trip.description || 'Expedition itinerary, group prep, packing checklists, and expense tracking.'}
-              </p>
-              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                <div class="collaborators-avatars" style="display: flex; align-items: center;">
-                  <div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem;" title="${profile.name}">${p1Short}</div>
-                  ${profile.partnerName ? `<div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem; margin-left: -6px; border: 2px solid var(--bg-surface);" title="${profile.partnerName}">${p2Short}</div>` : ''}
-                </div>
-                <span style="color: #E06D53; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 0.25rem;">
-                  Open Expedition &rarr;
+        ${filteredTrips.map(trip => {
+          const duration = getTripDurationDays(trip.startDate, trip.endDate);
+          return `
+            <div class="trip-card-modern" data-trip-id="${trip.id}">
+              <div class="trip-card-thumb-wrap">
+                <img src="${trip.coverImage}" alt="${trip.title}" class="trip-card-thumb-img" />
+                <span class="badge badge-active" style="position: absolute; top: 12px; left: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); font-size: 0.72rem; color: #FAF8F5; text-transform: capitalize;">
+                  ${trip.tripType === 'coupled' ? '💑 Coupled' : trip.status || 'Upcoming'}
                 </span>
+                <button class="btn-card-kebab" data-trip-id="${trip.id}" title="Trip Options" style="position: absolute; top: 12px; right: 12px; background: rgba(20,19,18,0.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15); color: #FAF8F5; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; line-height: 1;">
+                  •••
+                </button>
+              </div>
+              <div class="trip-card-body" style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 700; color: #E28F38;">📍 ${trip.destination}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">${duration} • ${formatDate(trip.startDate)} – ${formatDate(trip.endDate)}</span>
+                </div>
+                <h3 style="font-family: var(--font-family-journal); font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.3;">${trip.title}</h3>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 1rem 0; line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  ${trip.description || 'Expedition itinerary, group prep, packing checklists, and expense tracking.'}
+                </p>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                  <div class="collaborators-avatars" style="display: flex; align-items: center;">
+                    <div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem;" title="${profile.name}">${p1Short}</div>
+                    ${profile.partnerName ? `<div class="profile-avatar-sm" style="width: 26px; height: 26px; font-size: 0.68rem; margin-left: -6px; border: 2px solid var(--bg-surface);" title="${profile.partnerName}">${p2Short}</div>` : ''}
+                  </div>
+                  <span style="color: #E06D53; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 0.25rem;">
+                    Open Expedition &rarr;
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     `;
 
@@ -890,8 +968,18 @@
     const createBtn = containerEl.querySelector('#btn-create-trip');
     if (createBtn) createBtn.addEventListener('click', () => openCreateTripModal(false));
 
-    containerEl.querySelectorAll('[data-trip-id]').forEach(card => {
-      card.addEventListener('click', () => {
+    containerEl.querySelectorAll('.btn-card-kebab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tripId = btn.getAttribute('data-trip-id');
+        const trip = appStore.getTripById(tripId);
+        if (trip) openEditTripModal(trip);
+      });
+    });
+
+    containerEl.querySelectorAll('.trip-card-modern').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-card-kebab')) return;
         const tripId = card.getAttribute('data-trip-id');
         appStore.setCurrentTripId(tripId);
         currentView = 'trip-detail';
