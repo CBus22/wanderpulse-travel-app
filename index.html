@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WanderPulse — Modern Travel Planner & Itinerary Manager</title>
-  <meta name="description" content="Plan travel details, day-by-day itineraries, group expense splitting, and packing checklists with WanderPulse." />
+  <title>Outpost — Authentic Travel Journal &amp; Expedition Planner</title>
+  <meta name="description" content="Plan travel details, day-by-day itineraries, group expense splitting, and packing checklists with Outpost." />
 
   <!-- Google Fonts: Fraunces, Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,14 +25,15 @@
   <div class="app-container">
     <!-- Navbar Header -->
     <header class="navbar">
-      <div class="nav-brand" title="Return to Dashboard" id="nav-brand-logo">
+      <div class="nav-brand" title="Return to Outpost Dashboard" id="nav-brand-logo">
         <div class="brand-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.7 5.2c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E06D53" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </div>
-        <span class="editorial-brand-text">Wander<span class="gradient-text">Pulse</span> <span class="brand-subtag">Journal</span></span>
+        <span class="outpost-brand-title">Outpost</span>
       </div>
 
-      <div class="nav-links">
+      <div class="nav-actions-wrap" style="display: flex; align-items: center; gap: 0.75rem;">
+        <!-- Element 1: Profile Pill & Dropdown -->
         <div class="nav-profile-dropdown-container" style="position: relative;">
           <button class="nav-profile-btn" id="nav-profile-trigger" title="Travel Profile & Account Options">
             <div class="nav-duo-avatars" id="nav-duo-avatars-wrap">
@@ -45,17 +46,18 @@
             <a href="#" id="menu-item-personal" class="nav-dropdown-item">
               <span>👤 Personal Space &amp; Preferences</span>
             </a>
-            <a href="#" id="menu-item-theme" class="nav-dropdown-item">
-              <span>🌗 Toggle Dark / Light Theme</span>
-            </a>
             <a href="#" id="menu-item-settings" class="nav-dropdown-item">
               <span>⚙️ Cloud Database &amp; Sync</span>
             </a>
           </div>
         </div>
+
+        <!-- Element 2: Minimalist Dark/Light Mode Icon Button -->
+        <button id="theme-toggle-btn" class="btn btn-icon-only btn-secondary" title="Toggle Theme (Dark/Light)">
+          <!-- Icon rendered dynamically via JS -->
+        </button>
       </div>
     </header>
-
 
     <!-- Main Dynamic View Container -->
     <main class="main-content" id="app-main">
@@ -64,12 +66,13 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <p>© 2026 <strong>WanderPulse</strong> — Crafted for effortless travel planning. Vercel & GitHub ready.</p>
+      <p>© 2026 <strong>Outpost</strong> — Crafted for authentic travel journals and expedition planning.</p>
       <div>
         <a href="#" id="footer-settings-btn" style="color: var(--accent-primary); font-weight: 600;">⚙️ Cloud Database Settings</a>
       </div>
     </footer>
   </div>
+
 
   <!-- Application Script Bundle -->
   <script src="js/app.js"></script>
