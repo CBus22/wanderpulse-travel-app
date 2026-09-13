@@ -33,27 +33,16 @@
       </div>
 
       <div class="nav-actions-wrap" style="display: flex; align-items: center; gap: 0.75rem;">
-        <!-- Element 1: Profile Pill & Dropdown -->
-        <div class="nav-profile-dropdown-container" style="position: relative;">
-          <button class="nav-profile-btn" id="nav-profile-trigger" title="Travel Profile & Account Options">
-            <div class="nav-duo-avatars" id="nav-duo-avatars-wrap">
-              <div class="profile-avatar-sm" id="nav-user-avatar">AR</div>
-            </div>
-            <span class="profile-name-nav" id="nav-user-name">Alex &amp; Taylor</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="nav-profile-dropdown" id="nav-profile-menu">
-            <a href="#" id="menu-item-personal" class="nav-dropdown-item">
-              <span>👤 Personal Space &amp; Preferences</span>
-            </a>
-            <a href="#" id="menu-item-settings" class="nav-dropdown-item">
-              <span>⚙️ Cloud Database &amp; Sync</span>
-            </a>
+        <!-- Element 1: Profile Avatar Pill Button -->
+        <button class="nav-profile-btn" id="nav-profile-trigger" title="Personal Space &amp; Travel Preferences">
+          <div class="nav-duo-avatars" id="nav-duo-avatars-wrap">
+            <div class="profile-avatar-sm" id="nav-user-avatar">AR</div>
           </div>
-        </div>
+          <span class="profile-name-nav" id="nav-user-name">Alex &amp; Taylor</span>
+        </button>
 
         <!-- Element 2: Minimalist Dark/Light Mode Icon Button -->
-        <button id="theme-toggle-btn" class="btn btn-icon-only btn-secondary" title="Toggle Theme (Dark/Light)">
+        <button id="theme-toggle-btn" class="btn btn-icon-only btn-secondary" title="Toggle Theme (Dark/Light)" aria-label="Toggle Theme">
           <!-- Icon rendered dynamically via JS -->
         </button>
       </div>
