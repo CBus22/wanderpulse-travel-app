@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WanderPulse State Management & Local/Cloud Storage Store
+   Outpost State Management & Local/Cloud Storage Store
    ========================================================================== */
 
 const STORAGE_KEY = 'wanderpulse_trips_data_v1';
