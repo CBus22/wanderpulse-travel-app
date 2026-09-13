@@ -6,6 +6,7 @@
 :root {
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-display: 'Outfit', sans-serif;
+  --font-family-journal: 'Fraunces', Georgia, serif;
 
   /* Warm Terra / Alpine Theme (Default) */
   --bg-primary: #141312; /* Warm Obsidian Canvas */
@@ -18,15 +19,16 @@
   --border-glow: rgba(223, 106, 79, 0.35);
 
   /* Soft Stone Text Hierarchy */
-  --text-primary: #FAF8F5; /* Titles / High-Contrast */
-  --text-secondary: #D1C9BE; /* Body Text */
+  --text-primary: #F7F4EE; /* Warm Cream Titles */
+  --text-secondary: #D6CFC4; /* Warm Sand Body Text */
   --text-muted: #9E9487; /* Captions & Muted Labels */
 
   /* Terracotta & Amber Accents */
-  --accent-primary: #DF6A4F; /* Terracotta */
+  --accent-primary: #E06D53; /* Warm Terracotta */
   --accent-primary-hover: #c8583e;
   --accent-secondary: #E28F38; /* Warm Amber */
-  --accent-gradient: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%);
+  --accent-gradient: linear-gradient(135deg, #E06D53 0%, #E28F38 100%);
+
   --accent-gradient-teal: linear-gradient(135deg, #52B788 0%, #2D6A4F 100%);
 
   /* Category Color System */
@@ -93,11 +95,19 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-family-display);
+h1, h2, .editorial-title, .journal-heading {
+  font-family: var(--font-family-journal);
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
+
+h3, h4, h5, h6 {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
 
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font-family: inherit; font-size: inherit; }
@@ -2518,4 +2528,475 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   gap: 0.5rem;
   margin-top: 0.6rem;
 }
+
+/* --- Editorial Journal Header & Dropdown --- */
+.editorial-brand-text {
+  font-family: var(--font-family-journal);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.brand-subtag {
+  font-family: var(--font-family-journal);
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--accent-primary);
+  background: rgba(224, 109, 83, 0.12);
+  border: 1px solid rgba(224, 109, 83, 0.3);
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.nav-duo-avatars {
+  display: flex;
+  align-items: center;
+  margin-right: -0.25rem;
+}
+
+.nav-duo-avatars .profile-avatar-sm {
+  border: 2px solid var(--bg-secondary);
+}
+
+.nav-duo-avatars .profile-avatar-sm:nth-child(2) {
+  margin-left: -0.65rem;
+  background: linear-gradient(135deg, #E28F38, #DF6A4F);
+}
+
+.nav-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 0.5rem;
+  min-width: 250px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.nav-profile-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(224, 109, 83, 0.15);
+  color: #E06D53;
+}
+
+/* --- Personalized "Next Expedition" Immersive Banner --- */
+.next-expedition-banner {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  min-height: 300px;
+  margin-bottom: 2.25rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.25rem 2.5rem;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.3s ease;
+}
+
+.next-expedition-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 19, 18, 0.15) 0%, rgba(20, 19, 18, 0.75) 55%, rgba(20, 19, 18, 0.95) 100%);
+  z-index: 1;
+}
+
+.next-expedition-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.banner-widgets-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.weather-pill {
+  background: rgba(20, 19, 18, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  color: #FAF8F5;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gps-pill {
+  background: rgba(224, 109, 83, 0.18);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(224, 109, 83, 0.4);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  color: #E06D53;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.countdown-pill {
+  background: rgba(226, 143, 56, 0.2);
+  border: 1px solid rgba(226, 143, 56, 0.4);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  color: #E28F38;
+  font-weight: 700;
+}
+
+.next-expedition-heading {
+  font-family: var(--font-family-journal);
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #FAF8F5;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.btn-warm-expedition {
+  background: linear-gradient(135deg, #E06D53 0%, #E28F38 100%);
+  color: #FAF8F5;
+  border: none;
+  padding: 0.75rem 1.6rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(224, 109, 83, 0.35);
+  transition: all 0.25s ease;
+  width: fit-content;
+  margin-top: 0.35rem;
+}
+
+.btn-warm-expedition:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(224, 109, 83, 0.5);
+  color: #ffffff;
+}
+
+/* --- Asymmetric Editorial Grid (Featured Hero + Side Stack) --- */
+.asymmetric-editorial-grid {
+  display: grid;
+  grid-template-columns: 1.75fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.75rem;
+}
+
+@media (max-width: 900px) {
+  .asymmetric-editorial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.featured-trip-card {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  cursor: pointer;
+}
+
+.featured-trip-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(224, 109, 83, 0.4);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+.featured-trip-photo {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.featured-trip-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.featured-trip-card:hover .featured-trip-photo img {
+  transform: scale(1.04);
+}
+
+.featured-trip-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.featured-trip-title {
+  font-family: var(--font-family-journal);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #FAF8F5;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.personal-notes-quote {
+  background: rgba(39, 36, 32, 0.8);
+  border-left: 3px solid #E06D53;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.82rem;
+  color: #D6CFC4;
+  font-style: italic;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.packing-progress-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.packing-progress-track {
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.packing-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #E06D53, #E28F38);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* Side Stack Entries */
+.side-stack-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.journal-entry-card {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.15rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.journal-entry-card:hover {
+  transform: translateX(4px);
+  border-color: rgba(224, 109, 83, 0.35);
+  background: rgba(39, 36, 32, 0.9);
+}
+
+.journal-entry-thumb {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.journal-entry-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journal-entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.journal-entry-title {
+  font-family: var(--font-family-journal);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FAF8F5;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.journal-entry-accent-link {
+  color: #E06D53;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+}
+
+/* --- Organic Polaroid Travel Memories Photo Strip --- */
+.memories-section-container {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.memories-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.memories-header-title {
+  font-family: var(--font-family-journal);
+  font-size: 1.4rem;
+  color: #FAF8F5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.polaroid-memory-strip {
+  display: flex;
+  gap: 1.35rem;
+  overflow-x: auto;
+  padding: 1rem 0.5rem 1.5rem 0.5rem;
+  scrollbar-width: none;
+}
+
+.polaroid-memory-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.polaroid-card {
+  background: #FAF8F5;
+  color: #141312;
+  border-radius: 4px;
+  padding: 0.65rem 0.65rem 1.15rem 0.65rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  transform: rotate(-1.5deg);
+  transition: all 0.3s ease;
+  position: relative;
+  width: 210px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.polaroid-card:nth-child(even) {
+  transform: rotate(2.2deg);
+}
+
+.polaroid-card:nth-child(3n) {
+  transform: rotate(-2.8deg);
+}
+
+.polaroid-card:hover {
+  transform: rotate(0deg) scale(1.06);
+  z-index: 10;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.polaroid-photo-wrap {
+  width: 100%;
+  height: 150px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+  background: #e2e8f0;
+}
+
+.polaroid-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.polaroid-caption {
+  font-family: var(--font-family-journal);
+  font-style: italic;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #272420;
+  text-align: center;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.passport-stamp-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: 2px dashed #DF6A4F;
+  color: #DF6A4F;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.18rem 0.4rem;
+  border-radius: 4px;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  letter-spacing: 0.06em;
+  background: rgba(250, 248, 245, 0.92);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 
