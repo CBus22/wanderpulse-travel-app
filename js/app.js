@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WanderPulse — Unified Application Engine & Component Bundle
+   Outpost — Unified Application Engine & Component Bundle
    ========================================================================== */
 
 (function () {
@@ -806,14 +806,17 @@
       <section class="next-expedition-banner" style="background-image: url('${nextTrip.coverImage}');">
         <div class="next-expedition-overlay"></div>
         <div class="next-expedition-content">
-          <div class="banner-widgets-strip">
-            <span class="countdown-pill">⏳ Departing in ${getDaysUntil(nextTrip.startDate)} • ${formatDate(nextTrip.startDate)}–${formatDate(nextTrip.endDate)}</span>
+          <div class="preview-card-header">
+            <span class="preview-badge-next">NEXT OUTPOST</span>
+            <span class="preview-countdown-lbl">⏳ ${getDaysUntil(nextTrip.startDate)} away • ${formatDate(nextTrip.startDate)}–${formatDate(nextTrip.endDate)}</span>
+          </div>
+          <div class="banner-widgets-strip" style="margin-top: 0.2rem;">
             <span class="weather-pill">🌤️ ${weatherInfo.temp}</span>
             <span class="gps-pill">📍 ${weatherInfo.gps}</span>
           </div>
-          <h1 class="next-expedition-heading">Heading to ${nextTrip.destination.split(',')[0]}</h1>
-          <button class="btn-warm-expedition" id="btn-next-expedition-jump" data-id="${nextTrip.id}">
-            Open ${nextTrip.destination.split(',')[0]} Itinerary &rarr;
+          <h1 class="next-expedition-heading" style="margin-top: 0.35rem;">Heading to ${nextTrip.destination.split(',')[0]}</h1>
+          <button class="btn-warm-expedition shadow-terra-btn" id="btn-next-expedition-jump" data-id="${nextTrip.id}" style="padding: 0.65rem 1.35rem;">
+            View Trip Itinerary &rarr;
           </button>
         </div>
       </section>
@@ -821,18 +824,19 @@
       <!-- Section Title & Fast Actions -->
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
         <h2 style="font-size: 1.45rem; font-family: var(--font-family-journal); color: var(--text-primary); margin: 0;">
-          Active Journeys &amp; Journal Entries
+          Active Expeditions &amp; Journal Entries
         </h2>
         <div style="display: flex; gap: 0.75rem; align-items: center;">
           <div class="search-box" style="margin: 0; width: 220px;">
             ${icon('search', 'var(--text-muted)')}
             <input type="text" id="trip-search-input" placeholder="Search entries..." value="${searchQuery}" style="height: 34px; font-size: 0.8rem;">
           </div>
-          <button class="btn btn-primary btn-sm" id="btn-create-trip" style="background: linear-gradient(135deg, #E06D53 0%, #E28F38 100%); border: none; border-radius: 9999px; font-weight: 700;">
+          <button class="btn btn-primary btn-sm shadow-terra-btn" id="btn-create-trip" style="background: linear-gradient(135deg, #DF6A4F 0%, #E28F38 100%); border: none; border-radius: 12px; font-weight: 600; padding: 0.5rem 1.1rem; color: #fff;">
             + New Expedition
           </button>
         </div>
       </div>
+
 
       <!-- Asymmetric Editorial Grid (Featured Hero + Side Stack) -->
       <div class="asymmetric-editorial-grid">
@@ -1136,7 +1140,7 @@
           <div class="gamification-stat-icon">🗺️</div>
           <div>
             <div class="gamification-stat-val">${totalTripsCount} Trips</div>
-            <div class="gamification-stat-lbl">Total Planned in WanderPulse</div>
+            <div class="gamification-stat-lbl">Total Planned in Outpost</div>
           </div>
         </div>
         <div class="gamification-stat-item">
@@ -2113,7 +2117,7 @@
       <!DOCTYPE html>
       <html>
       <head>
-        <title>WanderPulse — Packing Checklist (${trip.title})</title>
+        <title>Outpost — Packing Checklist (${trip.title})</title>
         <style>
           body { font-family: system-ui, sans-serif; padding: 2rem; color: #1e293b; }
           h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
@@ -3047,8 +3051,8 @@
     if (!items || items.length === 0) return showToast('No itinerary stops to export', 'info');
 
     let gpx = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-    gpx += `<gpx version="1.1" creator="WanderPulse Travel Engine" xmlns="http://www.topografix.com/GPX/1/1">\n`;
-    gpx += `  <metadata>\n    <name>${trip.title} — Waypoint Route</name>\n    <desc>Day-by-day itinerary route exported from WanderPulse</desc>\n  </metadata>\n`;
+    gpx += `<gpx version="1.1" creator="Outpost Travel Engine" xmlns="http://www.topografix.com/GPX/1/1">\n`;
+    gpx += `  <metadata>\n    <name>${trip.title} — Waypoint Route</name>\n    <desc>Day-by-day itinerary route exported from Outpost</desc>\n  </metadata>\n`;
 
     items.forEach((item, idx) => {
       const lat = item.lat || 35.6762;
@@ -4428,7 +4432,7 @@
           </div>
           <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-              Paste your flight booking email, hotel voucher, or rental car confirmation text below. WanderPulse will auto-extract flight numbers, IATA codes, dates, and confirmation PNR codes!
+              Paste your flight booking email, hotel voucher, or rental car confirmation text below. Outpost will auto-extract flight numbers, IATA codes, dates, and confirmation PNR codes!
             </p>
 
             <div class="form-group">
@@ -6335,7 +6339,7 @@
                 ${icon('cloud')} Free Supabase Cloud Database Adapter
               </strong>
               <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.35rem;">
-                WanderPulse stores your trips locally in browser storage out of the box. Connect a free project on <strong>Supabase.com</strong> to sync across devices!
+                Outpost stores your trips locally in browser storage out of the box. Connect a free project on <strong>Supabase.com</strong> to sync across devices!
               </p>
             </div>
             <form id="form-settings" onsubmit="return false;">
@@ -6620,11 +6624,26 @@
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
+    const savedSettings = appStore.loadSettings();
+    if (savedSettings && savedSettings.theme) {
+      document.documentElement.setAttribute('data-theme', savedSettings.theme);
+    }
     const themeBtn = document.getElementById('theme-toggle-btn');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsFooterBtn = document.getElementById('footer-settings-btn');
     const brandEl = document.querySelector('.nav-brand');
     const navSpaceBtn = document.getElementById('nav-space-btn');
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        appStore.saveSettings({ theme: next });
+        showToast(`Switched theme to ${next} mode`, 'info');
+      });
+    }
 
     function syncNavProfile() {
       const p = appStore.loadProfile();
